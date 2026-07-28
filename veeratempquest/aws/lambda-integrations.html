@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lambda Integrations | AWS Study Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#e879f9;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #e879f9, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(232, 121, 249, 0.05)}
+  .option.disabled{cursor:default}
+  .option.correct-ans{border-color:var(--correct)!important;background:rgba(16,185,129,.15)!important}
+  .option.wrong-ans{border-color:var(--wrong)!important;background:rgba(239,68,68,.15)!important}
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct);color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+  .explanation{margin-top:20px;padding:15px;background:rgba(232, 121, 249, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  .explanation strong{color:var(--accent)}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="aws.html">← EXIT_NODE</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">SERVERLESS_INTEGRATION_TOPIC_24</div>
+      <h1>Lambda Connectivity Protocol</h1>
+      <p class="desc">Limits, database pooling, event source mapping, and synchronous orchestration patterns.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Clock</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/26</span><span class="hs-lbl">Active</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Protocol Accuracy</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">Integration sequence complete. State cached.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">REINITIALIZE_SYSTEM</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is the maximum deployment package size for a Lambda function (unzipped)?",o:["50 MB","250 MB (unzipped, including layers)","10 GB","1 GB"],a:1,e:"Unzipped code and its layers cannot exceed 250MB. For larger requirements, use container images (up to 10GB)."},
+  {q:"What is the Lambda maximum execution timeout limitation?",o:["5 minutes","15 minutes (900 seconds)","1 hour","30 minutes"],a:1,e:"Functions have a hard limit of 15 minutes. For longer tasks, use AWS Step Functions or ECS Fargate."},
+  {q:"What is the Lambda /tmp storage limitation?",o:["Unlimited","512 MB default (configurable up to 10 GB)","5 GB always","100 MB only"],a:1,e:"This ephemeral storage is local to the instance. It doesn't persist across different execution environments."},
+  {q:"What is the Lambda concurrent execution limit per account per region?",o:["100","1,000 (soft limit)","10,000","Unlimited"],a:1,e:"1,000 is the default soft limit. Exceeding this causes throttling (HTTP 429) unless a quota increase is granted."},
+  {q:"Why is connecting Lambda directly to an RDS database problematic at scale?",o:["Incompatible","Each invocation opens a new TCP connection, exhausting RDS limits","No SQL support","RDS is too slow"],a:1,e:"Lambda's rapid scaling creates a connection for every instance, quickly hitting the database's max_connections limit."},
+  {q:"What is Amazon RDS Proxy and why is it critical?",o:["Security proxy","Managed connection pooler that reuses persistent connections to RDS","Read replica manager","Backup service"],a:1,e:"It maintains a pool of open connections, allowing thousands of Lambdas to share a small, efficient set of DB links."},
+  {q:"What networking configuration is required for Lambda to connect to an RDS in a VPC?",o:["No config needed","Lambda must be deployed inside the VPC with subnets and security groups","Public endpoint needed","Elastic IP needed"],a:1,e:"Lambda needs VPC access. Its security group must be allowed inbound by the RDS security group on the DB port."},
+  {q:"How should you store RDS credentials in Lambda safely?",o:["Hardcode","Use AWS Secrets Manager or SSM Parameter Store SecureString","Plaintext env vars","In /tmp"],a:1,e:"Secrets Manager is best practice; it allows for automated credential rotation and avoids exposing passwords in code."},
+  {q:"How should DB connections be managed to maximize reuse?",o:["Open/close inside handler","Initialize connection OUTSIDE the handler (global scope)","New connection per query","Synchronous only"],a:1,e:"Lambda reuses execution environments for 'warm' starts. Global variables persist, allowing the reuse of open DB clients."},
+  {q:"Which Python library is commonly used for PostgreSQL RDS?",o:["boto3","psycopg2","pymysql","sqlalchemy"],a:1,e:"psycopg2 is the standard adapter. It requires native compiled binaries, often provided via Lambda Layers."},
+  {q:"What is the recommended approach for DynamoDB vs RDS?",o:["Same approach","DynamoDB uses HTTP API (no pool needed); RDS uses persistent TCP (needs Proxy)","DynamoDB needs TCP too","RDS is better"],a:1,e:"DynamoDB is naturally serverless because it uses stateless HTTP requests, requiring no complex connection pooling."},
+  {q:"How does Lambda integrate with DynamoDB Streams?",o:["Manual pull","Event Source Mapping polls streams and invokes Lambda with batches","SNS subscription","Direct HTTP call"],a:1,e:"The Lambda service manages the polling and batching, calling your function only when item changes occur."},
+  {q:"What is the Lambda Event Source Mapping for SQS?",o:["Push notification","Lambda service polls the queue and invokes your function with message batches","SNS fan-out","Manual poll"],a:1,e:"Lambda automatically retrieves messages, deletes them on success, and handles retries on failure based on queue settings."},
+  {q:"What is the standard Lambda + API Gateway + DynamoDB architecture?",o:["DB > Lambda > API","Client > API Gateway > Lambda > DynamoDB","Client > SQS > Lambda","API direct to DB"],a:1,e:"This is the classic serverless pattern. Gateway handles requests, Lambda logic, and DynamoDB persistent storage."},
+  {q:"How does Lambda handle API Gateway response format?",o:["Raw objects","Must return specific dict: {statusCode, headers, body}","Gateway formats it","Strings only"],a:1,e:"Lambda must wrap the result in a JSON structure that API Gateway understands to generate a valid HTTP response."},
+  {q:"What is the maximum payload size for API Gateway integration?",o:["1 MB","10 MB","100 MB","Unlimited"],a:1,e:"Both REST and HTTP APIs limit the request/response body to 10MB. Use S3 for larger data transfers."},
+  {q:"What is Lambda's max response payload for synchronous calls?",o:["10 MB","6 MB","Unlimited","1 MB"],a:1,e:"For synchronous calls, the result body cannot exceed 6MB. For larger data, provide a download link (S3 URL)."},
+  {q:"How does Lambda handle VPC cold starts currently?",o:["No cold starts","Improved with Hyperplane ENIs (sub-second starts)","Still 90 seconds","Always uses Provisioned Concurrency"],a:1,e:"AWS redesigned VPC networking in 2019 using Hyperplane, bringing VPC cold start times down to match standard functions."},
+  {q:"What is Lambda Destinations for async calls?",o:["VPC endpoint","Routes async results (Success/Failure) to SQS, SNS, or EventBridge","Output stream","Log destination"],a:1,e:"Destinations provide a more robust way to handle async results than legacy Dead Letter Queues (DLQ)."},
+  {q:"What happens to an SQS message if Lambda fails?",o:["Permanently deleted","Returns to queue after Visibility Timeout for retry","Retries forever","Forwarded to SNS"],a:1,e:"The message stays in SQS and becomes visible again after a timeout, allowing another attempt (or moving to DLQ)."},
+  {q:"What is Lambda's integration with Kinesis?",o:["No integration","Event Source Mapping polls shards and processes records in order","SNS subscription","Push records"],a:1,e:"Lambda processes Kinesis records per-shard, ensuring that data is handled in the sequence it arrived."},
+  {q:"What is the Lambda RDS Proxy auth mechanism?",o:["Master password","Connects using IAM authentication","Secrets Manager direct","Certificate only"],a:1,e:"Using IAM auth removes the need to store database passwords within the Lambda environment variables or code."},
+  {q:"What is the Lambda + SQS fan-out pattern?",o:["Single queue","SNS publishes to multiple SQS queues, each triggering separate Lambdas","Multiple queues to one Lambda","One message many Lambdas"],a:1,e:"This pattern allows one event to be processed independently by multiple different services simultaneously."},
+  {q:"What is the challenge of writing to RDS inside a transaction at high concurrency?",o:["No challenge","Lock contention and deadlocks can occur; RDS Proxy is essential","No SQL transactions","One write at a time"],a:1,e:"Multiple parallel functions competing for the same database rows can cause performance degradation and logic errors."},
+  {q:"What limit affects functions processing large files from S3?",o:["No S3 access","15-min timeout and /tmp storage limits","No file size limit","1 MB limit"],a:1,e:"For files in the GB range, stream the data in memory instead of downloading it to the local /tmp disk."},
+  {q:"What is Lambda's integration with Cognito for auth?",o:["Manual JWT check","Cognito User Pool Authorizer in Gateway validates tokens before invocation","Direct connection","Incompatible"],a:1,e:"The Gateway handles the validation, passing user details (claims) directly to the Lambda function in the event context."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsLambdaIntegrationsCache_v2');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsLambdaIntegrationsCache_v2', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress(); // Every second
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/26`;
+    document.getElementById('progressFill').style.width = ((current+1)/26 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num"> Q${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 25) ? "TERMINATE_PROTOCOL ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 25) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsLambdaIntegrationsCache_v2');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/26)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsLambdaIntegrationsCache_v2'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

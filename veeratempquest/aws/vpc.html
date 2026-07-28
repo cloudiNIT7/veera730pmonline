@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPC Fundamentals | AWS MCQ Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#10b981;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000 !important; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff !important; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px; position: relative;}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(16, 185, 129, 0.05)}
+  .option.disabled{cursor:default}
+  
+  /* FIXED HIGHLIGHT LOGIC */
+  .option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+  .option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+  
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct); color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong); color:#fff}
+
+  .explanation{margin-top:20px;padding:15px;background:rgba(16, 185, 129, 0.08);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  .explanation strong{color:var(--accent)}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="aws.html">← EXIT_NODE</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">NETWORK_BASE_TOPIC_10</div>
+      <h1>VPC Fundamental Infrastructure</h1>
+      <p class="desc">IP allocation, subnet orchestration, gateways, and isolated cloud routing.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_BLOCK</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_BLOCK →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Final Analysis</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">Network protocol complete. Result stored in local cache.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">REINITIALIZE_PROTOCOL</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is Amazon VPC (Virtual Private Cloud)?",o:["Physical data center","Logically isolated virtual network in AWS where you launch resources","Managed container service","DNS service"],a:1,e:"VPC lets you provision a private section of AWS with full control over IP ranges, subnets, and routing."},
+  {q:"What is the default VPC in AWS?",o:["Created manually","Pre-configured VPC in each region with public subnets and IGW","Shared across all accounts","Limited to 5 instances"],a:1,e:"Each region has a default VPC ready for immediate use, featuring an Internet Gateway and default subnets in each AZ."},
+  {q:"What is CIDR notation in networking?",o:["DNS record","Method for allocating IP addresses using IP/prefix format (e.g., 10.0.0.0/16)","Routing protocol","VPN tunneling"],a:1,e:"CIDR defines IP blocks. The prefix (e.g. /16) determines how many bits are used for the network address."},
+  {q:"What is the valid CIDR range for a VPC?",o:["/8 to /30","/16 to /28","/16 to /28 (AWS standard for VPCs)","/8 to /28"],a:2,e:"AWS allows VPC CIDR blocks between /16 (65,536 IPs) and /28 (16 IPs)."},
+  {q:"How many IP addresses does a /24 CIDR block contain?",o:["256","254","512","128"],a:0,e:"A /24 block provides 256 total IPs. Note that AWS reserves 5 of these for internal networking."},
+  {q:"Why does AWS reserve 5 IP addresses in each subnet?",o:["Load balancers","Network, Router, DNS, Future use, and Broadcast addresses","NAT Gateway","VPN endpoints"],a:1,e:"AWS reserves the first four and the last IP in every subnet for management and routing purposes."},
+  {q:"What is a Public Subnet in a VPC?",o:["No internet route","A subnet with a route table pointing to an Internet Gateway (IGW)","Subnet only for DBs","Subnet with NAT Gateway"],a:1,e:"A public subnet has a route (0.0.0.0/0) to an IGW, allowing instances with public IPs to reach the web."},
+  {q:"What is a Private Subnet in a VPC?",o:["HTTPS only","A subnet with no direct route to the Internet Gateway","Paid premium subnet","Cross-region subnet"],a:1,e:"Private subnets are isolated from direct internet access. They use NAT Gateways for outbound-only traffic."},
+  {q:"What is an Internet Gateway (IGW)?",o:["Physical router","Managed redundant component allowing VPC communication with the internet","NAT service","VPN concentrator"],a:1,e:"The IGW is the target in your route table for internet traffic. It is horizontally scaled and highly available."},
+  {q:"What is a NAT Gateway?",o:["IPv4/v6 converter","Managed service allowing private instances outbound access without allowing inbound traffic","VPN endpoint","Private load balancer"],a:1,e:"NAT Gateways reside in public subnets and use an Elastic IP to mask private instance traffic to the internet."},
+  {q:"What is the difference between an IGW and a NAT Gateway?",o:["No difference","IGW is bidirectional for public subnets; NAT is outbound-only for private subnets","IGW is for IPv6","IGW cheaper"],a:1,e:"IGWs provide a doorway for public instances. NAT Gateways allow private instances to reach out (e.g. for updates)."},
+  {q:"In which subnet should a NAT Gateway be placed?",o:["Private","Public subnet (requires an Elastic IP)","Any subnet","NAT subnet"],a:1,e:"Because it must route traffic to the internet, a NAT Gateway must live in a subnet with an active route to an IGW."},
+  {q:"What is the difference between a Public IP and an Elastic IP?",o:["No difference","Public IPs change on stop/start; Elastic IPs are static and persist","Public is IPv6","Public costs more"],a:1,e:"Elastic IPs are reserved by you and stay with your account until released, unlike dynamic public IPs."},
+  {q:"What is a Route Table in a VPC?",o:["DNS table","Rules (routes) that determine where network traffic is directed","Security policy","Billing record"],a:1,e:"Every subnet must be associated with a route table that tells traffic where to go based on the destination IP."},
+  {q:"What is the 'local' route in a VPC route table?",o:["127.0.0.1 route","Default route allowing all instances within the VPC to talk to each other","Internet route","AWS service route"],a:1,e:"The 'local' route covers your VPC's entire CIDR block and cannot be deleted or modified."},
+  {q:"How many subnets can you create per VPC by default?",o:["16","200 (default soft limit)","65,536","Unlimited"],a:1,e:"While you start with a limit of 200, you can request a service quota increase for more complex network designs."},
+  {q:"What makes a subnet 'public' vs 'private'?",o:["Security groups","Route table configuration (presence of IGW route)","Instance count","NAT Gateway presence"],a:1,e:"A subnet is public only if its route table sends 0.0.0.0/0 traffic to an Internet Gateway."},
+  {q:"What is the purpose of enabling 'Auto-assign Public IP' on a subnet?",o:["Assigns EIPs","Automatically gives a public IPv4 to instances launched in that subnet","Enables IPv6","Assigns private IPs"],a:1,e:"This setting simplifies instance launching for public-facing servers by removing the need to manually request a public IP."},
+  {q:"How many Internet Gateways can you attach to a single VPC?",o:["Unlimited","2 for redundancy","1 per VPC","1 per AZ"],a:2,e:"You can only have one IGW per VPC. It is designed by AWS to be highly available without needing a second gateway."},
+  {q:"What CIDR block represents all IP addresses (default route)?",o:["255.255.255.255/32","10.0.0.0/0","0.0.0.0/0","192.168.0.0/0"],a:2,e:"0.0.0.0/0 is used in route tables to define the destination for any traffic not matching other specific routes (the internet)."},
+  {q:"What is the minimum subnet size you can create in a VPC?",o:["/24","/28","/32","/30"],a:1,e:"A /28 is the smallest allowable subnet, providing 16 total IPs (11 of which are usable)."},
+  {q:"How many Availability Zones does a subnet span?",o:["All in region","Exactly one AZ","2 AZs","Depends on region"],a:1,e:"Subnets are pinned to a single AZ. To build a multi-AZ app, you must create subnets in multiple zones."},
+  {q:"What is the purpose of VPC Flow Logs?",o:["Monitor billing","Capture information about IP traffic moving to/from network interfaces","Configure routing","Set up VPN"],a:1,e:"Flow logs provide a metadata audit of accepted and rejected traffic, which is critical for security and debugging."},
+  {q:"What is the difference between /16 and /24 CIDR blocks?",o:["/16 has more IPs"," /16 provides 65,536 IPs; /24 provides 256 IPs total","Same number"," /24 has more"],a:1,e:"The smaller the prefix number, the larger the network. A /16 block is much larger than a /24 block."},
+  {q:"What is the purpose of a custom VPC vs the default VPC?",o:["Cheaper","Full control over ranges, subnets, and security for production isolation","Identical","Default is more secure"],a:1,e:"Custom VPCs are essential for production workloads where you need to carefully segment tiers and manage complex routing."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsVpcFundCache_v1');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsVpcFundCache_v1', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress(); 
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+    document.getElementById('progressFill').style.width = ((current+1)/25 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num"> Q${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH_PROTOCOL ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsVpcFundCache_v1');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/25)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsVpcFundCache_v1'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

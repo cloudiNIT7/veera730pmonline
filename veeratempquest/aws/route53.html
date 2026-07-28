@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route 53 | AWS MCQ Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#fb923c;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #fb923c, #fcd34d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(251, 146, 60, 0.05)}
+  .option.disabled{cursor:default}
+  .option.correct-ans{border-color:var(--correct)!important;background:rgba(16,185,129,.15)!important}
+  .option.wrong-ans{border-color:var(--wrong)!important;background:rgba(239,68,68,.15)!important}
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct);color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+  .explanation{margin-top:20px;padding:15px;background:rgba(251, 146, 60, 0.12);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  .explanation strong{color:var(--accent)}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="aws.html">← DNS_EXIT</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">GLOBAL_ROUTING_PROTOCOL_TOPIC_25</div>
+      <h1>Route 53 DNS Infrastructure</h1>
+      <p class="desc">Translate hostnames to IPs and orchestrate global traffic with health-aware policies.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/28</span><span class="hs-lbl">Active</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_BLOCK</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_BLOCK →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Resolution Accuracy</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">DNS Analysis Complete. Results cached to local storage.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">REINITIALIZE_PROTOCOL</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is Amazon Route 53?",o:["A CDN service","A scalable and highly available Domain Name System (DNS) web service","A VPN gateway service","A load balancing service"],a:1,e:"Route 53 performs domain registration, DNS resolution, and health checking with a 100% availability SLA."},
+  {q:"What is a DNS A Record?",o:["An alias record","Maps a hostname to an IPv4 address — e.g., www.example.com → 1.2.3.4","Maps a hostname to another hostname","Describes email servers"],a:1,e:"The A record is the most basic DNS type, translating a domain directly to a numerical IPv4 address."},
+  {q:"What is a DNS AAAA Record?",o:["An alias record","Maps a hostname to an IPv6 address (128-bit)","Maps host to host","Advanced A record"],a:1,e:"AAAA records are the IPv6 equivalent of A records, required for routing to modern IPv6-enabled resources."},
+  {q:"What is a DNS CNAME Record?",o:["Record mapping to IP","Maps a hostname to another hostname (canonical name). Cannot be used at zone apex","Certificate record","CDN record"],a:1,e:"CNAMEs point one domain to another. Crucially, they cannot be used for the root domain (e.g., example.com)."},
+  {q:"What is a Route 53 Alias Record?",o:["Alias for hosted zone","An AWS extension mapping a hostname to an AWS resource (ELB, S3). Works at zone apex","A CNAME with TTL 0","Private DNS record"],a:1,e:"Alias records are free, AWS-specific records that can point the root domain to resources like Load Balancers or CloudFront."},
+  {q:"What AWS resources can Route 53 Alias Records point to?",o:["Only EC2","ELB, CloudFront, S3 Website, API Gateway, Beanstalk, Global Accelerator","Only S3 and CloudFront","Any IP address"],a:1,e:"Alias records integrate with AWS services and automatically update if the underlying resource IP changes."},
+  {q:"What is a Route 53 Hosted Zone?",o:["Physical data center","A container for DNS records for a specific domain (Public or Private)","A DNS server cluster","Domain registration only"],a:1,e:"Hosted Zones are where you manage all the records (A, CNAME, etc.) for a single domain name."},
+  {q:"What is Route 53 Simple Routing Policy?",o:["Cheapest routing","Returns one or multiple IP addresses for a domain without health checks","Lowest latency route","Geographic routing"],a:1,e:"Simple routing is for standard DNS resolution when you don't need complex logic or health-aware redirection."},
+  {q:"What is Route 53 Weighted Routing Policy?",o:["Capacity routing","Distributes traffic across multiple resources based on assigned weights (0–255)","Fastest server route","Cost based routing"],a:1,e:"Weighted routing is perfect for blue-green deployments or A/B testing, allowing you to shift traffic percentages gradually."},
+  {q:"What is Route 53 Failover Routing Policy?",o:["Cheapest resource route","Routes to Primary; automatically shifts to Secondary if Primary fails a health check","Load based routing","Nearest region route"],a:1,e:"Failover routing is a disaster recovery pattern that redirects traffic to a backup site if the main site goes down."},
+  {q:"What is Route 53 Geolocation Routing Policy?",o:["Physical server location","Routes traffic based on the geographic location of the user (Continent, Country, State)","Network latency route","Language preference route"],a:1,e:"Geolocation ensures users in specific countries are directed to the appropriate localized endpoint or content."},
+  {q:"What is the difference between Geolocation and Latency-Based routing?",o:["They are identical","Geolocation uses user location; Latency-Based uses lowest network latency (fastest response)","Geolocation is expensive","Latency only works in one region"],a:1,e:"Geolocation gives you control over regional content; Latency routing gives you the best technical performance."},
+  {q:"What is Route 53 Latency-Based Routing Policy?",o:["Proximity routing","Routes each user to the AWS region that provides the lowest network latency","Server response time","Closest geographic location"],a:1,e:"Latency routing uses AWS's global network metrics to find the fastest path for every individual user."},
+  {q:"What is Route 53 Geoproximity Routing Policy?",o:["Geolocation variant","Routes based on location of users and resources with a configurable 'bias'","Proximity to data centers","Country only routing"],a:1,e:"Geoproximity uses 'bias' values to expand or shrink the geographic footprint of a specific region's traffic."},
+  {q:"What is Route 53 Multi-Value Routing Policy?",o:["Simple routing with multiple values","Returns up to 8 healthy records for a query, adding basic health-aware load balancing","Multi-region simultaneous","Weighted variant"],a:1,e:"Multi-value routing provides simple DNS-level availability by only returning healthy IP addresses in the response."},
+  {q:"What is Route 53 IP-Based Routing Policy?",o:["Server IP routing","Routes based on the client's IP address CIDR ranges (ISP or corporate network)","Lowest latency IP","Reputation based"],a:1,e:"IP-based routing is useful for directing specific corporate networks or ISPs to dedicated internal infrastructure."},
+  {q:"What is a Route 53 Health Check?",o:["Vulnerability scan","An automated monitor checking endpoint availability (HTTP/HTTPS/TCP)","DNS query validator","Billing health monitor"],a:1,e:"Health checks tell Route 53 whether an IP or resource is functional. If it fails, traffic is automatically diverted."},
+  {q:"What is a Calculated Health Check in Route 53?",o:["CloudWatch metric check","A parent health check that monitors up to 256 child checks for aggregated health","Custom threshold check","Private resource check"],a:1,e:"Calculated checks allow you to define health based on groups, e.g., 'Site is up if the Web Server AND the DB are healthy'."},
+  {q:"How can Route 53 health checks monitor private VPC endpoints?",o:["Cannot monitor","Create a CloudWatch Alarm for the endpoint and base the Route 53 health check on that alarm","Use VPN tunnel","Private endpoints don't need checks"],a:1,e:"Since Route 53 checkers are public, they use CloudWatch Alarms as a bridge to monitor private internal resources."},
+  {q:"What is a Route 53 Traffic Policy?",o:["VPC policy","A visual diagram combining multiple routing policies into a complex, reusable logic tree","IAM policy","Cost control policy"],a:1,e:"Traffic Flow provides a visual editor to build and version-control complex, multi-tiered routing logic."},
+  {q:"What is Cross-Region High Availability using Route 53?",o:["Multiple hosted zones","Deploying in multiple regions and using Failover/Latency routing to ensure uptime","Multiple AZs","VPC Peering"],a:1,e:"This pattern ensures your application remains online even if an entire AWS region experiences an outage."},
+  {q:"What is the TTL (Time To Live) in DNS?",o:["DNS server expiry","The duration resolvers cache a record. High TTL = less queries; Low TTL = faster changes","Route 53 record duration","Lambda timeout"],a:1,e:"TTL determines how long clients 'remember' an IP. Set it low (e.g., 60s) before a migration to allow for rapid switching."},
+  {q:"What is the Route 53 Resolver?",o:["API server","Enables DNS resolution between on-premises networks and AWS VPCs via endpoints","Health check endpoint","CDN resolver"],a:1,e:"Resolver endpoints bridge your on-premise DNS with your AWS Private Hosted Zones for hybrid cloud visibility."},
+  {q:"How does Route 53 support static website hosting on S3?",o:["No S3 support","Create an Alias record pointing to the S3 website endpoint (bucket name must match domain)","CNAME record to S3","S3 handles DNS natively"],a:1,e:"You must name your S3 bucket exactly like your domain (e.g., www.example.com) to use the Route 53 Alias feature."},
+  {q:"What is the difference between Public and Private Hosted Zones?",o:["No difference","Public handles internet traffic; Private handles internal VPC traffic","Private costs more","Public only uses Alias"],a:1,e:"Private zones allow you to use custom domains (e.g., internal.app) that are only visible within your virtual private clouds."},
+  {q:"Which service works with Route 53 for cross-region failover?",o:["CloudWatch Alarms only","Route 53 Failover policy + Health Checks on the primary endpoint","ELB only","Transit Gateway"],a:1,e:"Combining Failover policies with Health Checks is the industry standard for automating multi-region disaster recovery."},
+  {q:"What is the Route 53 Weighted Routing use case for blue-green deployment?",o:["Cannot be used","Gradually shifting traffic from old (blue) to new (green) by changing weights","Only for one region","Requires two hosted zones"],a:1,e:"Weight shifting (e.g., 90/10 to 50/50 to 0/100) allows for safe, controlled production releases with instant rollback."},
+  {q:"What DNS record type is used for email server configuration?",o:["A Record","MX Record (Mail Exchange) with priority values","TXT Record","CNAME Record"],a:1,e:"MX records tell the internet where to send email for your domain. Lower priority numbers take precedence."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsRoute53Cache_v5');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsRoute53Cache_v5', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/28`;
+    document.getElementById('progressFill').style.width = ((current+1)/28 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num">DNS: Q${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 27) ? "FINISH_RESOLUTION ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 27) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsRoute53Cache_v5');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/28)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsRoute53Cache_v5'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

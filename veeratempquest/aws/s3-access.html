@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S3 Access | AWS MCQ Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#a78bfa;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #a78bfa, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(167, 139, 250, 0.05)}
+  .option.disabled{cursor:default}
+  .option.correct-ans{border-color:var(--correct)!important;background:rgba(16,185,129,.15)!important}
+  .option.wrong-ans{border-color:var(--wrong)!important;background:rgba(239,68,68,.15)!important}
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct);color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+  .explanation{margin-top:20px;padding:15px;background:rgba(167, 139, 250, 0.08);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  .explanation strong{color:var(--accent)}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="aws.html">← IDENTITY_GATE</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">OBJECT_SECURITY_PROTOCOL_TOPIC_14</div>
+      <h1>S3 Access Framework</h1>
+      <p class="desc">Master bucket policies, cross-account access, and pre-signed URL security orchestration.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Clock</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Status</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_BLOCK</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_BLOCK →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Final Security Rating</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">Access Protocol complete. Audit state cached.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">REINITIALIZE_PROTOCOL</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is the primary method to grant cross-account access to an S3 bucket?",o:["Sharing root credentials","Using a Bucket Policy with a Principal specifying the other account's ARN","Creating duplicate IAM users","Enabling public access"],a:1,e:"Bucket policies allow you to define external account ARNs as principals to grant cross-account permissions securely."},
+  {q:"What is an S3 Access Point?",o:["A VPC endpoint for S3","A named network endpoint with its own policy, simplifying access for shared datasets","A CloudFront distribution","An S3 API endpoint URL"],a:1,e:"Access points act as dedicated 'gateways' to a bucket, each with its own unique policy to manage diverse application needs."},
+  {q:"What is the correct format for a Bucket Policy Principal to grant access to an account?",o:['"Principal": "arn:aws:iam::ACCOUNT-ID"','"Principal": {"AWS": "arn:aws:iam::ACCOUNT-ID:root"}','"Principal": "ACCOUNT-ID"','"Principal": "aws:all"'],a:1,e:"The 'root' principal represents the entire AWS account, allowing the external admin to delegate permissions to their users."},
+  {q:"What is a Pre-signed URL in S3?",o:["Permanent public URL","A time-limited URL granting temporary access to a private object embedding the creator's credentials","CloudFront signed URL","VPC-restricted URL"],a:1,e:"Pre-signed URLs are perfect for providing temporary access to private files without requiring users to have IAM credentials."},
+  {q:"Who can generate a pre-signed URL for an S3 object?",o:["Only root","Any IAM entity with s3:GetObject permission on that object","Only bucket owner","Only IAM admins"],a:1,e:"If your IAM role can read the object, it can sign a URL that allows others to read it within the expiry period."},
+  {q:"What is the maximum expiry for a pre-signed URL generated with IAM credentials?",o:["15 minutes","1 hour","7 days","1 year"],a:2,e:"URLs generated by IAM users can last up to 1 week. Role-based URLs are limited by the session duration of the role."},
+  {q:"What is the difference between a Bucket Policy and an IAM Policy?",o:["No difference","Bucket Policies are resource-based; IAM Policies are identity-based","IAM cannot control S3","Bucket policies are for encryption only"],a:1,e:"Bucket policies are attached to the bucket itself, while IAM policies are attached to the user or role accessing it."},
+  {q:"What S3 condition key allows you to restrict access to requests from a specific VPC Endpoint?",o:["aws:SourceVpc","aws:SourceVpce","aws:VpcId","s3:VpcEndpoint"],a:1,e:"Using 'aws:SourceVpce' ensures that data can only be accessed through a verified VPC interface or gateway endpoint."},
+  {q:"How do you restrict S3 bucket access to only a specific VPC?",o:["Security group on S3","Bucket Policy with aws:SourceVpc condition","NACL on S3","VPN to S3"],a:1,e:"The 'aws:SourceVpc' condition key matches the unique ID of your VPC to block all external traffic."},
+  {q:"What is an S3 Multi-Region Access Point?",o:["Nicknames for buckets","A global endpoint routing requests to the nearest replica using Global Accelerator","Cross-region IAM policy","VPC endpoint type"],a:1,e:"It provides a single global DNS name that automatically routes traffic to the closest healthy bucket across regions."},
+  {q:"What is S3 Object Ownership 'Bucket Owner Enforced' mode?",o:["Makes objects public","Disables ACLs entirely so the bucket owner owns all objects uploaded by others","Restricts writes","Enables cross-account writes"],a:1,e:"This is the AWS-recommended setting. It simplifies security by ignoring legacy ACLs and using only policies."},
+  {q:"What IAM policy element allows s3:GetObject from a specific IP range?",o:["Principal","Resource","Condition with IpAddress","Effect"],a:2,e:"The Condition block with 'IpAddress' allows you to whitelist specific corporate or network CIDR blocks."},
+  {q:"What is S3 Access Analyzer?",o:["Cost tool","A service identifying buckets accessible outside your account (public or cross-account)","Performance tool","Versioning tool"],a:1,e:"It audits your policies to warn you if you've accidentally made your sensitive data public or shared it too broadly."},
+  {q:"How can an IAM user in Account A access an S3 bucket in Account B?",o:["Impossible","Account B bucket policy must allow A, AND A must have IAM permission","VPC peering","Root credentials"],a:1,e:"Cross-account access is a handshake: the bucket must 'invite' the user, and the user's account must 'allow' the trip."},
+  {q:"What is the purpose of S3 Bucket Policies vs S3 ACLs?",o:["Interchangeable","Bucket Policies are recommended; ACLs are legacy","ACLs are newer","Bucket Policies for cross-account only"],a:1,e:"Bucket policies offer much more granular control and are easier to manage than legacy object-level ACLs."},
+  {q:"What is a VPC Endpoint Policy for S3?",o:["SG for endpoint","A resource policy on the Gateway Endpoint restricting which buckets can be reached","NACL for S3","Subnet route"],a:1,e:"It acts as a firewall for the endpoint, ensuring your VPC can only talk to specific, authorized S3 buckets."},
+  {q:"What does the S3 condition 's3:x-amz-server-side-encryption' enforce?",o:["Auto encryption","Denies PUT requests that do not specify the correct encryption header","Grants access to encrypted only","Rotates keys"],a:1,e:"By using this condition with a 'Deny' effect, you can force all users to encrypt their files during the upload phase."},
+  {q:"What is the 's3:PutBucketPolicy' permission used for?",o:["Uploading objects","Modifying or creating the bucket's access policy","Creating access points","Reading metadata"],a:1,e:"This is an administrative permission. Whoever has it can rewrite the rules of who can enter the bucket."},
+  {q:"Which approach best secures an S3 bucket used by an application on EC2?",o:["Hardcode credentials","Attach an IAM Role to the instance","Make bucket public","Hard-coded access key"],a:1,e:"IAM roles for EC2 use temporary credentials, removing the security risk of storing long-term keys on the server."},
+  {q:"What is the purpose of the S3 'aws:PrincipalOrgID' condition key?",o:["Check region","Restricts access to only principals within your AWS Organization","Specifies billing account","Limits root users"],a:1,e:"This key allows you to grant access to an entire organization of accounts without listing every account ID manually."},
+  {q:"What happens if a Bucket Policy and an IAM Policy conflict?",o:["IAM wins","Bucket wins","If either policy explicitly Denies, the request is denied","They cancel out"],a:2,e:"In AWS security, an explicit DENY is the final word. If no deny exists, an ALLOW in either policy grants access."},
+  {q:"What is an S3 Access Point alias?",o:["Nickname","A unique hostname automatically assigned to an Access Point for easy S3 operations","Route 53 record","Bucket policy alias"],a:1,e:"Aliases allow applications to use the Access Point hostname as if it were a standard bucket name."},
+  {q:"What is the 'Confused Deputy' problem in S3?",o:["IAM bug","A vulnerability where a service is tricked into using its permissions on behalf of an unauthorized account","Billing error","Consistency issue"],a:1,e:"To prevent this, always include account-specific conditions when giving AWS services access to your buckets."},
+  {q:"What S3 API call lists all objects in a bucket?",o:["GetObject","HeadBucket","ListObjectsV2","DescribeBucket"],a:2,e:"ListObjectsV2 is the modern API for inventorying the contents of your bucket with efficient pagination."},
+  {q:"What is the effect of a Bucket Policy Deny statement with no conditions?",o:["Anonymous users only","Applies to everyone including the owner and root account","Cross-account only","IAM roles only"],a:1,e:"Be extremely careful: an unconditional Deny can lock even the administrator out, requiring root intervention to fix."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsS3AccessCache_v4');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsS3AccessCache_v4', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress(); 
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+    document.getElementById('progressFill').style.width = ((current+1)/25 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num">Q ${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "SUBMIT_AUDIT ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsS3AccessCache_v4');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/25)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsS3AccessCache_v4'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

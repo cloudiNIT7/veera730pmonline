@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS MCQs — Veera Sir</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;
+  --text:#dce8f5;--muted:#4a6080;--dim:#2a3a50;
+  --compute:#3b82f6;--storage:#f59e0b;--networking:#10b981;--object:#a78bfa;
+  --iam:#ec4899;--database:#06b6d4;--security:#f97316;--monitoring:#84cc16;
+  --serverless:#e879f9;--dns:#fb923c;
+}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(59,130,246,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.03) 1px,transparent 1px);background-size:40px 40px}
+.bg-glow{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(59,130,246,.08) 0%,transparent 70%);z-index:0;pointer-events:none}
+
+/* Back nav */
+.back-nav{
+  position:relative;z-index:2;
+  padding:18px 40px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;
+}
+.back-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  text-decoration:none;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;
+  letter-spacing:1px;text-transform:uppercase;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:7px;padding:6px 12px;
+  transition:color .2s,border-color .2s;
+}
+.back-btn:hover{color:var(--compute);border-color:var(--compute)}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted)}
+.breadcrumb span{color:var(--compute)}
+
+header{position:relative;z-index:1;padding:50px 40px 44px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-badge{display:inline-block;background:linear-gradient(135deg,#1a2d4a,#0d1a2e);border:1px solid var(--border2);border-radius:12px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--compute);letter-spacing:3px;text-transform:uppercase;margin-bottom:22px}
+h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;letter-spacing:-1px;line-height:1.1;background:linear-gradient(135deg,#c02828 20%,#146941 60%,#ce10b5 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px}
+.subtitle{color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto 36px;line-height:1.6}
+.stats-row{display:flex;justify-content:center;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;max-width:480px;margin:0 auto}
+.stat{flex:1;padding:18px 12px;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-n{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--compute)}
+.stat-l{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+.search-wrap{position:relative;z-index:1;max-width:500px;margin:36px auto 0;padding:0 40px}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 18px 12px 44px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--compute)}
+.search-input::placeholder{color:var(--muted)}
+.search-icon{position:absolute;left:54px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem}
+.main{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:50px 40px 80px}
+.cat-section{margin-bottom:48px}
+.cat-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cat-name{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:3px}
+.cat-count{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted)}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.topic-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 22px 18px;text-decoration:none;color:inherit;display:block;position:relative;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
+.topic-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c-glow),transparent 60%);opacity:0;transition:opacity .3s}
+.topic-card:hover{transform:translateY(-4px);border-color:var(--c-accent);box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 0 1px var(--c-accent)}
+.topic-card:hover::after{opacity:1}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;position:relative;z-index:1}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:4px}
+.topic-icon{font-size:1.4rem}
+.topic-title{font-size:1rem;font-weight:700;line-height:1.3;margin-bottom:8px;position:relative;z-index:1;color:var(--c-accent)}
+.topic-bullets{display:flex;flex-direction:column;gap:3px;margin-bottom:14px;position:relative;z-index:1}
+.bullet{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:6px;line-height:1.4}
+.bullet::before{content:'›';color:var(--c-accent);font-size:.8rem;flex-shrink:0}
+.card-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);position:relative;z-index:1}
+.mcq-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;background:var(--c-accent);color:#000;padding:3px 8px;border-radius:4px;opacity:.9}
+.card-arrow{color:var(--c-accent);font-size:.9rem;transition:transform .2s}
+.topic-card:hover .card-arrow{transform:translateX(4px)}
+.hidden{display:none!important}
+.cat-compute{--c-accent:var(--compute);--c-glow:rgba(59,130,246,.06)}
+.cat-storage{--c-accent:var(--storage);--c-glow:rgba(245,158,11,.06)}
+.cat-networking{--c-accent:var(--networking);--c-glow:rgba(16,185,129,.06)}
+.cat-object{--c-accent:var(--object);--c-glow:rgba(167,139,250,.06)}
+.cat-iam{--c-accent:var(--iam);--c-glow:rgba(236,72,153,.06)}
+.cat-database{--c-accent:var(--database);--c-glow:rgba(6,182,212,.06)}
+.cat-security{--c-accent:var(--security);--c-glow:rgba(249,115,22,.06)}
+.cat-monitoring{--c-accent:var(--monitoring);--c-glow:rgba(132,204,22,.06)}
+.cat-serverless{--c-accent:var(--serverless);--c-glow:rgba(232,121,249,.06)}
+.cat-dns{--c-accent:var(--dns);--c-glow:rgba(251,146,60,.06)}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:.75rem;font-family:'JetBrains Mono',monospace;position:relative;z-index:1;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="back-nav">
+  <a class="back-btn" href="../index.html">← Home</a>
+  <span class="breadcrumb">Home / <span>AWS MCQs</span></span>
+</div>
+
+<header>
+  <div class="logo-badge">☁ AWS MCQ HUB · Veera Sir · NareshIT</div>
+  <h1>AWS Cloud MCQs</h1>
+  <p class="subtitle">26 topic-wise MCQ sets covering the full AWS Solutions Architect curriculum — from compute to serverless</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n">26</div><div class="stat-l">Topics</div></div>
+    <div class="stat"><div class="stat-n">650</div><div class="stat-l">Questions</div></div>
+    <div class="stat"><div class="stat-n">10</div><div class="stat-l">Categories</div></div>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <span class="search-icon">🔍</span>
+  <input class="search-input" type="text" placeholder="Search AWS topics..." oninput="filterTopics(this.value)">
+</div>
+
+<div class="main" id="mainContent">
+
+  <!-- COMPUTE SERVICES -->
+  <div class="cat-section" data-cat="compute">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--compute)"></div>
+      <span class="cat-name" style="color:var(--compute)">Compute Services</span>
+      <span class="cat-count">6 topics · 150 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-compute" href="ec2-overview.html">
+        <div class="card-top"><span class="topic-num">#05</span><span class="topic-icon">💻</span></div>
+        <div class="topic-title">EC2 Overview</div>
+        <div class="topic-bullets">
+          <div class="bullet">EC2 Overview & Architecture</div>
+          <div class="bullet">Instance Launch — Windows & Linux</div>
+          <div class="bullet">AMIs and Launch Templates</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-compute" href="ec2-management.html">
+        <div class="card-top"><span class="topic-num">#05</span><span class="topic-icon">⚙️</span></div>
+        <div class="topic-title">EC2 Instance Management</div>
+        <div class="topic-bullets">
+          <div class="bullet">Instance Types & Key Pairs</div>
+          <div class="bullet">EC2 Connect Methods</div>
+          <div class="bullet">Elastic IP, Snapshots, User Data</div>
+          <div class="bullet">Storage, AMI & Launch Template</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-compute" href="elb.html">
+        <div class="card-top"><span class="topic-num">#06</span><span class="topic-icon">⚖️</span></div>
+        <div class="topic-title">Elastic Load Balancing (ELB)</div>
+        <div class="topic-bullets">
+          <div class="bullet">ALB & NLB — Usage & Creation</div>
+          <div class="bullet">Path-Based Routing (ALB)</div>
+          <div class="bullet">Target Groups & LB Integration</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-compute" href="billing-monitoring.html">
+        <div class="card-top"><span class="topic-num">#07</span><span class="topic-icon">💰</span></div>
+        <div class="topic-title">Billing & Monitoring</div>
+        <div class="topic-bullets">
+          <div class="bullet">AWS Billing Dashboard</div>
+          <div class="bullet">Cost Explorer & Budgets</div>
+          <div class="bullet">CloudWatch Alarms</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-compute" href="asg.html">
+        <div class="card-top"><span class="topic-num">#08</span><span class="topic-icon">📈</span></div>
+        <div class="topic-title">Auto Scaling Group</div>
+        <div class="topic-bullets">
+          <div class="bullet">ASG Concepts & Policies</div>
+          <div class="bullet">Target Tracking Policy</div>
+          <div class="bullet">Step & Scheduled Scaling</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-compute" href="security-groups.html">
+        <div class="card-top"><span class="topic-num">#08</span><span class="topic-icon">🛡️</span></div>
+        <div class="topic-title">EC2 Security</div>
+        <div class="topic-bullets">
+          <div class="bullet">Security Groups & NACLs</div>
+          <div class="bullet">Security Groups & ACLs</div>
+          <div class="bullet">VPC Endpoints & Transit Gateway</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- STORAGE SERVICES -->
+  <div class="cat-section" data-cat="storage">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--storage)"></div>
+      <span class="cat-name" style="color:var(--storage)">Storage Services</span>
+      <span class="cat-count">1 topic · 25 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-storage" href="ebs-efs.html">
+        <div class="card-top"><span class="topic-num">#09</span><span class="topic-icon">💾</span></div>
+        <div class="topic-title">EBS / EFS</div>
+        <div class="topic-bullets">
+          <div class="bullet">Elastic Block Storage (EBS)</div>
+          <div class="bullet">EBS Volume Types & Snapshots</div>
+          <div class="bullet">Elastic File Storage (EFS)</div>
+          <div class="bullet">EBS vs EFS Comparison</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- NETWORKING -->
+  <div class="cat-section" data-cat="networking">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--networking)"></div>
+      <span class="cat-name" style="color:var(--networking)">Networking</span>
+      <span class="cat-count">2 topics · 50 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-networking" href="vpc.html">
+        <div class="card-top"><span class="topic-num">#10</span><span class="topic-icon">🌐</span></div>
+        <div class="topic-title">VPC Fundamentals</div>
+        <div class="topic-bullets">
+          <div class="bullet">Networking Basics & IPs</div>
+          <div class="bullet">CIDR Range & Subnet Calculations</div>
+          <div class="bullet">Public & Private Subnets</div>
+          <div class="bullet">IGW, NAT Gateway, Custom VPCs</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-networking" href="vpc-controls.html">
+        <div class="card-top"><span class="topic-num">#11</span><span class="topic-icon">🔧</span></div>
+        <div class="topic-title">VPC Controls</div>
+        <div class="topic-bullets">
+          <div class="bullet">Network ACLs & Route Tables</div>
+          <div class="bullet">VPC Peering (Same/Cross-Region)</div>
+          <div class="bullet">VPC Endpoints & Transit Gateway</div>
+          <div class="bullet">Private EC2 via VPC Endpoint</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- OBJECT STORAGE -->
+  <div class="cat-section" data-cat="object">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--object)"></div>
+      <span class="cat-name" style="color:var(--object)">Object Storage</span>
+      <span class="cat-count">3 topics · 75 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-object" href="s3.html">
+        <div class="card-top"><span class="topic-num">#12</span><span class="topic-icon">🪣</span></div>
+        <div class="topic-title">S3 Fundamentals</div>
+        <div class="topic-bullets">
+          <div class="bullet">What is S3?</div>
+          <div class="bullet">Storage Classes & Versioning</div>
+          <div class="bullet">Bucket ACL & Permissions</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-object" href="s3-advanced.html">
+        <div class="card-top"><span class="topic-num">#13</span><span class="topic-icon">🔬</span></div>
+        <div class="topic-title">S3 Advanced</div>
+        <div class="topic-bullets">
+          <div class="bullet">Data Partitioning, Copying & Moving</div>
+          <div class="bullet">Cross/Same-Region Replication</div>
+          <div class="bullet">Lifecycle Management</div>
+          <div class="bullet">Encryption, KMS, Static Hosting</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-object" href="s3-access.html">
+        <div class="card-top"><span class="topic-num">#14</span><span class="topic-icon">🔑</span></div>
+        <div class="topic-title">S3 Access</div>
+        <div class="topic-bullets">
+          <div class="bullet">Cross-Account Access for S3</div>
+          <div class="bullet">Bucket Policies & ACLs</div>
+          <div class="bullet">Pre-signed URLs & Access Points</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- IAM -->
+  <div class="cat-section" data-cat="iam">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--iam)"></div>
+      <span class="cat-name" style="color:var(--iam)">Identity & Access</span>
+      <span class="cat-count">1 topic · 25 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-iam" href="iam.html">
+        <div class="card-top"><span class="topic-num">#15</span><span class="topic-icon">👤</span></div>
+        <div class="topic-title">IAM</div>
+        <div class="topic-bullets">
+          <div class="bullet">Root Account vs IAM Users, MFA</div>
+          <div class="bullet">Users, Groups, Roles & Policies</div>
+          <div class="bullet">AWS CLI, IAM Roles</div>
+          <div class="bullet">Managed, Custom & Inline Policies</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- DATABASES -->
+  <div class="cat-section" data-cat="database">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--database)"></div>
+      <span class="cat-name" style="color:var(--database)">Databases</span>
+      <span class="cat-count">3 topics · 75 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-database" href="rds.html">
+        <div class="card-top"><span class="topic-num">#16</span><span class="topic-icon">🗄️</span></div>
+        <div class="topic-title">RDS</div>
+        <div class="topic-bullets">
+          <div class="bullet">Launching RDS Instances</div>
+          <div class="bullet">RDS vs EC2 Database</div>
+          <div class="bullet">RDS Proxy & ElastiCache</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-database" href="rds-operations.html">
+        <div class="card-top"><span class="topic-num">#17</span><span class="topic-icon">⚡</span></div>
+        <div class="topic-title">RDS Operations</div>
+        <div class="topic-bullets">
+          <div class="bullet">RDS to EC2 & Local Connection</div>
+          <div class="bullet">DB Creation, Tables & Queries</div>
+          <div class="bullet">Read Replicas & Masters</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-database" href="dynamodb-apigateway.html">
+        <div class="card-top"><span class="topic-num">#18</span><span class="topic-icon">⚡</span></div>
+        <div class="topic-title">DynamoDB & API Gateway</div>
+        <div class="topic-bullets">
+          <div class="bullet">DynamoDB Overview & Security</div>
+          <div class="bullet">DynamoDB + Lambda Integration</div>
+          <div class="bullet">Lambda, API Gateway Project</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div class="cat-section" data-cat="security">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--security)"></div>
+      <span class="cat-name" style="color:var(--security)">Security Services</span>
+      <span class="cat-count">2 topics · 50 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-security" href="secrets-keys.html">
+        <div class="card-top"><span class="topic-num">#19</span><span class="topic-icon">🔐</span></div>
+        <div class="topic-title">Secrets & Keys</div>
+        <div class="topic-bullets">
+          <div class="bullet">AWS Secrets Manager</div>
+          <div class="bullet">Key Management Service (KMS)</div>
+          <div class="bullet">Secrets Rotation & Access</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-security" href="security-tools.html">
+        <div class="card-top"><span class="topic-num">#22</span><span class="topic-icon">🛡️</span></div>
+        <div class="topic-title">AWS Security Tools</div>
+        <div class="topic-bullets">
+          <div class="bullet">ACM, Inspector, Trusted Advisor</div>
+          <div class="bullet">Shield, WAF, CloudTrail</div>
+          <div class="bullet">AWS Config, SNS, CloudFront</div>
+          <div class="bullet">Global Accelerator</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- MONITORING -->
+  <div class="cat-section" data-cat="monitoring">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--monitoring)"></div>
+      <span class="cat-name" style="color:var(--monitoring)">Monitoring</span>
+      <span class="cat-count">2 topics · 50 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-monitoring" href="cloudwatch.html">
+        <div class="card-top"><span class="topic-num">#20</span><span class="topic-icon">📊</span></div>
+        <div class="topic-title">CloudWatch Overview</div>
+        <div class="topic-bullets">
+          <div class="bullet">Metrics, Logs & Dashboards</div>
+          <div class="bullet">CloudWatch Agent</div>
+          <div class="bullet">Log Groups & Insights</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-monitoring" href="cloudwatch-advanced.html">
+        <div class="card-top"><span class="topic-num">#21</span><span class="topic-icon">🔔</span></div>
+        <div class="topic-title">CloudWatch Advanced</div>
+        <div class="topic-bullets">
+          <div class="bullet">CloudWatch EventBridge</div>
+          <div class="bullet">CloudWatch Alarms</div>
+          <div class="bullet">Composite Alarms & Actions</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- SERVERLESS -->
+  <div class="cat-section" data-cat="serverless">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--serverless)"></div>
+      <span class="cat-name" style="color:var(--serverless)">Serverless</span>
+      <span class="cat-count">2 topics · 50 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-serverless" href="lambda.html">
+        <div class="card-top"><span class="topic-num">#23</span><span class="topic-icon">λ</span></div>
+        <div class="topic-title">Lambda</div>
+        <div class="topic-bullets">
+          <div class="bullet">Lambda Overview & Config</div>
+          <div class="bullet">Lambda Boto3 & Automation</div>
+          <div class="bullet">Lambda Layers & Environment</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-serverless" href="lambda-integrations.html">
+        <div class="card-top"><span class="topic-num">#24</span><span class="topic-icon">🔗</span></div>
+        <div class="topic-title">Lambda Integrations</div>
+        <div class="topic-bullets">
+          <div class="bullet">Lambda Limitations</div>
+          <div class="bullet">Lambda to RDS Connection</div>
+          <div class="bullet">Lambda + DynamoDB + API Gateway</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- DNS & CDN -->
+  <div class="cat-section" data-cat="dns">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--dns)"></div>
+      <span class="cat-name" style="color:var(--dns)">DNS & CDN</span>
+      <span class="cat-count">2 topics · 50 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-dns" href="route53.html">
+        <div class="card-top"><span class="topic-num">#25</span><span class="topic-icon">🌍</span></div>
+        <div class="topic-title">Route 53</div>
+        <div class="topic-bullets">
+          <div class="bullet">DNS Records & Alias Config</div>
+          <div class="bullet">Simple, Weighted, Failover RP</div>
+          <div class="bullet">Geo Location & Latency Routing</div>
+          <div class="bullet">Cross-Region High Availability</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+      <a class="topic-card cat-dns" href="cloudfront.html">
+        <div class="card-top"><span class="topic-num">#26</span><span class="topic-icon">⚡</span></div>
+        <div class="topic-title">CloudFront</div>
+        <div class="topic-bullets">
+          <div class="bullet">CloudFront Overview</div>
+          <div class="bullet">Distributions & Invalidations</div>
+          <div class="bullet">Origins & Origin Groups</div>
+        </div>
+        <div class="card-bottom"><span class="mcq-badge">25 MCQs</span><span class="card-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>AWS MCQ Hub — 26 Topics · 650 Questions · Full Course Coverage by Veera Sir · NareshIT</footer>
+
+<script>
+function filterTopics(val){
+  const q=val.toLowerCase().trim();
+  document.querySelectorAll('.topic-card').forEach(card=>{
+    const text=card.textContent.toLowerCase();
+    card.classList.toggle('hidden',q&&!text.includes(q));
+  });
+  document.querySelectorAll('.cat-section').forEach(sec=>{
+    const visible=[...sec.querySelectorAll('.topic-card')].some(c=>!c.classList.contains('hidden'));
+    sec.classList.toggle('hidden',q&&!visible);
+  });
+}
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudFront | AWS MCQ Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#fb923c;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #fb923c, #fcd34d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(251, 146, 60, 0.05)}
+  .option.disabled{cursor:default}
+  .option.correct-ans{border-color:var(--correct)!important;background:rgba(16,185,129,.15)!important}
+  .option.wrong-ans{border-color:var(--wrong)!important;background:rgba(239,68,68,.15)!important}
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct);color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+  .explanation{margin-top:20px;padding:15px;background:rgba(251, 146, 60, 0.12);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="aws.html">← EXIT_ORIGIN</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">EDGE_NETWORK_TOPIC_26</div>
+      <h1>CloudFront Global Delivery</h1>
+      <p class="desc">Caching strategies, OAC, invalidations, and high-performance content delivery.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/27</span><span class="hs-lbl">Active</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_BLOCK</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_BLOCK →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Caching Efficiency</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">Distribution Complete. Logs synced to cache.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">PURGE_CACHE_REBOOT</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is Amazon CloudFront?",o:["An AWS load balancing service","A Content Delivery Network (CDN) that caches content at edge locations","A DNS routing service","A VPN endpoint service"],a:1,e:"CloudFront reduces latency by serving content from edge locations close to the user rather than fetching from the origin every time."},
+  {q:"What is a CloudFront Distribution?",o:["A billing unit","The configuration entity defining CDN settings like origins and behaviors","A replication job","A deployment region"],a:1,e:"A Distribution is where you define how CloudFront interacts with your origins and how users access your content."},
+  {q:"What types of CloudFront Distributions exist?",o:["Standard/Premium","Web Distribution (covers HTTP/HTTPS, static/dynamic)","Public/Private","Regional/Global"],a:1,e:"Web Distributions are the standard. RTMP was deprecated, so Web Distributions now handle all HTTP-based content delivery."},
+  {q:"What is a CloudFront Origin?",o:["An edge location","The source server (S3, ALB, EC2) from which CloudFront fetches content","A cache node","A DNS record"],a:1,e:"Origins are the authoritative sources. CloudFront fetches content from them when it is not already in the edge cache."},
+  {q:"What is Origin Access Control (OAC) in CloudFront?",o:["User authentication","Restricts S3 access so only CloudFront can fetch objects","An S3 bucket policy","An access log feature"],a:1,e:"OAC secures your S3 bucket by ensuring users cannot bypass CloudFront to access your files directly via S3 URLs."},
+  {q:"What is a Cache Behavior in CloudFront?",o:["Expiration policy","Rules determining how CloudFront handles specific URL path patterns","An alarm trigger","A bandwidth throttle"],a:1,e:"Behaviors let you have different settings (like TTL or Origins) for different parts of your site, e.g., /api vs /images."},
+  {q:"What is CloudFront Cache TTL (Time to Live)?",o:["Distribution expiry","The duration an object is kept in edge cache before being considered stale","Origin timeout","SSL duration"],a:1,e:"TTL defines freshness. A higher TTL increases cache hits, while a lower TTL ensures users see updates faster."},
+  {q:"What is a CloudFront Cache Invalidation?",o:["Clearing edge locations","Forcing the removal of specific cached objects before TTL expiry","Disabling a distribution","Deleting origin content"],a:1,e:"Invalidation is a 'forced clear'. Use it when you update a file (like index.html) and need it to reflect globally immediately."},
+  {q:"What is the best practice to avoid frequent CloudFront invalidations?",o:["Set TTL=0","Use versioned URLs or content hashing (e.g., style.v2.css)","Never cache static assets","Use query strings"],a:1,e:"Versioning files is more efficient and cheaper than invalidating. Each new version is treated as a unique file by the cache."},
+  {q:"What is CloudFront Origin Group?",o:["IAM roles for CDN","A grouping of a primary and failover origin for high availability","A collection of behaviors","A group of distributions"],a:1,e:"Origin Groups provide automatic failover. If your primary origin returns an error, CloudFront retries the request on the failover origin."},
+  {q:"What is the difference between Origin Group failover and Route 53 Failover?",o:["They are identical","CloudFront is request-level (instant); Route 53 is DNS-level (slower)","CloudFront is slower","Route 53 works per request"],a:1,e:"CloudFront failover is sub-second for specific failed requests. Route 53 switches all traffic but depends on DNS propagation."},
+  {q:"What is CloudFront Geo-Restriction?",o:["Latency routing","Blocking or allowing access based on the user's country/IP","IP access control","Content rating"],a:1,e:"Geo-restrictions allow you to block specific regions due to licensing or regulatory requirements at the edge layer."},
+  {q:"What is a CloudFront Price Class?",o:["Feature tier","Controls which edge locations serve your content to balance cost and performance","Number of origins","Monthly allowance"],a:1,e:"Price Classes allow you to exclude expensive edge locations (like South America) to save on data transfer costs."},
+  {q:"How does CloudFront serve HTTPS content with a custom domain?",o:["HTTPS not supported","Use an ACM certificate in the us-east-1 region","Use self-signed certs","Automatic — no cert needed"],a:1,e:"For CloudFront, ACM certificates must always be created in North Virginia (us-east-1) to be usable globally."},
+  {q:"What is CloudFront's origin protocol policy?",o:["Encryption level","Defines if CloudFront uses HTTP, HTTPS, or Match Viewer for origin talk","CDN encryption setting","Cache API protocol"],a:1,e:"This policy ensures security between the CloudFront edge and your backend server (origin)."},
+  {q:"What is a CloudFront Cache Policy?",o:["Storage billing","Reusable config defining cache keys (headers, cookies) and TTLs","Cache security policy","Invalidation schedule"],a:1,e:"Cache Policies standardize how CloudFront determines what makes a request unique enough to store in cache."},
+  {q:"What HTTP methods can CloudFront be configured to allow?",o:["GET only","GET/HEAD/OPTIONS or full methods including POST/PUT/DELETE","GET and POST","All methods always"],a:1,e:"CloudFront can be configured to allow write operations (POST/PUT) for dynamic applications and API backends."},
+  {q:"What is CloudFront Signed URLs and Signed Cookies?",o:["SSL signing","Methods to grant temporary access to private content","CDN signing","API authentication"],a:1,e:"Signed URLs are for single files; Signed Cookies are for granting access to multiple files (like a whole movie series)."},
+  {q:"What is CloudFront Field-Level Encryption?",o:["Config encryption","Encrypting specific sensitive fields (like CC numbers) at the edge","Full payload encryption","Database encryption"],a:1,e:"This protects data throughout your internal stack, ensuring only the end application can decrypt sensitive form fields."},
+  {q:"What is the CloudFront origin request policy?",o:["IAM policy","Controls which headers/cookies are forwarded to origin (regardless of cache key)","Security policy","Rate limiting"],a:1,e:"This separates what we cache from what we send to the backend, giving you more granular control."},
+  {q:"How does CloudFront handle dynamic content?",o:["Only serves static","Forwards non-cacheable requests directly to the origin over optimized routes","Dynamic is blocked","Only static can use CDN"],a:1,e:"Even if not cached, dynamic content benefits from AWS's optimized global backbone and persistent connections."},
+  {q:"What is Lambda@Edge vs CloudFront Functions?",o:["They are identical","Lambda@Edge handles complex logic; Functions are lightweight/JS only for speed","Lambda@Edge is deprecated","Functions are more powerful"],a:1,e:"CloudFront Functions are faster and cheaper for simple tasks; Lambda@Edge is for heavy lifting like DB queries."},
+  {q:"What is CloudFront Real-Time Logs?",o:["Invalidation logs","Near real-time streaming of access logs to Kinesis","Billing logs","Lambda execution log"],a:1,e:"Real-Time logs allow you to monitor your traffic performance and errors within seconds instead of hours."},
+  {q:"What is CloudFront's standard access logging?",o:["Enabled automatically","Optional feature delivering detailed logs to S3 every hour","CloudWatch only","Real-time only"],a:1,e:"Standard logs provide a full history of every request, which is vital for security auditing and debugging."},
+  {q:"What is the CloudFront Cache Hit Ratio?",o:["Uptime percentage","Percentage of requests served from cache vs origin fetches","Static to dynamic ratio","Traffic distribution"],a:1,e:"A high Cache Hit Ratio means your CDN is working effectively, reducing load and cost on your origin."},
+  {q:"What is the purpose of CloudFront Custom Error Pages?",o:["Blocking errors","Serving branded error pages (like 404.html) from S3","Logging errors","Redirecting to home"],a:1,e:"Custom error pages improve UX by showing a friendly site-branded page instead of a generic browser error."},
+  {q:"What is the Connection between viewer and edge location called?",o:["Origin connection","Viewer connection","Transmission path","PoP connection"],a:1,e:"The Viewer connection is where SSL is terminated close to the user, making the initial 'handshake' much faster."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsCloudFrontCache_v4');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsCloudFrontCache_v4', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/27`;
+    document.getElementById('progressFill').style.width = ((current+1)/27 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num">Q${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 26) ? "FINISH_DISTRIBUTION ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 26) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsCloudFrontCache_v4');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/27)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsCloudFrontCache_v4'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

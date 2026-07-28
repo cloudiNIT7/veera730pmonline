@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terraform Advanced | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#ef4444;--correct:#10b981;--wrong:#ef4444;--neutral:#3b82f6}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(239,68,68,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(239,68,68,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 600px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:780px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(239, 68, 68, 0.05)}
+.option.disabled{cursor:default}
+
+/* FIXED HIGHLIGHT LOGIC */
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(239, 68, 68, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="devops.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">TF_ADVANCED_PROTOCOL_31</div>
+    <h1>Terraform State & Advanced</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Advanced Logic Result</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">Terraform state protocol verified. Backend locking state cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_SESSION</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is Terraform Remote State?",opts:["Local state backup","Storing terraform.tfstate in a shared backend (S3/GCS) for team collaboration","A read-only snapshot","Cloud-only feature"],ans:1,exp:"Remote state allows teams to share the source of truth for their infrastructure without committing sensitive JSON files to Git."},
+  {q:"Which block configures a remote backend?",opts:["provider {}","remote_state {}","backend {} inside the terraform {} block","storage {}"],ans:2,exp:"The backend block defines the 'store' for the state file, such as S3, Azure Blob, or HashiCorp Consul."},
+  {q:"Why enable state locking with remote state?",opts:["To encrypt files","To prevent concurrent runs from corrupting the state file","To speed up plan","To compress data"],ans:1,exp:"Locking ensures that if two people run 'apply' at the same time, one must wait, preventing conflicting updates."},
+  {q:"Common AWS service for state locking with S3?",opts:["SQS","SNS","DynamoDB","RDS"],ans:2,exp:"DynamoDB maintains a lock ID that Terraform checks before every operation to ensure exclusivity."},
+  {q:"What is a Terraform Data Source?",opts:["Variable type","A block that reads existing infrastructure data not managed by the current config","Remote state ref","Provider plugin"],ans:1,exp:"Data sources allow you to fetch IDs for existing VPCs, AMIs, or Subnets to use in your new resources."},
+  {q:"What is the 'lifecycle' block for?",opts:["Resource loops","A meta-argument block controlling create/update/destroy behavior","Variable hook","Provider lifecycle"],ans:1,exp:"Lifecycle rules allow you to override standard behavior, such as preventing the accidental deletion of a database."},
+  {q:"What does 'create_before_destroy = true' do?",opts:["Backup before delete","Creates the new resource before deleting the old one to reduce downtime","Disables delete","Runs apply first"],ans:1,exp:"This is essential for resources like SSL certificates or Load Balancers that must exist before switching traffic."},
+  {q:"What does 'prevent_destroy = true' do?",opts:["Stop creation","Causes an error if a plan tries to delete the resource","Prevents updates","Locks state"],ans:1,exp:"It acts as a safety pin for critical infrastructure like production databases or core networking."},
+  {q:"What does 'ignore_changes' do?",opts:["Ignore all","Tells Terraform to ignore drift on specific attributes (like tags)","Disables resource","Skips plan"],ans:1,exp:"Useful when external systems (like AWS Auto Scaling) modify resource properties that HCL doesn't need to track."},
+  {q:"What is a conditional expression in HCL?",opts:["If-else statement","A ternary expression: condition ? true_val : false_val","Loop construct","Lifecycle rule"],ans:1,exp:"Conditionals allow you to toggle logic, such as using a smaller instance size in Dev vs Prod environments."},
+  {q:"How to conditionally create a resource using count?",opts:["if (var.x)","count = var.create ? 1 : 0","optional = true","enabled = var.x"],ans:1,exp:"Setting count to 0 effectively hides the resource from the deployment plan based on a boolean variable."},
+  {q:"Resource type for AWS RDS instance?",opts:["aws_rds","aws_database","aws_db_instance","aws_relational_db"],ans:2,exp:"'aws_db_instance' is the standard HCL resource for launching relational databases in AWS."},
+  {q:"Resource type for AWS Lambda?",opts:["aws_function","aws_lambda","aws_lambda_function","aws_serverless"],ans:2,exp:"The resource requires a filename (zip) and a handler definition to execute serverless code."},
+  {q:"Resource type for AWS S3 bucket?",opts:["aws_storage","aws_s3","aws_s3_bucket","aws_bucket"],ans:2,exp:"S3 buckets are managed via the 'aws_s3_bucket' resource, often combined with ACL or Versioning sub-resources."},
+  {q:"Resource type for IAM role?",opts:["aws_role","aws_iam","aws_iam_role","aws_access"],ans:2,exp:"IAM roles require an 'assume_role_policy' written in JSON to define which services can use the identity."},
+  {q:"What is a Terraform Provisioner?",opts:["Provider plugin","Mechanism to run scripts on a resource after creation or before destruction","State manager","Module type"],ans:1,exp:"Provisioners (like local-exec or remote-exec) are a 'last resort' for tasks that cloud APIs cannot perform."},
+  {q:"Use of 'local-exec' provisioner?",opts:["Remote commands","Runs commands on the machine where Terraform is executing","Copying files","Node software install"],ans:1,exp:"Commonly used to trigger a local Ansible run or log the completion of a deployment to a file."},
+  {q:"Use of 'remote-exec' provisioner?",opts:["Local commands","Runs commands directly on the new remote resource via SSH/WinRM","Backend copy","Ansible playbooks"],ans:1,exp:"Requires a 'connection' block to authenticate with the new VM to install packages or configure services."},
+  {q:"What is a Terraform Null Resource?",opts:["Empty resource","Resource with no infra—used to trigger provisioners or logic","Placeholder","Deleted resource"],ans:1,exp:"Null resources allow you to run scripts that aren't tied to a specific cloud object's lifecycle."},
+  {q:"What is 'triggers' in a null_resource?",opts:["Module trigger","Map of values that, when changed, force the resource to re-create and re-run scripts","Alert trigger","Dependencies"],ans:1,exp:"By linking a trigger to a file hash or timestamp, you can ensure a script runs every time the code changes."},
+  {q:"What does 'terraform_data' replace (TF 1.4+)?",opts:["null_resource","data block","Remote state","Backend block"],ans:0,exp:"'terraform_data' is a built-in alternative to null_resource that doesn't require an external provider plugin."},
+  {q:"Referencing a data source in a resource?",opts:["data[\"x\"]","data.type.name.attribute","datasource.x","ref(data)"],ans:1,exp:"Use the 'data.' prefix to pull information from resources that Terraform is only 'watching', not managing."},
+  {q:"Resource to attach IAM policy to a role?",opts:["aws_iam_link","aws_iam_role_policy_attachment","aws_iam_attach","aws_role_policy"],ans:1,exp:"Attachments link a standalone policy ARN to a specific IAM role name."},
+  {q:"What does 'terraform state rm' do?",opts:["Delete infra","Removes a resource from state without deleting the real cloud resource","Remove state file","Delete backend"],ans:1,exp:"Useful when you want to stop managing a resource with Terraform but keep it running in the cloud."},
+  {q:"What does 'terraform import' do?",opts:["Import .tf","Brings manually-created cloud resources into your Terraform state file","Import module","Download plugins"],ans:1,exp:"Import allows you to adopt 'brownfield' infrastructure that was created via the console into your HCL code."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('tfAdvancedMasteryCache_v1');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp,
+            tag: "IAC_ADVANCED"
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('tfAdvancedMasteryCache_v1', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH EXAM ✓" : "NEXT STEP →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('tfAdvancedMasteryCache_v1');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 25`;
+}
+
+function retryQuiz() { localStorage.removeItem('tfAdvancedMasteryCache_v1'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudWatch Advanced | AWS MCQ Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#84cc16;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #84cc16, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(132, 204, 22, 0.05)}
+  .option.disabled{cursor:default}
+  .option.correct-ans{border-color:var(--correct)!important;background:rgba(16,185,129,.15)!important}
+  .option.wrong-ans{border-color:var(--wrong)!important;background:rgba(239,68,68,.15)!important}
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct);color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+  .explanation{margin-top:20px;padding:15px;background:rgba(132, 204, 22, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  .explanation strong{color:var(--accent)}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="#">← EXIT_MONITOR</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">OBSERVABILITY_PROTOCOL_TOPIC_21</div>
+      <h1>CloudWatch Advanced</h1>
+      <p class="desc">EventBridge orchestration, automated alarm responses, and composite alerting patterns.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Clock</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Status</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Final Analysis</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">Monitoring session complete. Data logged to local cache.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">REINITIALIZE_PROTOCOL</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is Amazon EventBridge?",o:["An API Gateway feature","A serverless event bus that routes events from AWS, custom apps, and SaaS to targets","A message queue","IoT device protocol"],a:1,e:"EventBridge is a serverless event bus that makes it easy to connect applications using data from your own apps, SaaS apps, and AWS services."},
+  {q:"What is an EventBridge Rule?",o:["A security group rule","A definition that matches incoming events against a pattern and routes them to targets","A VPC routing rule","A CloudFormation rule"],a:1,e:"Rules match incoming events and send them to targets for processing. A rule can match an event pattern or a schedule."},
+  {q:"What is the difference between EventBridge Event Patterns and Schedules?",o:["No difference","Patterns react to specific events; Schedules run on a time-based (cron/rate) basis","Schedules are more expensive","Patterns only work with Lambda"],a:1,e:"Event patterns trigger when something happens (e.g., S3 upload); schedules trigger at specific times or intervals."},
+  {q:"What is a CloudWatch Alarm?",o:["CloudFormation alarm","A mechanism that watches a metric and performs actions when thresholds are crossed","Security alert","Billing notification"],a:1,e:"Alarms watch a single metric and can trigger actions like SNS notifications or Auto Scaling policies."},
+  {q:"What are the three states of a CloudWatch Alarm?",o:["Active, Inactive, Disabled","OK, ALARM, INSUFFICIENT_DATA","Running, Stopped, Error","Green, Yellow, Red"],a:1,e:"OK means the metric is normal; ALARM means the threshold is breached; INSUFFICIENT_DATA means the metric isn't available yet."},
+  {q:"What actions can a CloudWatch Alarm trigger on an EC2 instance?",o:["Delete the instance","Stop, Terminate, Reboot, or Recover the instance","Change instance type","Migrate region"],a:1,e:"Alarms can automate instance remediation, such as recovering an instance if hardware fails or rebooting on OS crashes."},
+  {q:"What is the EC2 'Recover' alarm action?",o:["Restore from backup","Migrates an impaired instance to a new host while preserving ID, IPs, and EBS","Restores from AMI","Reboots the OS"],a:1,e:"Recover migrates an instance to healthy underlying hardware during system failures without changing its identity (IP/ID)."},
+  {q:"What is a Composite CloudWatch Alarm?",o:["Alarm for multiple metrics","An alarm determined by the state of multiple other alarms using Boolean logic (AND/OR)","Alarm for composite resources","Multi-threshold alarm"],a:1,e:"Composite alarms reduce noise by only firing when a combination of multiple underlying alarms are in a specific state."},
+  {q:"What is the purpose of Composite Alarms in reducing alert fatigue?",o:["Reduce costs","They alert only when multiple conditions are true, representing genuine problems over transient spikes","Slow down evaluation","Require fewer permissions"],a:1,e:"By requiring multiple failure indicators (e.g., high CPU AND high latency), you filter out false positives from single-metric spikes."},
+  {q:"What is EventBridge Pipes?",o:["Networking feature","A point-to-point integration connecting event sources to targets with filtering and enrichment","Message queue","IoT protocol"],a:1,e:"Pipes provide a simpler way to build event-driven integrations between specific sources (like SQS) and targets (like Lambda)."},
+  {q:"What is the EventBridge Schema Registry?",o:["DNS registry","A feature that discovers and stores event structures to enable code bindings","Security registry","Archival system"],a:1,e:"It allows you to generate code bindings for events, making it easier to write code that processes events from the bus."},
+  {q:"What is the CloudWatch Alarm Period?",o:["Retention duration","The time window in seconds over which a metric is evaluated for a statistic","Notification frequency","Action cooldown"],a:1,e:"The period is the time interval used to calculate the statistic (like Average) used for comparison against the threshold."},
+  {q:"What is the 'Evaluation Periods' setting in a CloudWatch Alarm?",o:["Subscriber count","Number of consecutive periods a metric must breach before changing to ALARM state","Data point count","Time until resolution"],a:1,e:"Evaluation periods add a buffer to prevent alarms from flapping on a single transient data point breach."},
+  {q:"What is EventBridge's default event bus?",o:["Custom bus","The bus that automatically receives events from all AWS services in your account","Cross-account relay","Partner bus"],a:1,e:"Every account has a default bus that natively receives events from AWS services without manual configuration."},
+  {q:"How can EventBridge trigger Lambda on a schedule?",o:["Cannot trigger","Create a rule with a schedule expression (rate or cron) and set Lambda as target","Via Alarms only","Lambda must poll"],a:1,e:"You can define cron or rate expressions in a rule to invoke a Lambda function at precise intervals."},
+  {q:"What is CloudWatch Alarm with SNS action used for?",o:["Notification encryption","Sending alerts to email, SMS, or Slack when an alarm state changes","Storing history","Blocking traffic"],a:1,e:"SNS is the primary way to fan out notifications to team members or external monitoring systems when an alarm triggers."},
+  {q:"What is the CloudWatch Alarm 'treat missing data' configuration?",o:["Fill with zeros","Defines if missing points are treated as breaching, notBreaching, ignore, or missing","Deletes alarm","Sends notification"],a:1,e:"This tells the alarm how to behave if an application stops reporting metrics (e.g., treating it as a failure)."},
+  {q:"What is EventBridge Archive and Replay?",o:["Log archival","Archive stores events matching a rule; Replay re-sends them to re-process historical data","S3 backup","CloudTrail archive"],a:1,e:"This allows you to re-process historical events, which is great for debugging or recovering from logic errors in your code."},
+  {q:"What is a CloudWatch Alarm action for Auto Scaling?",o:["ASG manages alarms","Alarms trigger ASG scaling policies to add or remove instances","Target tracking only","Only works with ELB"],a:1,e:"Alarms are the 'triggers' for scaling policies, telling the group when it's time to grow or shrink based on load."},
+  {q:"What is EventBridge's integration with SaaS partners?",o:["No integration","Partner event buses receive events directly from providers like Zendesk or Datadog","Requires middleware","Region restricted"],a:1,e:"Partner event sources allow third-party SaaS apps to send events directly into your AWS event bus for processing."},
+  {q:"What is CloudWatch alarm 'Datapoints to alarm' feature?",o:["Total points before alarm","Alarm triggers if M out of N periods breach the threshold","Metric count","SNS count"],a:1,e:"This allows for flexible alerting where a metric doesn't have to be 'consecutively' bad, just 'mostly' bad over a window."},
+  {q:"What service provides responses when EC2 instances are terminated?",o:["Logs","EventBridge — rules can match state change events to trigger cleanup logic","CloudTrail","Flow Logs"],a:1,e:"EventBridge catches the 'terminated' event from EC2, allowing you to trigger Lambda to clean up resources like DNS or volumes."},
+  {q:"What is the difference between CloudWatch Events (legacy) and EventBridge?",o:["No difference","EventBridge is the evolution, adding custom buses, SaaS integration, and schema discovery","EventBridge is slower","Legacy is better"],a:1,e:"EventBridge is the modern, more feature-rich version of the original CloudWatch Events service."},
+  {q:"What is CloudWatch Synthetics Canary Blueprint?",o:["EC2 blueprint","Pre-built scripts for common monitoring tasks like heartbeats and API checks","CloudFormation library","Lambda template"],a:1,e:"Blueprints are templates that help you quickly set up 24/7 monitoring scripts to check URL or API availability."},
+  {q:"What is an EventBridge target?",o:["Destination VPC","A resource or service invoked when a rule matches an event (e.g., Lambda, SQS, SNS)","Dashboard","IAM role"],a:1,e:"Targets are the 'doers'—the services that actually receive the event data and act upon it."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsCloudWatchAdvCache');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsCloudWatchAdvCache', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+    document.getElementById('progressFill').style.width = ((current+1)/25 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num">MONITOR:${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "SUBMIT_DATA ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsCloudWatchAdvCache');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/25)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsCloudWatchAdvCache'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

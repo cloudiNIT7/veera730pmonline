@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudWatch Overview | AWS MCQ Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#84cc16;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #84cc16, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(132, 204, 22, 0.05)}
+  .option.disabled{cursor:default}
+  .option.correct-ans{border-color:var(--correct)!important;background:rgba(16,185,129,.15)!important}
+  .option.wrong-ans{border-color:var(--wrong)!important;background:rgba(239,68,68,.15)!important}
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct);color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+  .explanation{margin-top:20px;padding:15px;background:rgba(132, 204, 22, 0.12);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  .explanation strong{color:var(--accent)}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="aws.html">← EXIT_MONITOR</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">OBSERVABILITY_TOPIC_20</div>
+      <h1>CloudWatch Fundamentals</h1>
+      <p class="desc">Foundational monitoring concepts: Metrics, log groups, dashboards, and agent operations.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_BLOCK</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_BLOCK →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Final Analysis</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">Observability Protocol Complete. Session cached.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_BOOT</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is Amazon CloudWatch?",o:["A deployment automation service","A monitoring and observability service that collects metrics, logs, and events","A security vulnerability scanner","A CI/CD pipeline tool"],a:1,e:"CloudWatch is AWS's native monitoring platform. It collects numerical metrics, text logs, and events to provide operational insights."},
+  {q:"What is a CloudWatch Metric?",o:["A log entry","A time-ordered set of data points representing a measurable aspect of AWS resources","A security finding","A billing record"],a:1,e:"Metrics are time-series data points. Each metric has a namespace (like AWS/EC2) and identifying dimensions."},
+  {q:"What is the default CloudWatch metric collection interval for EC2?",o:["Every 30 seconds","Every 5 minutes (Basic Monitoring)","Every 1 hour","Every 1 minute always"],a:1,e:"Basic Monitoring is free and sends metrics every 5 minutes. Detailed Monitoring is a paid feature that sends data every 1 minute."},
+  {q:"Which EC2 metric is NOT available in CloudWatch by default?",o:["CPUUtilization","NetworkIn","MemoryUtilization","DiskReadOps"],a:2,e:"Memory, swap, and disk space usage require the CloudWatch Agent because the hypervisor cannot see inside the instance OS."},
+  {q:"What is a CloudWatch Namespace?",o:["A VPC networking concept","A container that groups related metrics together","A log group prefix","An IAM permission boundary"],a:1,e:"Namespaces act as containers for metrics to prevent name collisions across different services or applications."},
+  {q:"What is a CloudWatch Dimension?",o:["A chart axis setting","A name/value pair that filters and identifies specific metrics","A dashboard widget size","A metric calculation period"],a:1,e:"Dimensions identify the specific resource a metric belongs to, such as a specific InstanceId or DBInstanceIdentifier."},
+  {q:"What is CloudWatch Logs?",o:["S3-based log storage","A managed service to collect, monitor, store, and analyze log files","A database for operational events","An SNS topic"],a:1,e:"CloudWatch Logs centralizes log management for Lambda, EC2, CloudTrail, and custom applications."},
+  {q:"What is a CloudWatch Log Group?",o:["A security group for logs","A logical container grouping log streams that share settings","An S3 bucket for logs","An alarm group"],a:1,e:"Log Groups organize streams and share settings like retention periods and access control policies."},
+  {q:"What is a CloudWatch Log Stream?",o:["A real-time data pipeline","A sequence of log events from a single source within a Log Group","A live visualization","An SNS channel"],a:1,e:"A Log Stream represents the chronological sequence of logs from a specific instance, task, or function execution."},
+  {q:"What is CloudWatch Log Retention?",o:["The speed of log delivery","How long CloudWatch stores log data before deleting it","Log writer count","Encryption setting"],a:1,e:"Retention can be set from 1 day to 10 years. By default, logs never expire, which can increase storage costs."},
+  {q:"What is a CloudWatch Metric Filter?",o:["A dashboard filter","A pattern applied to log data that creates a metric when matches occur","A security filter","A sampling setting"],a:1,e:"Metric Filters search log data for specific patterns (like errors) and turn them into numerical metrics for alerting."},
+  {q:"What is Amazon CloudWatch Agent?",o:["A browser extension","Software installed on servers to collect OS-level metrics and custom logs","An auto-remediation tool","An alarm responder"],a:1,e:"The Agent is required to collect metrics the hypervisor can't see, like memory utilization and disk space usage."},
+  {q:"How is CloudWatch Agent configuration typically managed at scale?",o:["Manually editing files","Storing the JSON config in SSM Parameter Store","Using CloudFormation only","Hardcoding in the AMI"],a:1,e:"SSM Parameter Store allows you to manage a single configuration file and apply it to thousands of instances simultaneously."},
+  {q:"What is CloudWatch Logs Insights?",o:["An AI log service","An interactive SQL-like query language for analyzing log data","A log streaming service","A log archival feature"],a:1,e:"Insights allows you to run complex queries against logs to find trends, count errors, or aggregate data points over time."},
+  {q:"What is a CloudWatch Dashboard?",o:["The AWS billing page","A customizable page displaying graphs, metrics, and alarms from multiple services","A VPC map","An ASG visualization"],a:1,e:"Dashboards provide a 'single pane of glass' view for monitoring your entire infrastructure across regions and accounts."},
+  {q:"What is CloudWatch Container Insights?",o:["A security scanner","A feature collecting performance metrics from ECS, EKS, and Kubernetes","A container registry","A Docker log viewer"],a:1,e:"Container Insights provides granular observability into clusters, nodes, pods, and individual containers."},
+  {q:"How long does CloudWatch retain metric data at 1-second resolution?",o:["Forever","3 hours","24 hours","7 days"],a:1,e:"High-resolution data is kept briefly: 1-second data for 3 hours, and 1-minute data for 15 days."},
+  {q:"What is CloudWatch Evidently?",o:["A log analysis tool","A feature for running A/B tests and controlled feature flag rollouts","A security checker","A cost dashboard"],a:1,e:"Evidently helps you perform dark launches and experiments to measure the impact of new code on user metrics."},
+  {q:"What is the PutMetricData API used for?",o:["Creating alarms","Publishing custom metrics to CloudWatch from any source","Reading existing metrics","Deleting metric data"],a:1,e:"PutMetricData allows your applications or scripts to send their own performance data to CloudWatch."},
+  {q:"What are CloudWatch Anomaly Detection Alarms?",o:["Static threshold alarms","ML-powered alarms that learn normal metric patterns and alert on deviations","Security alerts","Billing detections"],a:1,e:"Anomaly detection uses machine learning to create an expected 'band' of values, adjusting for daily or weekly trends."},
+  {q:"What is CloudWatch Synthetics?",o:["A load testing tool","Programmable canaries that monitor endpoints and APIs 24/7","An AI log analyzer","A chaos service"],a:1,e:"Synthetics canaries simulate user traffic to detect broken links, UI errors, or latency before real users are affected."},
+  {q:"What is Cross-Account CloudWatch observability?",o:["No sharing allowed","A feature linking accounts to view metrics and logs in a central console","Log replication to S3","Cross-account billing"],a:1,e:"This allows a central monitoring account to see data from many different source accounts for enterprise-wide visibility."},
+  {q:"What is CloudWatch RUM (Real User Monitoring)?",o:["Backend monitoring","A feature collecting client-side experience data directly from browsers","A log parsing service","A synthetic tool"],a:1,e:"RUM tracks the actual experience of your users, including page load times, JavaScript errors, and user journeys."},
+  {q:"How can you export CloudWatch Logs to S3 for long-term storage?",o:["Automated by AWS","Using CreateExportTask API or Kinesis Data Firehose subscription filters","Third-party tools only","Using Lambda copy"],a:1,e:"Logs can be exported in batches to S3 or streamed in near-real-time using subscription filters and Firehose."},
+  {q:"What is CloudWatch Contributor Insights?",o:["User analytics tool","A feature analyzing logs to identify 'top contributors' like the highest traffic IP addresses","A metric aggregator","A cost dashboard"],a:1,e:"Contributor Insights highlights the top talkers or most frequent error sources within your log data."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsCloudWatchOverviewCache_v2');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsCloudWatchOverviewCache_v2', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+    document.getElementById('progressFill').style.width = ((current+1)/25 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num">OBSERVABILITY: Q${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "SUBMIT_REPORT ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsCloudWatchOverviewCache_v2');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/25)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsCloudWatchOverviewCache_v2'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

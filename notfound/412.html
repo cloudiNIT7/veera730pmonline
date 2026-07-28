@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>412 — Precondition Failed</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    font-family:'Baloo 2', sans-serif;
+    background:linear-gradient(160deg,#12203a,#0a1424);
+    color:#dfe9ff; height:100vh; overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  }
+  .robot { width:180px; position:relative; margin-bottom:24px; animation:tilt 5s ease-in-out infinite; }
+  @keyframes tilt { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+  .head { width:120px; height:100px; background:linear-gradient(180deg,#5b8dee,#3a6bd6); border-radius:20px;
+          margin:0 auto; position:relative; box-shadow:0 10px 30px rgba(58,107,214,.4); }
+  .head::before { content:''; position:absolute; top:-26px; left:50%; transform:translateX(-50%);
+          width:4px; height:22px; background:#5b8dee; }
+  .head::after { content:''; position:absolute; top:-34px; left:50%; transform:translateX(-50%);
+          width:14px; height:14px; border-radius:50%; background:#ff6b8a;
+          box-shadow:0 0 16px #ff6b8a; animation:pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .eyes { display:flex; justify-content:center; gap:20px; padding-top:30px; }
+  .eye { width:20px; height:20px; border-radius:50%; background:#0a1424; position:relative; }
+  .eye::after { content:'×'; position:absolute; inset:0; color:#ff6b8a; font-size:22px; line-height:20px; font-weight:800; }
+  .mouth { width:44px; height:8px; background:#0a1424; border-radius:4px; margin:14px auto 0; transform:rotate(-4deg); }
+  .body-b { width:140px; height:70px; background:linear-gradient(180deg,#3a6bd6,#2c539f); border-radius:16px;
+            margin:10px auto 0; box-shadow:0 10px 26px rgba(44,83,159,.4); }
+  .body-b .led { width:10px; height:10px; border-radius:50%; background:#ffd76b; margin:14px auto;
+            box-shadow:0 0 12px #ffd76b; animation:pulse 1.6s infinite; }
+  h1 { font-size:clamp(70px,15vw,140px); font-weight:800; letter-spacing:-3px; color:#5b8dee; line-height:1; }
+  p.big { font-size:22px; font-weight:600; margin:4px 0 8px; }
+  p.small { color:#8fa4cc; max-width:430px; margin:0 22px 26px; line-height:1.6; font-size:14px; }
+  a.btn { text-decoration:none; color:#0a1424; background:#5b8dee; padding:13px 28px; border-radius:99px;
+          font-weight:800; font-size:14px; box-shadow:0 10px 30px rgba(91,141,238,.45); transition:transform .25s; }
+  a.btn:hover { transform:translateY(-3px); }
+</style>
+</head>
+<body>
+<div class="robot">
+  <div class="head">
+    <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+    <div class="mouth"></div>
+  </div>
+  <div class="body-b"><div class="led"></div></div>
+</div>
+<h1>412</h1>
+<p class="big">Precondition Failed</p>
+<p class="small">One of the conditions your request set never came true, so the server pulled the plug. Let's reboot back home.</p>
+<a class="btn" href="../dashboard.html">↻ Back to Dashboard</a>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multicloud DevOps with AI — Veera Sir</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#06080f;
+  --surface:#0d1117;
+  --card:#0f1623;
+  --border:#1a2332;
+  --border2:#243044;
+  --text:#dce8f5;
+  --muted:#4a6080;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.bg-grid{
+  position:fixed;inset:0;z-index:0;
+  background-image:
+    linear-gradient(rgba(59,130,246,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(59,130,246,.03) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.bg-glow{
+  position:fixed;top:-200px;left:50%;transform:translateX(-50%);
+  width:900px;height:500px;
+  background:radial-gradient(ellipse,rgba(59,130,246,.07) 0%,transparent 70%);
+  z-index:0;pointer-events:none;
+}
+.back-btn{
+  position:fixed;top:18px;left:18px;z-index:2;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:8px;
+  text-decoration:none;
+  color:var(--text);
+  background:var(--surface);
+  border:1px solid var(--border2);
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  transition:border-color .2s,transform .2s,background .2s;
+}
+.back-btn:hover{
+  border-color:#3b82f6;
+  background:#111826;
+  transform:translateY(-1px);
+}
+
+/* HEADER */
+header{
+  position:relative;z-index:1;
+  padding:70px 40px 60px;
+  text-align:center;
+  border-bottom:1px solid var(--border);
+}
+.badge{
+  display:inline-block;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:8px;padding:7px 16px;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;
+  color:#3b82f6;letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:28px;
+}
+h1{
+  font-size:clamp(2.4rem,5.5vw,4.2rem);
+  font-weight:800;letter-spacing:-2px;line-height:1.05;
+  background:linear-gradient(135deg,#ef0505 10%,#318a61 55%,#e706c9 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:16px;
+}
+.sub{
+  color:var(--muted);font-size:1rem;max-width:500px;
+  margin:0 auto 42px;line-height:1.7;
+}
+.meta-row{
+  display:flex;justify-content:center;align-items:center;gap:24px;
+  flex-wrap:wrap;
+}
+.meta-chip{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:8px 14px;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;
+  color:var(--muted);letter-spacing:1px;
+}
+.meta-chip span{color:var(--text);font-weight:700}
+
+/* MAIN */
+.main{
+  position:relative;z-index:1;
+  max-width:1000px;margin:0 auto;
+  padding:64px 40px 80px;
+}
+.section-label{
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;letter-spacing:4px;
+  color:var(--muted);text-transform:uppercase;
+  margin-bottom:40px;
+}
+
+/* NAV CARDS */
+.nav-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+@media(max-width:700px){.nav-grid{grid-template-columns:1fr}}
+
+.nav-card{
+  display:block;
+  text-decoration:none;color:inherit;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:36px 28px 30px;
+  position:relative;overflow:hidden;
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+}
+.nav-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:3px;
+  background:var(--c);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .3s;
+}
+.nav-card:hover{
+  transform:translateY(-6px);
+  border-color:var(--c);
+  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px var(--c);
+}
+.nav-card:hover::before{transform:scaleX(1)}
+
+.nav-card-icon{
+  font-size:2.2rem;margin-bottom:20px;
+  display:block;
+}
+.nav-card-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;letter-spacing:3px;
+  color:var(--c);text-transform:uppercase;
+  margin-bottom:8px;
+}
+.nav-card-title{
+  font-size:1.5rem;font-weight:800;
+  line-height:1.2;margin-bottom:12px;
+  color:var(--text);
+}
+.nav-card-desc{
+  font-size:.8rem;color:var(--muted);line-height:1.6;
+  margin-bottom:24px;
+}
+.nav-card-stats{
+  display:flex;gap:12px;flex-wrap:wrap;
+  margin-bottom:22px;
+}
+.stat-pill{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:6px;padding:4px 10px;color:var(--muted);
+}
+.stat-pill b{color:var(--c)}
+.nav-card-cta{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:18px;border-top:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;color:var(--c);letter-spacing:1px;
+  text-transform:uppercase;
+}
+.arrow{font-size:1rem;transition:transform .2s}
+.nav-card:hover .arrow{transform:translateX(5px)}
+
+.card-aws{--c:#3b82f6}
+.card-devops{--c:#10b981}
+.card-test{--c:#f59e0b}
+
+/* FEATURE STRIP */
+.feature-strip{
+  display:flex;justify-content:center;gap:0;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;margin-top:56px;overflow:hidden;
+  max-width:640px;margin-left:auto;margin-right:auto;
+}
+.feature-item{
+  flex:1;padding:20px 12px;text-align:center;
+  border-right:1px solid var(--border);
+}
+.feature-item:last-child{border-right:none}
+.fi-n{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700}
+.fi-l{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:3px}
+
+footer{
+  text-align:center;padding:24px;
+  color:var(--muted);font-size:.72rem;
+  font-family:'JetBrains Mono',monospace;
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<a class="back-btn" href="main.html">← Back</a>
+
+<header>
+  <div class="badge">☁ Veera Sir · NareshIT · MCQ Hub</div>
+  <h1>Multicloud DevOps<br>with AI by Veera Sir </h1>
+  <p class="sub">
+    Complete topic-wise MCQ sets covering the full AWS & DevOps curriculum — built for exam excellence. 
+    Includes selected out-of-syllabus questions for extra practice and self-learning enhancement.
+    </p>
+  <div class="meta-row">
+    <div class="meta-chip">📚 Topics <span>60+</span></div>
+    <div class="meta-chip">❓ Questions <span>1500+</span></div>
+    <div class="meta-chip">🏆 Categories <span>3 Modules</span></div>
+  </div>
+</header>
+
+<div class="main">
+  <p class="section-label">Choose your module </p>
+  <div class="nav-grid">
+
+    <!-- AWS -->
+    <a class="nav-card card-aws" href="aws/aws.html">
+      <span class="nav-card-icon">☁️</span>
+      <div class="nav-card-label">Module 01</div>
+      <div class="nav-card-title">AWS Cloud</div>
+      <div class="nav-card-desc">Topic-wise MCQs covering the full AWS Solutions Architect curriculum — compute to serverless.</div>
+      <div class="nav-card-stats">
+        <div class="stat-pill"><b>26</b> Topics</div>
+        <div class="stat-pill"><b>650</b> MCQs</div>
+        <div class="stat-pill"><b>10</b> Categories</div>
+      </div>
+      <div class="nav-card-cta">Start AWS MCQs <span class="arrow">→</span></div>
+    </a>
+
+    <!-- DevOps -->
+    <a class="nav-card card-devops" href="devops/devops.html">
+      <span class="nav-card-icon">⚙️</span>
+      <div class="nav-card-label">Module 02</div>
+      <div class="nav-card-title">DevOps</div>
+      <div class="nav-card-desc">Shell, Git, Docker, Kubernetes, Jenkins, Terraform, Ansible & more — full pipeline coverage.</div>
+      <div class="nav-card-stats">
+        <div class="stat-pill"><b>34</b> Topics</div>
+        <div class="stat-pill"><b>850</b> MCQs</div>
+        <div class="stat-pill"><b>12</b> Categories</div>
+      </div>
+      <div class="nav-card-cta">Start DevOps MCQs <span class="arrow">→</span></div>
+    </a>
+
+    <!-- Overall Test -->
+    <a class="nav-card card-test" href="aws-devops/overall-test.html">
+      <span class="nav-card-icon">🏆</span>
+      <div class="nav-card-label">Module 03</div>
+      <div class="nav-card-title">Overall Test</div>
+      <div class="nav-card-desc">Mixed questions from all AWS & DevOps topics — simulate the real exam experience end-to-end.</div>
+      <div class="nav-card-stats">
+        <div class="stat-pill"><b>All</b> Topics</div>
+        <div class="stat-pill"><b>100</b> MCQs</div>
+        <div class="stat-pill"><b>Timed</b> Mode</div>
+      </div>
+      <div class="nav-card-cta">Take Full Test <span class="arrow">→</span></div>
+    </a>
+
+  </div>
+
+  <div class="feature-strip">
+    <div class="feature-item"><div class="fi-n" style="color:#3b82f6">26</div><div class="fi-l">AWS Topics</div></div>
+    <div class="feature-item"><div class="fi-n" style="color:#10b981">34</div><div class="fi-l">DevOps Topics</div></div>
+    <div class="feature-item"><div class="fi-n" style="color:#f59e0b">1500+</div><div class="fi-l">Total MCQs</div></div>
+    <div class="feature-item"><div class="fi-n" style="color:#ec4899">100%</div><div class="fi-l">Course Cover</div></div>
+  </div>
+</div>
+
+<footer>MCQ Hub — AWS · DevOps · Full Course Coverage by Veera Sir · NareshIT</footer>
+<script src="../ai-agent-widget.js"></script>
+</body>
+</html>

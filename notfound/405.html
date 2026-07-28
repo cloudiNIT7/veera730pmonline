@@ -1,0 +1,79 @@
+
+<style>
+  .block404 {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 500px;
+    overflow: hidden;
+    cursor: pointer;
+    background-image: url(https://imgur.com/eHVyWTM.jpg);
+    background-size: cover;
+    background-position: center;
+  }
+  .waves {
+    position: absolute;
+    inset: 0;
+    background-image: url(https://imgur.com/eHVyWTM.jpg);
+    background-size: cover;
+    background-position: center;
+    filter: url("#glitch");
+  }
+  .t404 {
+    position: absolute;
+    width: 45%;
+    max-width: 560px;
+    min-width: 220px;
+    aspect-ratio: 364 / 146;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-image: url(https://imgur.com/KPZo9YX.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .obj {
+    width: clamp(140px, 20vw, 300px);
+    aspect-ratio: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: animation-404 6s infinite ease-in-out;
+  }
+  .obj img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  @keyframes animation-404 {
+    0%, 100% { transform: translate(-50%, -50%) rotate(0); }
+    50% { transform: translate(-53%, -42%) rotate(-5deg); }
+  }
+  svg.glitch-svg {
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+</style>
+
+<div class="block404">
+  <div class="waves"></div>
+  <div class="obj">
+    <img src="https://imgur.com/w0Yb4MX.png" alt="404 object">
+  </div>
+  <div class="t404"></div>
+</div>
+
+<svg class="glitch-svg" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glitch">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01 0.03" numOctaves="1" result="warp" id="turb"/>
+      <feColorMatrix in="warp" result="huedturb" type="hueRotate" values="90">
+        <animate attributeType="XML" attributeName="values" values="0;180;360" dur="3s" repeatCount="indefinite"/>
+      </feColorMatrix>
+      <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="50" in="SourceGraphic" in2="huedturb"/>
+    </filter>
+  </defs>
+</svg>

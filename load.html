@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud iNIT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* ==========================================================================
+           1. RESET & BASE CONFIGURATION
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #191919; /* Anthracite Matte Dark */
+            color: #fbfaf7; /* High contrast Warm Off-white */
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==========================================================================
+           2. GLOBAL TOP NAVBAR
+           ========================================================================== */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            height: 72px;
+            border-bottom: 1px solid #2d2d2d;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            font-family: 'Lora', serif;
+            font-size: 24px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            color: #cc7d5c; /* Terracotta Orange Accent Palette */
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .btn-login {
+            color: #b3b3b3;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .btn-login:hover {
+            color: #fbfaf7;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #404040;
+            color: #fbfaf7;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            transition: background 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #2a2a2a;
+        }
+
+        .btn-primary {
+            background-color: #fbfaf7;
+            color: #191919;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            font-family: inherit;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        /* ==========================================================================
+           3. SECTION I: HERO CONTAINER
+           ========================================================================== */
+        .hero-container {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 40px;
+            align-items: center;
+            gap: 40px;
+            min-height: calc(100vh - 73px);
+            box-sizing: border-box;
+        }
+
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-title {
+            font-family: 'Lora', serif;
+            font-size: 64px;
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #a3a3a3;
+            margin-bottom: 40px;
+            max-width: 480px;
+            line-height: 1.4;
+        }
+
+        .input-container {
+            background-color: #222222;
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 8px 8px 8px 20px;
+            display: flex;
+            align-items: center;
+            max-width: 500px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-container:focus-within {
+            border-color: #444444;
+        }
+
+        #chat-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fbfaf7;
+            flex-grow: 1;
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        #chat-input::placeholder {
+            color: #666666;
+        }
+
+        .btn-ask {
+            background-color: #cc7d5c;
+            color: #fbfaf7;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn-ask:hover {
+            opacity: 0.9;
+        }
+
+        .tags-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tag-btn {
+            background-color: #292929;
+            border: none;
+            color: #a3a3a3;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .tag-btn:hover {
+            background-color: #333333;
+            color: #fbfaf7;
+        }
+
+        .hero-right-graphic {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* ==========================================================================
+           4. SECTION II: PROBLEM SOLVERS GRAPH CANVAS
+           ========================================================================== */
+        .problems-section {
+            padding: 100px 40px;
+            border-top: 1px solid #2d2d2d;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .problems-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .badge-icon {
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .problems-header h2 {
+            font-family: 'Lora', serif;
+            font-size: 48px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .problems-header p {
+            font-size: 18px;
+            color: #a3a3a3;
+            margin-bottom: 30px;
+        }
+
+        .problems-header p span {
+            text-decoration: underline;
+            color: #fbfaf7;
+            cursor: pointer;
+        }
+
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #8a8a8a;
+            align-items: center;
+        }
+
+        .btn-download {
+            background-color: #292929;
+            color: #fbfaf7;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-download:hover {
+            background-color: #383838;
+        }
+
+        .workspace-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 60px;
+            margin-top: 40px;
+        }
+
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            justify-content: center;
+        }
+
+        .feature-item {
+            padding-bottom: 40px;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-title {
+            font-family: 'Lora', serif;
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: #a3a3a3;
+            line-height: 1.6;
+        }
+
+        .mindmap-wrapper {
+            position: relative;
+            background: #191919;
+            border-radius: 16px;
+            min-height: 720px;
+            overflow: hidden;
+        }
+
+        .map-node {
+            position: absolute;
+            font-size: 11px;
+            color: #7a7a7a;
+            white-space: nowrap;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        
+        .map-node:hover {
+            color: #fbfaf7;
+        }
+        
+        .map-node.heading {
+            font-size: 14px;
+            color: #fbfaf7;
+            font-weight: 500;
+        }
+
+        .map-node.underline {
+            text-decoration: underline;
+        }
+
+        .core-claude {
+            position: absolute;
+            left: 340px;
+            top: 360px;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Lora', serif;
+            font-size: 28px;
+            color: #fbfaf7;
+            font-weight: 500;
+            z-index: 10;
+        }
+
+        .core-claude .core-logo-img {
+            height: 36px;
+            width: 36px;
+            border-radius: 8px;
+            display: block;
+            object-fit: cover;
+        }
+
+        .core-claude::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 150px;
+            height: 150px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(204,125,92,0.22) 0%, rgba(204,125,92,0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .mindmap-svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        @media (max-width: 960px) {
+            .hero-container, .workspace-layout, .model-card, .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+            .hero-subtitle, .input-container {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .tags-container, .social-links, .legal-links {
+                justify-content: center;
+            }
+            .hero-right-graphic {
+                max-width: 380px;
+                margin: 0 auto;
+            }
+            .mindmap-wrapper {
+                min-height: 620px;
+                transform: scale(0.75);
+            }
+            .model-card {
+                padding: 30px;
+                gap: 20px;
+            }
+            .btn-details {
+                margin: 0 auto;
+            }
+            .model-bullets {
+                justify-content: center;
+            }
+            .footer-container {
+                padding: 40px 20px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .navbar {
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .nav-right {
+                gap: 12px;
+            }
+            .btn-secondary {
+                display: none;
+            }
+        }
+
+        /* ==========================================================================
+           5. SECTION III: CLAUDE MODELS SYSTEM
+           ========================================================================== */
+        .models-section {
+            padding: 100px 40px;
+            border-top: 1px solid #2d2d2d;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .models-header {
+            text-align: center;
+            margin-bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .models-header h2 {
+            font-family: 'Lora', serif;
+            font-size: 48px;
+            font-weight: 500;
+        }
+
+        .models-subtext {
+            font-size: 14px;
+            color: #a3a3a3;
+            margin-top: -8px;
+        }
+
+        .models-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .model-card {
+            background-color: #212121;
+            border: 1px solid #2d2d2d;
+            border-radius: 24px;
+            padding: 40px 50px;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            align-items: flex-start;
+            gap: 40px;
+            cursor: pointer;
+        }
+
+        .model-card-left h3 {
+            font-family: 'Lora', serif;
+            font-size: 36px;
+            font-weight: 500;
+            color: #fbfaf7;
+        }
+
+        .model-card-right {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .model-card-right h4 {
+            font-size: 18px;
+            font-weight: 400;
+            color: #fbfaf7;
+            line-height: 1.4;
+        }
+
+        .model-bullets {
+            font-size: 14px;
+            color: #888888;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .model-bullets span.dot {
+            display: inline-block;
+            font-size: 10px;
+            color: #555555;
+            padding: 0 4px;
+        }
+
+        .btn-details {
+            background: #2b2b2b;
+            color: #fbfaf7;
+            border: 1px solid #3d3d3d;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ==========================================================================
+           6. SECTION IV: FOOTER SYSTEM
+           ========================================================================== */
+        .footer-container {
+            background-color: #141414;
+            border-top: 1px solid #2d2d2d;
+            padding: 40px 80px;
+        }
+
+        .footer-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .footer-left-brand {
+            font-family: 'Lora', serif;
+            font-size: 18px;
+            color: #8a8a8a;
+        }
+
+        .footer-left-brand span {
+            color: #cc7d5c;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .social-links a {
+            color: #8a8a8a;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-links a img {
+            width: 18px;
+            height: 18px;
+            filter: grayscale(100%) brightness(1.6);
+            opacity: 0.75;
+            transition: filter 0.2s ease, opacity 0.2s ease;
+        }
+
+        .social-links a:hover {
+            color: #fbfaf7;
+        }
+
+        .social-links a:hover img {
+            filter: none;
+            opacity: 1;
+        }
+
+        .legal-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .legal-links a {
+            color: #666666;
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s ease;
+        }
+
+        .legal-links a:hover {
+            color: #a3a3a3;
+        }
+
+        /* ==========================================================================
+           7. INITIAL VISIBILITY STATE (GSAP takes over from here — everything
+           starts hidden via inline opacity so there's no flash of unstyled
+           content before the timelines/ScrollTriggers run)
+           ========================================================================== */
+        .hero-title, .hero-subtitle, .input-container, .tags-container, .hero-right-graphic {
+            opacity: 0;
+        }
+
+        .reveal, .reveal-stagger > *, .mindmap-wrapper {
+            opacity: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-title, .hero-subtitle, .input-container, .tags-container, .hero-right-graphic,
+            .reveal, .reveal-stagger > *, .mindmap-wrapper {
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        }
+
+        /* ==========================================================================
+           9. MINDMAP LINE-DRAW (GSAP animates stroke-dashoffset directly)
+           ========================================================================== */
+        .mindmap-svg line {
+            stroke-dasharray: 260;
+            stroke-dashoffset: 260;
+        }
+
+        .core-claude {
+            opacity: 0;
+        }
+
+        /* ==========================================================================
+           10. HERO GRAPHIC AMBIENT GLOW (cursor-reactive)
+           ========================================================================== */
+        .hero-right-graphic::before {
+            content: "";
+            position: absolute;
+            inset: -20%;
+            background: radial-gradient(circle 220px at var(--glow-x, 50%) var(--glow-y, 40%), rgba(204, 125, 92, 0.22), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .hero-right-graphic svg {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-graphic-img {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 560px;
+            max-height: 65vh;
+            height: auto;
+            object-fit: contain;
+            border-radius: 16px;
+            display: block;
+        }
+
+        /* ==========================================================================
+           11. LIVE ANSWER PANEL
+           ========================================================================== */
+        .answer-panel {
+            max-width: 500px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            background-color: #1c1c1c;
+            border: 1px solid #2d2d2d;
+            border-radius: 12px;
+            margin-bottom: 0;
+        }
+        .answer-panel.is-open {
+            max-height: 260px;
+            opacity: 1;
+            margin-bottom: 16px;
+        }
+        .answer-panel-inner {
+            padding: 16px 20px;
+        }
+        .answer-panel-query {
+            font-size: 12px;
+            color: #7a7a7a;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .answer-panel-body {
+            font-size: 14px;
+            color: #dcdcdc;
+            line-height: 1.6;
+        }
+        .typing-dots {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .typing-dots span {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #cc7d5c;
+            animation: typingBounce 1.1s infinite ease-in-out;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        /* ==========================================================================
+           12. MODAL SYSTEM (model details / legal) — GSAP drives open/close
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .modal-overlay.is-open {
+            pointer-events: auto;
+        }
+        .modal-panel {
+            background: #1c1c1c;
+            border: 1px solid #2d2d2d;
+            border-radius: 20px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 36px;
+            position: relative;
+        }
+        .modal-panel h3 {
+            font-family: 'Lora', serif;
+            font-size: 26px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .modal-panel p {
+            font-size: 14px;
+            color: #b3b3b3;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .modal-panel ul {
+            margin: 12px 0 12px 20px;
+            color: #b3b3b3;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #2b2b2b;
+            border: 1px solid #3d3d3d;
+            color: #fbfaf7;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ==========================================================================
+           13. ICON-EXPAND BUTTONS
+           These buttons render as a compact icon pill by default; on hover GSAP
+           expands them to reveal the full label next to the icon. Text stays in
+           the DOM (not injected on hover) so screen readers and no-js users
+           still get it — it's just visually collapsed to width:0 at rest.
+           ========================================================================== */
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+        }
+        .icon-btn .btn-icon-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+        }
+        .icon-btn .btn-icon-wrap svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .icon-btn .btn-label {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            opacity: 0;
+            margin-left: 0;
+        }
+        .icon-btn.btn-login {
+            gap: 6px;
+        }
+
+        .btn-primary.icon-btn,
+        .btn-secondary.icon-btn,
+        .btn-download.icon-btn,
+        .btn-details.icon-btn {
+            border-radius: 999px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <img class="logo-icon" src="https://i.ibb.co/C5XqXXx5/d2a09cd4-f07d-4034-99ad-51292342123d.png" alt="Cloud iNIT logo" style="height: 28px; vertical-align: middle; margin-right: 8px;">
+            Cloud iNIT
+        </div>
+        <div class="nav-right">
+            <a href="login.html" class="btn-login icon-btn">
+                <span class="btn-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                </span>
+                <span class="btn-label">Login</span>
+            </a>
+            <div style="display: inline-block; position: relative;">
+                <button class="btn-secondary icon-btn" id="contact-us-btn">
+                    <span class="btn-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg>
+                    </span>
+                    <span class="btn-label">Contact us</span>
+                </button>
+                <div id="contact-options-popover" style="display: none; position: absolute; top: 110%; right: 0; min-width: 240px; background: #232323; color: #fbfaf7; border: 1px solid #383838; border-radius: 8px; box-shadow: 0 8px 24px #0003; z-index: 10; padding: 14px 0;">
+                    <a href="https://whatsapp.com/channel/0029VbCkNwX8qJ02LaVO8o0Y" target="_blank" rel="noopener" style="display: flex; align-items: center; gap: 10px; padding: 10px 24px; color: #fbfaf7; text-decoration: none;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width:22px;height:22px;"> WhatsApp Community
+                    </a>
+                    <a href="https://x.com/veeracloud7" target="_blank" rel="noopener" style="display: flex; align-items: center; gap: 10px; padding: 10px 24px; color: #fbfaf7; text-decoration: none;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/1280px-Logo_of_Twitter.svg.png" alt="Twitter" style="width:22px;height:22px;"> Twitter
+                    </a>
+                    <a href="https://www.youtube.com/@cloudtect" target="_blank" rel="noopener" style="display: flex; align-items: center; gap: 10px; padding: 10px 24px; color: #fbfaf7; text-decoration: none;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png" alt="YouTube" style="width:22px;height:22px;"> YouTube
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61591112875415" target="_blank" rel="noopener" style="display: flex; align-items: center; gap: 10px; padding: 10px 24px; color: #fbfaf7; text-decoration: none;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Facebook_icon.svg" alt="Facebook" style="width:22px;height:22px;"> Facebook
+                    </a>
+                </div>
+            </div>
+            <script>
+            (function(){
+                var btn = document.getElementById('contact-us-btn');
+                var popover = document.getElementById('contact-options-popover');
+                if (btn && popover) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (popover.style.display === 'none' || popover.style.display === '') {
+                            popover.style.display = 'block';
+                            if (window.gsap) {
+                                gsap.fromTo(popover, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' });
+                            }
+                        } else {
+                            popover.style.display = 'none';
+                        }
+                    });
+                    document.addEventListener('click', function(e) {
+                        if (popover.style.display === 'block' && !popover.contains(e.target) && e.target !== btn) {
+                            popover.style.display = 'none';
+                        }
+                    });
+                    document.addEventListener('keydown', function(e){
+                        if (e.key === "Escape") {
+                            popover.style.display = 'none';
+                        }
+                    });
+                }
+            })();
+            </script>
+            <button class="btn-primary icon-btn" onclick="window.location.href='demo.html'">
+                <span class="btn-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </span>
+                <span class="btn-label">Try Portal</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="hero-container">
+        <div class="hero-left">
+            <h1 class="hero-title">Meet your<br>thinking partner</h1>
+            <p class="hero-subtitle">Tackle any big, bold, bewildering challenge with Cloud iNIT.</p>
+            
+            <div class="input-container">
+                <input type="text" id="chat-input" placeholder="How can I help you today?">
+                <button id="submit-btn" class="btn-ask">
+                    Ask Ai <span class="up-arrow">↑</span>
+                </button>
+            </div>
+
+            <div class="answer-panel" id="answer-panel">
+                <div class="answer-panel-inner">
+                    <div class="answer-panel-query" id="answer-panel-query"></div>
+                    <div class="answer-panel-body" id="answer-panel-body"></div>
+                </div>
+            </div>
+
+            <div class="tags-container">
+                <button class="tag-btn" data-prompt="Help me write "><span style="font-size:11px;">✎</span> Write</button>
+                <button class="tag-btn" data-prompt="Teach me about "><span style="font-size:11px;">📋</span> Learn</button>
+                <button class="tag-btn" data-prompt="Write code for "><span style="font-size:11px;">&lt;/&gt;</span> Code</button>
+            </div>
+        </div>
+
+        <div class="hero-right-graphic">
+            <img src="https://static01.nyt.com/images/2022/04/14/multimedia/22ai-indigenous/22ai-indigenous-articleLarge.gif?quality=75&auto=webp&disable=upscale" alt="Hero graphic" class="hero-graphic-img">
+        </div>
+    </main>
+
+    <section class="problems-section">
+        <div class="problems-header reveal">
+            <div class="badge-icon" style="display: flex; align-items: center; justify-content: center;">
+                <img class="logo-icon" src="https://i.ibb.co/C5XqXXx5/d2a09cd4-f07d-4034-99ad-51292342123d.png" alt="Cloud iNIT logo" style="height: 40px; display: block;">
+            </div>
+            <h2 style="text-align:center;">The AI for problem solvers</h2>
+   
+            <p>Use <span><a href="https://veeracloud.shop/" style="color: inherit; text-decoration: underline;" target="_blank" rel="noopener">Cloud iNIT</a></span> in the desktop app to hand off tasks.</p>
+      
+            <div class="download-buttons">
+                <span>Download the desktop app:</span>
+                <button class="btn-download icon-btn" id="mac-download-btn">
+                    <span class="btn-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                    </span>
+                    <span class="btn-label">macOS</span>
+                </button>
+                <div id="mac-options-modal" style="
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: rgba(25,25,25,0.82);
+                    z-index: 2000;
+                ">
+                  <div style="
+                        background: #232323;
+                        border-radius: 18px;
+                        color: #fbfaf7;
+                        padding: 32px 40px 28px 40px;
+                        min-width: 355px;
+                        max-width: 95vw;
+                        margin: 64px auto 0 auto;
+                        box-shadow: 0 12px 44px #000b;
+                        position: relative;
+                        font-family: 'Plus Jakarta Sans', sans-serif;
+                        display: flex;
+                        flex-direction: column;
+                    ">
+                        <button id="close-mac-options" style="
+                            position: absolute;
+                            top: 17px;
+                            right: 23px;
+                            background: none;
+                            border: none;
+                            color: #fbfaf7;
+                            font-size: 30px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            transition: color 0.12s;
+                        " aria-label="Close">&times;</button>
+                        <h3 style="
+                            margin-top: 0;
+                            font-size: 1.55rem;
+                            margin-bottom: 18px;
+                            font-weight: 600;
+                            letter-spacing: 0.005em;
+                            text-align: center;
+                        ">Select your batch (macOS)</h3>
+                        <div style="display: flex; flex-direction: column; gap: 28px; margin-top: 8px;">
+                            <div style="border-bottom: 1px solid #353535; padding-bottom: 9px;">
+                                <div style="font-weight: 700; font-size: 1.07em; margin-bottom: 8px;">Batch 1030</div>
+                                <div style="display:flex; flex-direction:row; gap:12px; flex-wrap:wrap;">
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/1030online"
+                                        target="_blank" class="btn-download"
+                                        style="background: #cc7d5c; color: #191919; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500;box-shadow: 0 1px 9px #221a1333;">Online</a>
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/1030offline"
+                                        target="_blank" class="btn-download"
+                                        style="background: #414141; color: #fbfaf7; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #1919191e;">Offline</a>
+                                </div>
+                            </div>
+                            <div style="border-bottom: 1px solid #353535; padding-bottom: 9px;">
+                                <div style="font-weight: 700; font-size: 1.07em; margin-bottom: 8px;">Batch 900</div>
+                                <div style="display:flex; flex-direction:row; gap:12px; flex-wrap:wrap;">
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/900online"
+                                        target="_blank" class="btn-download"
+                                        style="background: #cc7d5c; color: #191919; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #221a1333;">Online</a>
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/900offline"
+                                        target="_blank" class="btn-download"
+                                        style="background: #414141; color: #fbfaf7; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #1919191e;">Offline</a>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1.07em; margin-bottom: 8px;">Batch 730</div>
+                                <div style="display:flex; flex-direction:row; gap:12px; flex-wrap:wrap;">
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/730online"
+                                        target="_blank" class="btn-download"
+                                        style="background: #cc7d5c; color: #191919; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #221a1333;">Online</a>
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/730offline"
+                                        target="_blank" class="btn-download"
+                                        style="background: #414141; color: #fbfaf7; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #1919191e;">Offline</a>
+                                </div>
+                            </div>
+                        </div>
+                  </div>
+                </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var macBtn = document.getElementById('mac-download-btn');
+                    var modal = document.getElementById('mac-options-modal');
+                    var closeBtn = document.getElementById('close-mac-options');
+
+                    if (modal && modal.parentElement !== document.body) {
+                        document.body.appendChild(modal);
+                    }
+
+                    function disableScroll() { document.body.style.overflow = 'hidden'; }
+                    function enableScroll() { document.body.style.overflow = ''; }
+
+                    if (macBtn && modal && closeBtn) {
+                        macBtn.addEventListener('click', function(e){
+                            e.preventDefault();
+                            modal.style.display = 'block';
+                            if (window.gsap) {
+                                gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.25 });
+                                gsap.fromTo(modal.children[0], { y: 24, scale: 0.96, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.6)' });
+                            }
+                            setTimeout(function() {
+                                modal.children[0].scrollIntoView({behavior:'auto', block:'center'});
+                            }, 40);
+                            disableScroll();
+                        });
+                        closeBtn.addEventListener('click', function(){
+                            modal.style.display = 'none';
+                            enableScroll();
+                        });
+                        modal.addEventListener('click', function(e){
+                            if (e.target === modal) {
+                                modal.style.display = 'none';
+                                enableScroll();
+                            }
+                        });
+                        document.addEventListener('keydown', function(e){
+                            if (e.key === 'Escape' && modal.style.display === 'block') {
+                                modal.style.display = 'none';
+                                enableScroll();
+                            }
+                        });
+                    }
+                });
+                </script>
+                <button class="btn-download icon-btn" id="windows-download-btn">
+                    <span class="btn-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="8" rx="1"/><rect x="13" y="4" width="8" height="8" rx="1"/><rect x="3" y="14" width="8" height="6" rx="1"/><rect x="13" y="14" width="8" height="6" rx="1"/></svg>
+                    </span>
+                    <span class="btn-label">Windows</span>
+                </button>
+                <div id="windows-options-modal" style="
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: rgba(25,25,25,0.82);
+                    z-index: 2000;
+                ">
+                  <div style="
+                        background: #232323;
+                        border-radius: 18px;
+                        color: #fbfaf7;
+                        padding: 32px 40px 28px 40px;
+                        min-width: 355px;
+                        max-width: 95vw;
+                        margin: 64px auto 0 auto;
+                        box-shadow: 0 12px 44px #000b;
+                        position: relative;
+                        font-family: 'Plus Jakarta Sans', sans-serif;
+                        display: flex;
+                        flex-direction: column;
+                    ">
+                        <button id="close-windows-options" style="
+                            position: absolute;
+                            top: 17px;
+                            right: 23px;
+                            background: none;
+                            border: none;
+                            color: #fbfaf7;
+                            font-size: 30px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            transition: color 0.12s;
+                        " aria-label="Close">&times;</button>
+                        <h3 style="
+                            margin-top: 0;
+                            font-size: 1.55rem;
+                            margin-bottom: 18px;
+                            font-weight: 600;
+                            letter-spacing: 0.005em;
+                            text-align: center;
+                        ">Select your batch (Windows)</h3>
+                        <div style="display: flex; flex-direction: column; gap: 28px; margin-top: 8px;">
+                            <div style="border-bottom: 1px solid #353535; padding-bottom: 9px;">
+                                <div style="font-weight: 700; font-size: 1.07em; margin-bottom: 8px;">Batch 1030</div>
+                                <div style="display:flex; flex-direction:row; gap:12px; flex-wrap:wrap;">
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/1030onlinepc"
+                                        target="_blank" class="btn-download"
+                                        style="background: #cc7d5c; color: #191919; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500;box-shadow: 0 1px 9px #221a1333;">Online</a>
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/1030offlinepc"
+                                        target="_blank" class="btn-download"
+                                        style="background: #414141; color: #fbfaf7; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #1919191e;">Offline</a>
+                                </div>
+                            </div>
+                            <div style="border-bottom: 1px solid #353535; padding-bottom: 9px;">
+                                <div style="font-weight: 700; font-size: 1.07em; margin-bottom: 8px;">Batch 900</div>
+                                <div style="display:flex; flex-direction:row; gap:12px; flex-wrap:wrap;">
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/900onlinepc"
+                                        target="_blank" class="btn-download"
+                                        style="background: #cc7d5c; color: #191919; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #221a1333;">Online</a>
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/900offlinepc"
+                                        target="_blank" class="btn-download"
+                                        style="background: #414141; color: #fbfaf7; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #1919191e;">Offline</a>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1.07em; margin-bottom: 8px;">Batch 730</div>
+                                <div style="display:flex; flex-direction:row; gap:12px; flex-wrap:wrap;">
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/730onlinepc"
+                                        target="_blank" class="btn-download"
+                                        style="background: #cc7d5c; color: #191919; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #221a1333;">Online</a>
+                                    <a href="https://github.com/CloudTechDevOps/CloudTechDevOps/releases/tag/730offlinepc"
+                                        target="_blank" class="btn-download"
+                                        style="background: #414141; color: #fbfaf7; border-radius: 7px; padding: 8px 18px; text-decoration: none; font-weight:500; box-shadow: 0 1px 9px #1919191e;">Offline</a>
+                                </div>
+                            </div>
+                        </div>
+                  </div>
+                </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var windowsBtn = document.getElementById('windows-download-btn');
+                    var windowsModal = document.getElementById('windows-options-modal');
+                    var closeWindowsBtn = document.getElementById('close-windows-options');
+
+                    if (windowsModal && windowsModal.parentElement !== document.body) {
+                        document.body.appendChild(windowsModal);
+                    }
+
+                    function disableScroll() { document.body.style.overflow = 'hidden'; }
+                    function enableScroll() { document.body.style.overflow = ''; }
+
+                    if (windowsBtn && windowsModal && closeWindowsBtn) {
+                        function closeWindowsModal() {
+                            windowsModal.style.display = 'none';
+                            enableScroll();
+                        }
+
+                        windowsBtn.addEventListener('click', function(e){
+                            e.preventDefault();
+                            windowsModal.style.display = 'block';
+                            if (window.gsap) {
+                                gsap.fromTo(windowsModal, { opacity: 0 }, { opacity: 1, duration: 0.25 });
+                                gsap.fromTo(windowsModal.children[0], { y: 24, scale: 0.96, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.6)' });
+                            }
+                            setTimeout(function() {
+                                windowsModal.children[0].scrollIntoView({behavior:'auto', block:'center'});
+                            }, 40);
+                            disableScroll();
+                        });
+                        closeWindowsBtn.addEventListener('click', function(){
+                            closeWindowsModal();
+                        });
+                        windowsModal.addEventListener('click', function(e){
+                            if (e.target === windowsModal) {
+                                closeWindowsModal();
+                            }
+                        });
+                        document.addEventListener('keydown', function(e){
+                            if (e.key === 'Escape' && windowsModal.style.display === 'block') {
+                                closeWindowsModal();
+                            }
+                        });
+                    }
+                });
+                </script>
+            </div>
+        </div>
+
+        <div class="workspace-layout">
+            <div class="features-list reveal-stagger">
+                <div class="feature-item">
+                    <div class="feature-title"><span>☁️</span> Get free access to a cloud environment</div>
+                    <div class="feature-desc">Spin up a ready-to-use cloud environment instantly, no setup or payment required, and start building right away.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title"><span>📅</span> Daily tasks & practice tests</div>
+                    <div class="feature-desc">Build momentum with daily tasks and practice tests, earn rewards in the store, and climb the leaderboard as you go.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title"><span>🎯</span> AI mock interviews, earned by performance</div>
+                    <div class="feature-desc">Unlock AI-powered mock interviews tailored to how you're doing—rewarding users who practice consistently and perform their best.</div>
+                </div>
+            </div>
+
+            <div class="mindmap-wrapper reveal">
+                <svg class="mindmap-svg">
+                    <g stroke="#3a3a3a" stroke-width="1.2">
+                        <line class="connector-line" x1="340" y1="360" x2="160" y2="140" />
+                        <line class="connector-line" x1="340" y1="360" x2="110" y2="330" />
+                        <line class="connector-line" x1="340" y1="360" x2="255" y2="460" />
+                        <line class="connector-line" x1="340" y1="360" x2="290" y2="600" />
+                        <line class="connector-line" x1="340" y1="360" x2="530" y2="620" />
+                    </g>
+                </svg>
+
+                <div class="core-claude">
+                    Cloud iNIT
+                </div>
+
+                <div class="map-node heading" style="left: 60px; top: 100px;">aws</div>
+                <div class="map-node" style="left: 210px; top: 100px;">azure</div>
+                <div class="map-node" style="left: 375px; top: 100px;">gcp</div>
+                <div class="map-node underline" style="left: 375px; top: 132px;">Free sandbox</div>
+
+                <div class="map-node heading" style="left: 20px; top: 320px;">Free ai studio</div>
+                <div class="map-node underline" style="left: 230px; top: 230px;">Free Ats score calculator</div>
+                <div class="map-node" style="left: 195px; top: 375px;">Free resume builder</div>
+
+                <div class="map-node heading" style="left: 260px; top: 470px;">Data analysis</div>
+                <div class="map-node underline" style="left: 195px; top: 440px;">Github access</div>
+                <div class="map-node underline" style="left: 340px; top: 540px;">Batch communication</div>
+
+                <div class="map-node heading" style="left: 200px; top: 610px;">Daily tasks</div>
+                <div class="map-node underline" style="left: 420px; top: 610px;">Growth</div>
+
+                <div class="map-node heading" style="left: 470px; top: 660px;">Software development</div>
+                <div class="map-node underline" style="left: 500px; top: 570px;">Daily Test</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="models-section">
+        <div class="models-header reveal">
+            <div class="model-cloud-icon">
+                <svg width="60" height="40" viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 32C12 32 8 28 8 22C8 17.5 11.5 13.5 16 13C17.5 8 22 4 28 4C34.5 4 39.5 9 40 15.5C45 16 49 20 49 25C49 30.5 44.5 35 39 35" stroke="#a3a3a3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M26 35C24 35 22.5 33.5 22.5 31.5C22.5 30 24 28.5 26 28.5" stroke="#a3a3a3" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h2>Cloud iNIT's ai models</h2>
+            <p class="models-subtext">Cloud iNIT ai models are used to build Cloud iNIT.</p>
+        </div>
+
+        <div class="models-stack reveal-stagger">
+            <div class="model-card">
+                <div class="model-card-left">
+                    <h3>ChatGPT</h3>
+                </div>
+                <div class="model-card-right">
+                    <h4>Built for speed, giving you answers the moment you need them</h4>
+                    <div class="model-bullets">
+                        <span>Fast response</span><span class="dot">•</span>
+                        <span>Quick answers</span><span class="dot">•</span>
+                        <span>Everyday tasks</span>
+                    </div>
+                    <button class="btn-details icon-btn">
+                        <span class="btn-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+                        </span>
+                        <span class="btn-label">Model details</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="model-card-left">
+                    <h3>Gemini</h3>
+                </div>
+                <div class="model-card-right">
+                    <h4>Tuned for deeper reasoning, giving thoughtful answers to harder questions</h4>
+                    <div class="model-bullets">
+                        <span>Better thinking</span><span class="dot">•</span>
+                        <span>Deep analysis</span><span class="dot">•</span>
+                        <span>Complex questions</span>
+                    </div>
+                    <button class="btn-details icon-btn">
+                        <span class="btn-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+                        </span>
+                        <span class="btn-label">Model details</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="model-card-left">
+                    <h3>Gen Ai 5.2</h3>
+                </div>
+                <div class="model-card-right">
+                    <h4>Built to handle large codebases and long development sessions</h4>
+                    <div class="model-bullets">
+                        <span>Long codes</span><span class="dot">•</span>
+                        <span>Large projects</span><span class="dot">•</span>
+                        <span>Fewer check-ins needed</span>
+                    </div>
+                    <button class="btn-details icon-btn">
+                        <span class="btn-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+                        </span>
+                        <span class="btn-label">Model details</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="model-card-left">
+                    <h3>Claude</h3>
+                </div>
+                <div class="model-card-right">
+                    <h4>Sharp at algorithms and logic, built for structured problem solving</h4>
+                    <div class="model-bullets">
+                        <span>Algorithms</span><span class="dot">•</span>
+                        <span>Logic</span><span class="dot">•</span>
+                        <span>Problem solving</span>
+                    </div>
+                    <button class="btn-details icon-btn">
+                        <span class="btn-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+                        </span>
+                        <span class="btn-label">Model details</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-container">
+        <div class="footer-content">
+            <div class="footer-left-brand">
+                <img src="https://i.ibb.co/C5XqXXx5/d2a09cd4-f07d-4034-99ad-51292342123d.png" alt="Cloud iNIT Logo" style="height:24px; width:24px; vertical-align:middle; margin-right:8px;"> Cloud iNIT © 2026
+            </div>
+            
+            <div class="social-links">
+                <a href="https://x.com/veeracloud7" target="_blank" rel="noopener">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/1280px-Logo_of_Twitter.svg.png" alt="Twitter"> Twitter
+                </a>
+                <a href="https://www.instagram.com/cloud_tech_devops/" target="_blank" rel="noopener">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram"> Instagram
+                </a>
+                <a href="https://whatsapp.com/channel/0029VbCkNwX8qJ02LaVO8o0Y" target="_blank" rel="noopener">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp"> WhatsApp
+                </a>
+                <a href="https://www.youtube.com/@cloudtect" target="_blank" rel="noopener">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png" alt="YouTube"> YouTube
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61591112875415" target="_blank" rel="noopener">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Facebook_icon.svg" alt="Facebook"> Facebook
+                </a>
+            </div>
+
+            <div class="legal-links">
+                <a href="policy.html" class="legal-trigger">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="info-modal" aria-hidden="true">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
+            <button class="modal-close" id="info-modal-close" aria-label="Close">&times;</button>
+            <h3 id="info-modal-title"></h3>
+            <div id="info-modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatInput = document.getElementById('chat-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const tagButtons = document.querySelectorAll('.tag-btn');
+            const answerPanel = document.getElementById('answer-panel');
+            const answerPanelQuery = document.getElementById('answer-panel-query');
+            const answerPanelBody = document.getElementById('answer-panel-body');
+
+            /* ============================================================
+               GSAP — HERO ENTRANCE TIMELINE
+               ============================================================ */
+            const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+            heroTl
+                .to('.hero-title', { opacity: 1, y: 0, duration: 0.8 }, 0.05)
+                .from('.hero-title', { y: 24 }, 0.05)
+                .to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.7 }, 0.2)
+                .from('.hero-subtitle', { y: 18 }, 0.2)
+                .to('.hero-right-graphic', { opacity: 1, y: 0, duration: 0.8 }, 0.15)
+                .from('.hero-right-graphic', { y: 18 }, 0.15)
+                .to('.input-container', { opacity: 1, y: 0, duration: 0.6 }, 0.35)
+                .from('.input-container', { y: 16 }, 0.35)
+                .to('.tags-container', { opacity: 1, y: 0, duration: 0.6 }, 0.45)
+                .from('.tags-container', { y: 14 }, 0.45);
+
+            /* ============================================================
+               GSAP — SCROLL-TRIGGERED REVEALS
+               (replaces the old IntersectionObserver + CSS .is-visible)
+               ============================================================ */
+            gsap.utils.toArray('.reveal').forEach((el) => {
+                if (el.classList.contains('mindmap-wrapper')) return; // handled separately below
+                gsap.fromTo(el,
+                    { opacity: 0, y: 28 },
+                    {
+                        opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+                        scrollTrigger: { trigger: el, start: 'top 85%' }
+                    }
+                );
+            });
+
+            gsap.utils.toArray('.reveal-stagger').forEach((group) => {
+                gsap.fromTo(group.children,
+                    { opacity: 0, y: 20 },
+                    {
+                        opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.12,
+                        scrollTrigger: { trigger: group, start: 'top 85%' }
+                    }
+                );
+            });
+
+            /* ============================================================
+               GSAP — MINDMAP REVEAL (lines draw in, core pops, nodes fade,
+               then a soft ambient drift loop takes over)
+               ============================================================ */
+            const mindmapWrapper = document.querySelector('.mindmap-wrapper');
+            if (mindmapWrapper) {
+                const lines = mindmapWrapper.querySelectorAll('.connector-line');
+                const core = mindmapWrapper.querySelector('.core-claude');
+                const nodes = mindmapWrapper.querySelectorAll('.map-node');
+
+                const mapTl = gsap.timeline({
+                    scrollTrigger: { trigger: mindmapWrapper, start: 'top 80%' },
+                    onComplete: () => {
+                        // Ambient loops once the reveal is finished
+                        gsap.to(core, {
+                            y: -6, duration: 3.5, ease: 'sine.inOut',
+                            repeat: -1, yoyo: true
+                        });
+                        gsap.to(core, {
+                            scale: 1.05, duration: 3.5, ease: 'sine.inOut',
+                            repeat: -1, yoyo: true, opacity: 1
+                        });
+                        nodes.forEach((n, i) => {
+                            gsap.to(n, {
+                                x: 3, y: -8,
+                                duration: 4.5 + (i % 5) * 0.3,
+                                ease: 'sine.inOut',
+                                repeat: -1, yoyo: true,
+                                delay: (i % 6) * 0.15
+                            });
+                        });
+                        lines.forEach((l, i) => {
+                            gsap.to(l, {
+                                stroke: '#cc7d5c', duration: 1.7, ease: 'sine.inOut',
+                                repeat: -1, yoyo: true, delay: i * 0.3
+                            });
+                        });
+                    }
+                });
+
+                mapTl
+                    .to(mindmapWrapper, { opacity: 1, duration: 0.3 }, 0)
+                    .to(lines, { strokeDashoffset: 0, duration: 1, ease: 'power2.inOut', stagger: 0.12 }, 0.1)
+                    .to(core, { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.6)' }, 0.5)
+                    .fromTo(core, { scale: 0.85 }, { scale: 1, duration: 0.6, ease: 'back.out(1.6)' }, 0.5)
+                    .to(nodes, { opacity: 1, duration: 0.5, stagger: 0.04 }, 0.75);
+            }
+
+            /* ============================================================
+               GSAP — BUTTON MICRO-INTERACTIONS (hover + press)
+               Applied broadly to every clickable control on the page.
+               ============================================================ */
+            const interactiveSelectors = [
+                '.btn-ask', '.tag-btn', '.modal-close', '.logo'
+            ];
+
+            document.querySelectorAll(interactiveSelectors.join(',')).forEach((btn) => {
+                gsap.set(btn, { transformOrigin: 'center center' });
+
+                btn.addEventListener('mouseenter', () => {
+                    gsap.to(btn, { scale: 1.045, duration: 0.25, ease: 'power2.out' });
+                });
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn, { scale: 1, duration: 0.3, ease: 'power2.out' });
+                });
+                btn.addEventListener('mousedown', () => {
+                    gsap.to(btn, { scale: 0.94, duration: 0.12, ease: 'power2.out' });
+                });
+                btn.addEventListener('mouseup', () => {
+                    gsap.to(btn, { scale: 1.045, duration: 0.18, ease: 'back.out(2)' });
+                });
+            });
+
+            /* ============================================================
+               GSAP — ICON-EXPAND BUTTONS
+               Each .icon-btn rests as a compact icon pill; on hover the icon
+               spins in, the label unfurls from width:0 with a slight
+               overshoot, and the whole pill breathes with an elastic scale.
+               A quick shine sweep plays across the icon on the way in.
+               ============================================================ */
+            document.querySelectorAll('.icon-btn').forEach((btn) => {
+                const label = btn.querySelector('.btn-label');
+                const iconWrap = btn.querySelector('.btn-icon-wrap');
+                if (!label || !iconWrap) return;
+
+                const fullWidth = label.scrollWidth;
+                gsap.set(label, { width: 0, opacity: 0, marginLeft: 0 });
+
+                let hoverTl = null;
+
+                const playEnter = () => {
+                    if (hoverTl) hoverTl.kill();
+                    hoverTl = gsap.timeline();
+                    hoverTl
+                        .to(btn, { scale: 1.06, duration: 0.35, ease: 'elastic.out(1, 0.55)' }, 0)
+                        .to(iconWrap, { rotate: 360, duration: 0.5, ease: 'back.out(2.4)' }, 0)
+                        .to(iconWrap, { scale: 1.15, duration: 0.25, ease: 'power2.out', yoyo: true, repeat: 1 }, 0)
+                        .to(label, { width: fullWidth, marginLeft: 8, duration: 0.45, ease: 'power3.out' }, 0.05)
+                        .to(label, { opacity: 1, duration: 0.3, ease: 'power1.out' }, 0.15);
+                };
+
+                const playLeave = () => {
+                    if (hoverTl) hoverTl.kill();
+                    hoverTl = gsap.timeline();
+                    hoverTl
+                        .to(label, { opacity: 0, duration: 0.15, ease: 'power1.in' }, 0)
+                        .to(label, { width: 0, marginLeft: 0, duration: 0.3, ease: 'power3.in' }, 0.03)
+                        .to(iconWrap, { rotate: 0, duration: 0.3, ease: 'power2.out' }, 0)
+                        .to(btn, { scale: 1, duration: 0.3, ease: 'power2.out' }, 0);
+                };
+
+                btn.addEventListener('mouseenter', playEnter);
+                btn.addEventListener('mouseleave', playLeave);
+                btn.addEventListener('mousedown', () => gsap.to(btn, { scale: 0.94, duration: 0.12, ease: 'power2.out' }));
+                btn.addEventListener('mouseup', () => gsap.to(btn, { scale: 1.06, duration: 0.2, ease: 'back.out(2)' }));
+                // Focus-visible (keyboard) gets the same reveal as hover
+                btn.addEventListener('focus', playEnter);
+                btn.addEventListener('blur', playLeave);
+            });
+
+            /* Model cards lift + border glow on hover */
+            document.querySelectorAll('.model-card').forEach((card) => {
+                card.addEventListener('mouseenter', () => {
+                    gsap.to(card, { y: -4, backgroundColor: '#242424', borderColor: '#3d3d3d', duration: 0.3, ease: 'power2.out' });
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { y: 0, backgroundColor: '#212121', borderColor: '#2d2d2d', duration: 0.35, ease: 'power2.out' });
+                });
+            });
+
+            /* Feature items: subtle nudge on hover */
+            document.querySelectorAll('.feature-item').forEach((item) => {
+                item.addEventListener('mouseenter', () => {
+                    gsap.to(item, { x: 6, duration: 0.3, ease: 'power2.out' });
+                });
+                item.addEventListener('mouseleave', () => {
+                    gsap.to(item, { x: 0, duration: 0.35, ease: 'power2.out' });
+                });
+            });
+
+            /* Map nodes: gentle pop on hover, on top of the ambient drift */
+            document.querySelectorAll('.map-node').forEach((node) => {
+                node.addEventListener('mouseenter', () => {
+                    gsap.to(node, { scale: 1.12, duration: 0.2, ease: 'power2.out' });
+                });
+                node.addEventListener('mouseleave', () => {
+                    gsap.to(node, { scale: 1, duration: 0.25, ease: 'power2.out' });
+                });
+            });
+
+            /* ============================================================
+               Ask box -> live answer panel
+               ============================================================ */
+            const VEERA_API_ENDPOINT = 'https://twilight-bread-fbaa.cloudgcp08.workers.dev/';
+
+            const extractAnswerText = (data) => {
+                if (typeof data === 'string') return data;
+                if (data == null) return '';
+
+                if (Array.isArray(data.choices) && data.choices.length > 0) {
+                    const choice = data.choices[0];
+                    if (choice?.message && typeof choice.message.content === 'string') {
+                        return choice.message.content;
+                    }
+                    if (typeof choice?.text === 'string') return choice.text;
+                }
+
+                const candidateKeys = ['answer', 'response', 'result', 'text', 'message', 'output'];
+                for (const key of candidateKeys) {
+                    if (typeof data[key] === 'string') return data[key];
+                }
+                if (Array.isArray(data.content)) {
+                    const joined = data.content
+                        .map((block) => (block && typeof block.text === 'string' ? block.text : ''))
+                        .filter(Boolean)
+                        .join('\n');
+                    if (joined) return joined;
+                }
+                return JSON.stringify(data, null, 2);
+            };
+
+            const fetchVeeraAnswer = async (queryText) => {
+                const res = await fetch(VEERA_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: 'user', content: queryText }
+                        ]
+                    })
+                });
+
+                if (!res.ok) {
+                    let bodyText = '';
+                    try { bodyText = await res.text(); } catch (_) { /* ignore */ }
+                    throw new Error(`Request failed with status ${res.status}${bodyText ? ` — ${bodyText}` : ''}`);
+                }
+
+                const contentType = res.headers.get('content-type') || '';
+                const data = contentType.includes('application/json')
+                    ? await res.json()
+                    : await res.text();
+
+                return extractAnswerText(data) || 'No answer was returned for that query.';
+            };
+
+            const openAnswerPanel = () => {
+                if (!answerPanel.classList.contains('is-open')) {
+                    answerPanel.classList.add('is-open');
+                    gsap.fromTo(answerPanel, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+                }
+            };
+
+            const runPromptSubmission = async () => {
+                const queryText = chatInput.value.trim();
+                if (!queryText) return;
+
+                answerPanelQuery.textContent = queryText;
+                answerPanelBody.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
+                openAnswerPanel();
+                chatInput.value = '';
+
+                try {
+                    const answer = await fetchVeeraAnswer(queryText);
+                    gsap.fromTo(answerPanelBody, { opacity: 0 }, { opacity: 1, duration: 0.35, onStart: () => { answerPanelBody.textContent = answer; } });
+                } catch (err) {
+                    console.error('Cloud iNIT API error:', err);
+                    answerPanelBody.textContent = `Something went wrong reaching Cloud iNIT: ${err.message}`;
+                }
+            };
+
+            submitBtn.addEventListener('click', runPromptSubmission);
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') runPromptSubmission();
+            });
+
+            tagButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    chatInput.value = button.getAttribute('data-prompt');
+                    chatInput.focus();
+                });
+            });
+
+            document.querySelectorAll('.map-node').forEach(node => {
+                node.addEventListener('click', () => {
+                    chatInput.value = `Optimize workspace pipeline workflow parameters for: ${node.innerText.replace('— ', '')}`;
+                    chatInput.focus();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            /* ============================================================
+               Generic info modal (model details / legal) — GSAP open/close
+               ============================================================ */
+            const infoModal = document.getElementById('info-modal');
+            const infoModalTitle = document.getElementById('info-modal-title');
+            const infoModalBody = document.getElementById('info-modal-body');
+            const infoModalClose = document.getElementById('info-modal-close');
+            const infoModalPanel = infoModal.querySelector('.modal-panel');
+
+            const openInfoModal = (title, bodyHtml) => {
+                infoModalTitle.textContent = title;
+                infoModalBody.innerHTML = bodyHtml;
+                infoModal.classList.add('is-open');
+                infoModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                gsap.fromTo(infoModal, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+                gsap.fromTo(infoModalPanel, { y: 20, scale: 0.96, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.6)' });
+            };
+
+            const closeInfoModal = () => {
+                gsap.to(infoModalPanel, { y: 12, scale: 0.97, opacity: 0, duration: 0.22, ease: 'power2.in' });
+                gsap.to(infoModal, {
+                    opacity: 0, duration: 0.25, ease: 'power2.in',
+                    onComplete: () => {
+                        infoModal.classList.remove('is-open');
+                        infoModal.setAttribute('aria-hidden', 'true');
+                        document.body.style.overflow = '';
+                    }
+                });
+            };
+
+            infoModalClose.addEventListener('click', closeInfoModal);
+            infoModal.addEventListener('click', (e) => {
+                if (e.target === infoModal) closeInfoModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && infoModal.classList.contains('is-open')) closeInfoModal();
+            });
+
+            const escapeHtml = (str) => str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            document.querySelectorAll('.btn-details').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const modelName = e.target.closest('.model-card').querySelector('h3').innerText;
+
+                    openInfoModal(
+                        modelName,
+                        '<p><span class="typing-dots"><span></span><span></span><span></span></span></p>'
+                    );
+
+                    try {
+                        const description = await fetchVeeraAnswer(
+                            `In 2-3 sentences, describe the Claude model "${modelName}" and what it's best used for.`
+                        );
+                        infoModalBody.innerHTML = `<p>${escapeHtml(description)}</p>`;
+                        gsap.fromTo(infoModalBody, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+                    } catch (err) {
+                        console.error('Cloud iNIT API error:', err);
+                        infoModalBody.innerHTML = `<p>Couldn't load details for ${escapeHtml(modelName)}: ${escapeHtml(err.message)}</p>`;
+                    }
+                });
+            });
+
+            document.querySelectorAll('.model-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    card.querySelector('.btn-details').click();
+                });
+            });
+
+            const legalContent = {
+                'Terms and Conditions': '<p>By using Cloud iNIT you agree to use the service responsibly and in line with applicable laws.</p><p>This is placeholder legal copy — replace it with your actual Terms and Conditions before launch.</p>',
+                'Privacy Policy': '<p>Cloud iNIT only collects the information needed to provide the service, and does not sell personal data to third parties.</p><p>This is placeholder legal copy — replace it with your actual Privacy Policy before launch.</p>'
+            };
+
+            document.querySelectorAll('.legal-trigger').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const label = e.target.innerText;
+                    openInfoModal(label, legalContent[label] || '<p>Content coming soon.</p>');
+                });
+            });
+
+            /* ============================================================
+               Hero graphic ambient glow — cursor-reactive
+               ============================================================ */
+            const heroGraphic = document.querySelector('.hero-right-graphic');
+            if (heroGraphic) {
+                heroGraphic.addEventListener('mousemove', (e) => {
+                    const rect = heroGraphic.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    heroGraphic.style.setProperty('--glow-x', `${x}%`);
+                    heroGraphic.style.setProperty('--glow-y', `${y}%`);
+                });
+                heroGraphic.addEventListener('mouseleave', () => {
+                    gsap.to(heroGraphic, {
+                        '--glow-x': '50%', '--glow-y': '40%', duration: 0.6, ease: 'power2.out'
+                    });
+                });
+            }
+        });
+    </script>
+<script src="ai-agent-widget.js"></script>
+</body>
+</html>

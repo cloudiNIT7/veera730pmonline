@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DynamoDB & API Gateway | AWS MCQ Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#06b6d4;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  .back-btn:hover{letter-spacing: 1px;}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  /* Gradient H1 Header */
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #06b6d4, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(6,182,212,.05)}
+  .option.disabled{cursor:default}
+  .option.correct-ans{border-color:var(--correct)!important;background:rgba(16,185,129,.15)!important}
+  .option.wrong-ans{border-color:var(--wrong)!important;background:rgba(239,68,68,.15)!important}
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct);color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+  /* Compact Explanation Highlight */
+  .explanation{margin-top:20px;padding:15px;background:rgba(6,182,212,.08);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  .explanation strong{color:var(--accent)}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="aws.html">← AWS_EXIT</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">SERVERLESS_PROTOCOL_TOPIC_18</div>
+      <h1>DynamoDB & API Gateway</h1>
+      <p class="desc">Foundational data management, event-driven streams, and synchronous request orchestration.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Index</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Efficiency Rating</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">Evaluation complete. Data state synchronized.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">RESET_CACHE_REBOOT</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What type of database is Amazon DynamoDB?",o:["Relational SQL database","Fully managed NoSQL key-value and document database","Graph database","In-memory cache only"],a:1,e:"DynamoDB is a fully managed, serverless NoSQL database supporting key-value and document data models with single-digit millisecond performance."},
+  {q:"What are the two components of a DynamoDB composite primary key?",o:["Index Key and Sort Key","Partition Key (required) and Sort Key (optional)","Primary Key and Foreign Key","Hash Key and Range Value"],a:1,e:"DynamoDB supports a simple primary key (Partition Key only) or a composite primary key (Partition Key + Sort Key)."},
+  {q:"What is the maximum item size in DynamoDB?",o:["1 MB","400 KB","4 MB","100 KB"],a:1,e:"Each item can be a maximum of 400 KB. For larger files, use S3 and store the metadata URL in DynamoDB."},
+  {q:"What are DynamoDB Read Capacity Units (RCUs)?",o:["Number of replicas","1 RCU = 1 strongly consistent read OR 2 eventually consistent reads per second for items up to 4 KB","Monthly billing units","Concurrent connections"],a:1,e:"1 RCU handles 1 strongly consistent read/sec or 2 eventually consistent reads/sec for items up to 4 KB."},
+  {q:"What is DynamoDB On-Demand capacity mode?",o:["Manual planning","Automatically scales to handle any traffic — pay per request","Reserved discount","Read-only access"],a:1,e:"On-Demand mode auto-scales to accommodate traffic; you pay per request without capacity planning."},
+  {q:"What is a DynamoDB Global Secondary Index (GSI)?",o:["Index on partition key","An index with a different partition key enabling queries on non-primary key attributes","Full-text index","Cross-region index"],a:1,e:"GSIs allow you to query non-primary key attributes efficiently by using a different partition key."},
+  {q:"What is DynamoDB Streams?",o:["Real-time analytics","An ordered sequence of item-level changes (inserts/updates/deletes) retained for 24 hours","Log export to S3","Replication tool"],a:1,e:"Streams provide a time-ordered log of modifications, often used as an event trigger for Lambda functions."},
+  {q:"What is DynamoDB Global Tables?",o:["Tables > 1k items","Multi-region, fully replicated tables providing millisecond latency globally","Shared tables","Tables > 10 TB"],a:1,e:"Global Tables provide active-active multi-region replication for global data availability and low latency."},
+  {q:"What encryption options does DynamoDB provide at rest?",o:["No native encryption","Encryption using AWS KMS with AWS-owned, managed, or Customer keys","SSL only","SDK encryption only"],a:1,e:"Data at rest is encrypted by default via KMS. You can choose different key ownership tiers."},
+  {q:"What is DynamoDB Accelerator (DAX)?",o:["Query optimizer","A fully managed in-memory cache delivering microsecond read latency","Backup service","Replication engine"],a:1,e:"DAX provides microsecond latency for read-heavy workloads without requiring complex code-level caching logic."},
+  {q:"How does IAM provide fine-grained security for DynamoDB?",o:["Internal users","Policies can restrict access to specific tables, individual items, or attributes","Security groups only","VPC only"],a:1,e:"IAM supports condition keys that allow restricting access down to specific partition keys or attributes."},
+  {q:"What type of VPC Endpoint does DynamoDB use?",o:["Interface Endpoint","Gateway Endpoint (free) — adds a route table entry","Transit Gateway","PrivateLink"],a:1,e:"DynamoDB uses Gateway VPC Endpoints, which route traffic privately without needing a NAT Gateway."},
+  {q:"How is AWS Lambda triggered by DynamoDB?",o:["No trigger","Lambda event source mapping processes DynamoDB Streams records","EventBridge only","Manual SDK"],a:1,e:"Lambda polls DynamoDB Streams to process item changes synchronously in real-time."},
+  {q:"What is Amazon API Gateway?",o:["VPN endpoint","Fully managed service to create, publish, and secure APIs at any scale","DNS routing","Serverless balancer"],a:1,e:"API Gateway is a managed service that handles request routing, auth, throttling, and monitoring for backends."},
+  {q:"What are the three API types supported by API Gateway?",o:["Public, Private, Internal","REST API, HTTP API, and WebSocket API","GET, POST, DELETE","Regional, Edge, Private"],a:1,e:"API Gateway supports REST, HTTP (lower cost/latency), and WebSocket (bidirectional) protocols."},
+  {q:"How does API Gateway invoke a Lambda function?",o:["Asynchronously","Synchronously — waits for response then returns to client","SQS only","Polling"],a:1,e:"By default, API Gateway uses synchronous RequestResponse calls with a maximum 29s timeout."},
+  {q:"What is an API Gateway Stage?",o:["Geo region","A named reference to an API deployment (e.g., dev, prod) with independent configs","Auth level","Billing tier"],a:1,e:"Stages are separate deployments (like dev, staging, prod) that allow independent configuration and monitoring."},
+  {q:"What does API Gateway Throttling protect against?",o:["SQL injection","Backends being overwhelmed (returns 429 Too Many Requests)","DDoS on DNS","Unauthorized access"],a:1,e:"Throttling limits request rates to ensure backend stability. Clients get HTTP 429 if they exceed limits."},
+  {q:"What is a Lambda Authorizer in API Gateway?",o:["Built-in feature","A Lambda function that validates tokens and returns IAM policies","IAM role","Cognito only"],a:1,e:"Authorizers use custom code to validate bearer tokens (like JWT) before allowing the request to hit the backend."},
+  {q:"What is the standard flow in a DynamoDB + Lambda + API Gateway app?",o:["DB > Lambda > API","Client > API Gateway > Lambda > DynamoDB > API Gateway > Client","Client > Lambda > API","API > DB > Lambda"],a:1,e:"Standard Flow: Request → Gateway (Auth) → Lambda (Compute) → DynamoDB (Storage) → Response back to client."},
+  {q:"What is DynamoDB Point-in-Time Recovery (PITR)?",o:["Manual snapshots","Continuous automated backups for 35-day restoration","Weekly only","Cross-region backup"],a:1,e:"PITR enables automated continuous backups, allowing you to restore data to any specific second in the last 35 days."},
+  {q:"What is the difference between Scan and Query?",o:["Identical","Query retrieves items by key; Scan reads every item in the table then filters (expensive)","Scan is faster","Query reads whole table"],a:1,e:"Query is efficient and uses indexes. Scan reads the entire table, consuming massive throughput capacity."},
+  {q:"What is API Gateway CORS configuration used for?",o:["Encryption","Allowing browsers to call the API from different domains","Caching","Balancing"],a:1,e:"CORS lets browser applications securely interact with APIs hosted on a different domain name."},
+  {q:"What is API Gateway Caching?",o:["Local code storage","Caching responses at the gateway to reduce backend calls","IAM cache","Memory DB"],a:1,e:"Caching stores responses at the stage level to improve latency and reduce Lambda execution costs."},
+  {q:"What is a DynamoDB Local Secondary Index (LSI)?",o:["Cross-region index","Index on same partition key but different sort key (set at creation)","Global query index","Primary key replacement"],a:1,e:"LSIs use the same partition key as the table but provide an alternative sort key for specialized queries."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsDynamoGatewayStudy_v1');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsDynamoGatewayStudy_v1', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+    document.getElementById('progressFill').style.width = ((current+1)/25 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num"> Q${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "SUBMIT_DATA_FINISH ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsDynamoGatewayStudy_v1');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/25)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsDynamoGatewayStudy_v1'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

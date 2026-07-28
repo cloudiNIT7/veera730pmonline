@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Git Login</title>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      font-family: sans-serif;
+      background: #FAF9F6;
+      overflow: hidden;
+    }
+
+    /* ── layout ── */
+    .container {
+      position: fixed;
+      top: 38%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    svg, .form-container {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    svg { width: 1000px; pointer-events: none; stroke-width: 1.2px; stroke: #000; fill: none; }
+
+    /* ── form ── */
+    .form-container { width: 270px; }
+
+    .form-row {
+      width: 100%; height: 60px;
+      display: flex; align-items: center;
+    }
+
+    .form-row input[type="email"],
+    .form-row input[type="password"] {
+      width: 100%; height: 46px;
+      padding: 0 10px;
+      border: 2px solid #ddd;
+      outline: none;
+      font-size: 18px; font-family: inherit;
+      background: #FAF9F6;
+      transition: border-color 0.2s;
+    }
+
+    .form-row input.valid { border-color: #000; }
+
+    .form-row input[type="checkbox"] {
+      width: 18px; height: 18px;
+      margin: 0 10px 0 0;
+      cursor: pointer; flex-shrink: 0;
+    }
+
+    .form-row label { font-size: 18px; cursor: pointer; user-select: none; }
+
+    .form-row input[type="submit"] {
+      width: 100%; height: 46px;
+      border: none; background: #eee;
+      font-size: 18px; font-family: inherit;
+      cursor: pointer;
+    }
+
+    .form-row input[type="submit"]:hover { background: #ddd; }
+
+    /* ── error ── */
+    #error-msg {
+      height: 20px; margin-top: 4px;
+      font-size: 13px; color: #c00;
+      text-align: center;
+      opacity: 0; transition: opacity .25s;
+    }
+    #error-msg.show { opacity: 1; }
+
+    /* ── welcome screen ── */
+    #welcome-screen {
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #FAF9F6;
+      opacity: 0; pointer-events: none;
+    }
+    #welcome-title {
+      font-size: 2.4rem; font-weight: 300;
+      letter-spacing: .12em; color: #111;
+      margin: 0; opacity: 0;
+      transform: translateY(20px);
+    }
+    #welcome-sub {
+      font-size: 1rem; color: #666;
+      margin-top: 12px; letter-spacing: .04em;
+      opacity: 0; transform: translateY(20px);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Form + SVG ─────────────────────────────────────────────── -->
+<div class="container" id="mainContainer">
+  <div class="form-container">
+
+    <div class="form-row">
+      <input type="email" id="emailInput" placeholder="e-mail" autocomplete="off" />
+    </div>
+
+    <div class="form-row">
+      <input type="password" id="passwordInput" placeholder="password" autocomplete="off" />
+    </div>
+
+    <div class="form-row">
+      <input type="checkbox" id="agreeCheck" />
+      <label for="agreeCheck">agree to whatever</label>
+    </div>
+
+    <div class="form-row" style="flex-direction:column; align-items:stretch; height:auto;">
+      <input type="submit" id="submitBtn" value="submit" />
+      <div id="error-msg"></div>
+    </div>
+
+  </div>
+
+  <!-- ── SVG Machinery ──────────────────────────────────────────── -->
+  <svg viewBox="0 0 1000 1000" stroke-linecap="round" stroke-linejoin="round">
+
+    <rect x="710" y="527" width="16" height="47" rx="10" ry="10" />
+
+    <!-- grabbing hand (open fingers) -->
+    <g class="grabbing-hand">
+      <path d="M48.89,54.39c-3.51.76-15.72,3-22.83-.68a14,14,0,0,0-6.41-1.52h0A3.79,3.79,0,0,1,17,51.09a3.7,3.7,0,0,1-1.1-2.64V27.75A3.75,3.75,0,0,1,19.63,24H24.1"/>
+      <path class="fo" d="M57.05,29.76l24.82,0a4.07,4.07,0,0,0,4.11-4h0a4.07,4.07,0,0,0-4-4.11L48.69,21.3"/>
+      <path class="fo" d="M59.34,37.74l28.81.61a4.06,4.06,0,0,0,4.14-4h0a4.06,4.06,0,0,0-4-4.15L57,29.64"/>
+      <path class="fo" d="M57.13,45.9l26.94.78a4.07,4.07,0,0,0,4.15-4h0a4.07,4.07,0,0,0-4-4.14l-24.84-.8"/>
+      <path class="fo" d="M48.89,54.39l27.82.36a4.06,4.06,0,0,0,4.2-3.93h0A4.06,4.06,0,0,0,77,46.62l-19.88-.78"/>
+      <path class="fo" d="M40.78,28c5.75-5.85,12.66-22,10.5-25.88-2.25-4.09-6,.1-14.73,8.66C30.84,16.36,30.91,17.1,24.32,24"/>
+    </g>
+
+    <!-- pull system (checkbox line) -->
+    <g class="pull-system">
+      <line class="cb-pull-line" x1="0" y1="0" x2="0" y2="0"/>
+      <g class="cb-pull-circle">
+        <circle cx="0" cy="0" r="10"/><circle cx="0" cy="0" r="4" fill="#000"/>
+      </g>
+      <circle class="btn-circle" cx="0" cy="0" r="3" stroke="none" fill="#000"/>
+      <path  class="btn-connector" d=""/>
+    </g>
+
+    <!-- spray hand -->
+    <g class="spray-hand-container">
+      <g class="pushing-hand">
+        <circle cx="18" cy="0"   r="5" fill="#000"/>
+        <circle cx="18" cy="-70" r="5" fill="#000"/>
+        <path d="M18,-70 v70" stroke-width="4"/>
+        <g>
+          <path d="M25.3,32.9V60.2a4.2,4.2,0,0,0,4.2,4.2h0a4.2,4.2,0,0,0,4.2-4.2V26.7"/>
+          <rect x="3.9" y="18.4" width="8.4" height="21.47" rx="3.7" transform="translate(10.2 -1) rotate(19.4)"/>
+          <path d="M20.9,24a3.4,3.4,0,0,0-1.7-1.1h0a4.2,4.2,0,0,0-5.4,2.5L9.1,38.8a4.3,4.3,0,0,0,2.6,5.4h0a4.3,4.3,0,0,0,5.4-2.6l1.8-5.1"/>
+          <path d="M18.4,37.9,17.3,43a4.2,4.2,0,0,0,3.4,4.9h0a4.3,4.3,0,0,0,4.5-2.3"/>
+          <path fill="white" d="M29,16.8c-6.4,5-15,13.2-12.8,17.8s6,.7,15.8-6.7c6.4-4.8,7.4-12.6.5-19.2V4.2A3.8,3.8,0,0,0,28.7.5H8A3.5,3.5,0,0,0,5.4,1.6,3.7,3.7,0,0,0,4.3,4.2V8.7"/>
+          <path d="M4.3,8.7c-5.8,6.4-3.6,20-2.2,24.8"/>
+        </g>
+      </g>
+      <g class="sprayer">
+        <g class="sprayer-head">
+          <defs>
+            <radialGradient id="grad1" cx="50%" cy="50%" r="50%" fx="100%" fy="50%">
+              <stop offset="0%"   stop-color="#777" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#777" stop-opacity="1"/>
+            </radialGradient>
+          </defs>
+          <rect x="82.39" y="19.85" width="13.06" height="16.79" rx="1.46"/>
+          <rect x="74.55" y="22.56" width="7.84"  height="6.1"   rx="1.13"/>
+          <line class="spray-line" stroke="#777" stroke-dasharray="8 5" x1="22.40" y1="14.76" x2="74.27" y2="25.2"/>
+          <line class="spray-line" stroke="#777" stroke-dasharray="8 5" x1="21.51" y1="21.12" x2="74.27" y2="25.2"/>
+          <line class="spray-line" stroke="#777" stroke-dasharray="8 5" x1="21.44" y1="28.26" x2="74.27" y2="25.2"/>
+          <line class="spray-line" stroke="#777" stroke-dasharray="8 5" x1="22.37" y1="35.54" x2="74.27" y2="25.2"/>
+          <line class="spray-line" stroke="#777" stroke-dasharray="8 5" x1="24.21" y1="42.36" x2="74.27" y2="25.2"/>
+          <line class="spray-line" stroke="#777" stroke-dasharray="8 5" x1="24.31" y1="7.78"  x2="74.27" y2="25.2"/>
+          <circle fill="url(#grad1)" stroke="none" class="spray-bubble" cx="25.43" cy="12.97" r="12.47"/>
+          <circle fill="url(#grad1)" stroke="none" class="spray-bubble" cx="15.60" cy="25.43" r="15.10"/>
+          <circle fill="url(#grad1)" stroke="none" class="spray-bubble" cx="33.24" cy="37.13" r="9.21"/>
+          <circle fill="url(#grad1)" stroke="none" class="spray-bubble" cx="35.92" cy="19.50" r="11.89"/>
+          <circle fill="url(#grad1)" stroke="none" class="spray-bubble" cx="18.82" cy="34.45" r="11.89"/>
+        </g>
+        <path d="M89,42h0a21.3,21.3,0,0,1,21.3,21.3v56.48a5.06,5.06,0,0,1-5.06,5.06H72.6a5.06,5.06,0,0,1-5.06-5.06V63.4A21.45,21.45,0,0,1,89,42Z" fill="#fff"/>
+        <rect x="78.3"  y="36.64" width="21.24" height="6.15"  rx="1.93" fill="#fff"/>
+        <rect x="76.33" y="71.46" width="33.96" height="23.23" fill="#ccc"/>
+      </g>
+    </g>
+
+    <!-- gears -->
+    <g>
+      <line class="gear-connector" x1="0" y1="0" x2="0" y2="0"/>
+      <g class="gears-container"></g>
+    </g>
+
+    <!-- grabbing hand (closed fingers) -->
+    <g class="grabbing-hand">
+      <g fill="#fff">
+        <rect class="fc" x="44.79" y="13.38" width="8.42" height="22.15" rx="3.67" transform="translate(20.57 71.26) rotate(-85.25)"/>
+        <rect class="fc" x="44.08" y="39.17" width="8.42" height="21.47" rx="3.67" transform="translate(-5.44 93.9) rotate(-85.25)"/>
+        <rect class="fc" x="45.68" y="30.71" width="8.42" height="22.57" rx="3.67" transform="matrix(0.08,-1,1,0.08,3.91,88.24)"/>
+        <rect class="fc" x="44.98" y="22.21" width="8.42" height="22.57" rx="3.67" transform="matrix(0.08,-1,1,0.08,11.74,79.74)"/>
+        <path class="fc" d="M32.18,27.42c5,6.46,13.22,15.06,17.76,12.81,4.18-2.07.69-6-6.66-15.74C38.46,18.1,30.69,17.1,24.1,24"/>
+      </g>
+    </g>
+
+    <!-- spiral -->
+    <g class="spiral-container">
+      <path stroke-width=".8" class="spiral-path" d=""/>
+    </g>
+
+    <!-- weight -->
+    <g class="weight-big-container">
+      <line x1="14" y1="14" x2="60" y2="14"/>
+      <line x1="14" y1="14" x2="60" y2="55"/>
+      <circle cx="14" cy="14" r="5" fill="#000" stroke="none"/>
+      <g class="weight-big" stroke="none">
+        <path fill="#231f20" d="M25.5,16.7c.2-.6.5-1.3.7-2C31.1,3.1,23.2,0,14.3,0S-1.6,4.2,2.4,14.7a22.5,22.5,0,0,1,.8,2.4A14.4,14.4,0,0,0,0,26.2c0,8,6.5,11.6,14.5,11.6S29,34.2,29,26.2A14.6,14.6,0,0,0,25.5,16.7ZM14.4,5c5.6,0,9.3,1.9,7.1,8.5a13.5,13.5,0,0,0-7-1.8,14.6,14.6,0,0,0-7.2,1.9C5.5,7.5,8.8,5,14.4,5Z"/>
+        <path fill="#fff" d="M15.1,15.6l-1.8-.2a9.2,9.2,0,0,0-9.1,9.2,6.2,6.2,0,0,0,.2,1.9A13.3,13.3,0,0,1,15.1,15.6Z"/>
+      </g>
+    </g>
+
+    <!-- scales -->
+    <g class="scales-container">
+      <defs>
+        <marker id="ball" viewBox="0 0 10 10" refX="5" refY="5"
+                markerUnits="strokeWidth" markerWidth="5" markerHeight="5" orient="auto">
+          <circle cx="5" cy="5" r="3" fill="#000"/>
+        </marker>
+      </defs>
+      <rect x="10"  y="-19" width="30" height="90"  rx="15" ry="15" stroke-width="10" stroke="#ccc"/>
+      <rect class="tc" x="10"  y="-19" width="30" height="90"  rx="15" ry="15" stroke="#fff"/>
+      <rect x="-31" y="-19" width="30" height="144" rx="15" ry="15" stroke-width="10" stroke="#ccc"/>
+      <rect class="tc" x="-31" y="-19" width="30" height="144" rx="15" ry="15" stroke="#fff"/>
+      <g class="reels-connector">
+        <rect x="-8" y="3.2" width="25" height="10" rx="5" ry="5"/>
+        <circle cx="-1"  cy="8.5" r="3" fill="#000" stroke="none"/>
+        <circle cx="9.9" cy="8.5" r="3" fill="#000" stroke="none"/>
+      </g>
+      <g class="car-weight-connector">
+        <rect x="-36" y="97" width="10" height="95" rx="5" ry="5"/>
+        <circle cx="-31" cy="103" r="3" fill="#000" stroke="none"/>
+        <circle cx="-31" cy="186" r="3" fill="#000" stroke="none"/>
+      </g>
+      <line class="scales-moving-line" x1="147.6" y1="30.52" x2="40" y2="12"
+            stroke-width="2" marker-start="url(#ball)" marker-end="url(#ball)"/>
+      <path fill="#000" d="M102.45,30.68,92,20.26c-9.89,9.9-9.89,10.47-9.89,10.47Z"/>
+    </g>
+
+    <!-- car -->
+    <g class="car-container">
+      <g>
+        <g class="car">
+          <circle cx="17" cy="88" r="5"/>
+          <circle cx="17" cy="88" r="2" fill="#000"/>
+          <circle cx="32" cy="88" r="5"/>
+          <circle cx="32" cy="88" r="2" fill="#000"/>
+          <path d="M10,65 h30 l-5,15 h-20 l-5,-15" fill="#000"/>
+        </g>
+        <line x1="-51" y1="95" x2="145" y2="95"/>
+      </g>
+    </g>
+
+  </svg>
+</div>
+
+<!-- ── Welcome Screen ─────────────────────────────────────────── -->
+<div id="welcome-screen">
+  <h1 id="welcome-title">Welcome!</h1>
+  <p  id="welcome-sub">Checking…</p>
+</div>
+
+<!-- ── Scripts ───────────────────────────────────────────────── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<script type="module">
+  /* ─── Firebase ──────────────────────────────────────────────────
+     Loaded with a dynamic import wrapped in try/catch, and Analytics
+     (unused elsewhere) has been dropped. Static top-level imports mean
+     a single blocked request (ad-blocker, offline, gstatic hiccup)
+     throws and kills the ENTIRE module — including all the GSAP
+     animation wiring below. This keeps the UI fully interactive even
+     if Firebase fails to load, and only login submission is affected. */
+  let auth = null;
+  let signInWithEmailAndPassword = null;
+  let firebaseReady = (async () => {
+    try {
+      const [{ initializeApp }, authModule] = await Promise.all([
+        import('https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js'),
+        import('https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js')
+      ]);
+      signInWithEmailAndPassword = authModule.signInWithEmailAndPassword;
+
+      const firebaseApp = initializeApp({
+        apiKey: "AIzaSyCFdcL1yRhonVFSMpLkZm2Cyqt2-NCHwBI",
+        authDomain: "veera730pmonline.firebaseapp.com",
+        projectId: "veera730pmonline",
+        storageBucket: "veera730pmonline.firebasestorage.app",
+        messagingSenderId: "570230262031",
+        appId: "1:570230262031:web:63f3917d8197259bbcd67a",
+        measurementId: "G-9V7EDX772E"
+      });
+      auth = authModule.getAuth(firebaseApp);
+    } catch (err) {
+      console.error('Veera Cloud: Firebase failed to load.', err);
+    }
+  })();
+
+  /* ─── DOM refs ──────────────────────────────────────────────── */
+  const $ = id => document.getElementById(id);
+  const $$ = sel => document.querySelectorAll(sel);
+
+  const emailInput    = $('emailInput');
+  const passwordInput = $('passwordInput');
+  const agreeCheck    = $('agreeCheck');
+  const submitBtn     = $('submitBtn');
+  const errorMsg      = $('error-msg');
+  const mainContainer = $('mainContainer');
+  const welcomeScreen = $('welcome-screen');
+  const welcomeTitle  = $('welcome-title');
+  const welcomeSub    = $('welcome-sub');
+
+  // SVG elements
+  const sprayHandContainer  = document.querySelector('.spray-hand-container');
+  const pushingHand         = document.querySelector('.pushing-hand');
+  const sprayerEl           = document.querySelector('.sprayer');
+  const sprayerHead         = document.querySelector('.sprayer-head');
+  const sprayLines          = Array.from($$('.spray-line'));
+  const sprayBubbles        = Array.from($$('.spray-bubble'));
+  const gearsContainerEl    = document.querySelector('.gears-container');
+  const gearConnector       = document.querySelector('.gear-connector');
+
+  const pullSystem          = document.querySelector('.pull-system');
+  const cbPullLine          = document.querySelector('.cb-pull-line');
+  const cbPullCircle        = document.querySelector('.cb-pull-circle');
+  const btnCircle           = document.querySelector('.btn-circle');
+  const btnConnector        = document.querySelector('.btn-connector');
+
+  const spiralContainer     = document.querySelector('.spiral-container');
+  const spiralPath          = document.querySelector('.spiral-path');
+  const weightBigContainer  = document.querySelector('.weight-big-container');
+  const weightBig           = document.querySelector('.weight-big');
+  const scalesContainer     = document.querySelector('.scales-container');
+  const scalesMovingLine    = document.querySelector('.scales-moving-line');
+  const timingChains        = Array.from($$('.tc'));
+  const reelsConnector      = document.querySelector('.reels-connector');
+  const carWeightConnector  = document.querySelector('.car-weight-connector');
+  const carContainer        = document.querySelector('.car-container');
+  const car                 = document.querySelector('.car');
+  const carInclineWrapper   = document.querySelector('.car-container > g');
+
+  const grabbingHands       = Array.from($$('.grabbing-hand'));
+  const openFingers         = Array.from($$('.fo'));
+  const closedFingers       = Array.from($$('.fc'));
+
+  /* ─── State ─────────────────────────────────────────────────── */
+  let emailValid    = false;
+  let passwordValid = false;
+  let submitting    = false;
+  let sprayCount    = 0;
+  let pullProgress  = 0;
+  let submitOpacity = 0;
+  let btnOnPlace    = false;
+
+  /* ─── Initial layout ────────────────────────────────────────── */
+  function initLayout() {
+    gsap.set(pullSystem,          { x: 375,   y: 646 });
+    gsap.set(sprayHandContainer,  { x: 700,   y: 621 });
+    gsap.set(sprayerEl,           { x: -59.5, y: 53  });
+    gsap.set(carContainer,        { x: 190,   y: 802 });
+    gsap.set(scalesContainer,     { x: 170,   y: 710 });
+    gsap.set(grabbingHands,       { x: 297,   y: 830 });
+    gsap.set(closedFingers,       { opacity: 0 });
+    gsap.set(spiralContainer,     { x: 305, y: 435, svgOrigin: '14 14', scaleX: -1 });
+    gsap.set(weightBigContainer,  { x: 305, y: 435 });
+    gsap.set([sprayLines, sprayBubbles], { opacity: 0 });
+    gsap.set(timingChains[0], { attr: { 'stroke-width': '5', 'stroke-dasharray': '0 12' } });
+    gsap.set(timingChains[1], { attr: { 'stroke-width': '5', 'stroke-dasharray': '0 12' } });
+    gsap.set(cbPullLine,    { attr: { x1: 0, y1: -105, x2: 0, y2: 44 } });
+    gsap.set(cbPullCircle,  { y: 44 });
+    gsap.set(submitBtn,     { color: 'rgba(0,0,0,0)', transformOrigin: '100% 0%', rotation: -90 });
+  }
+
+  /* ─── Scale to viewport ─────────────────────────────────────── */
+  function scaleToFit() {
+    const s = Math.min(1, window.innerHeight / 800);
+    gsap.set(mainContainer, { scale: s, transformOrigin: '50% 75%' });
+  }
+
+  initLayout();
+  scaleToFit();
+  window.addEventListener('resize', scaleToFit);
+
+  /* ─── Error display ─────────────────────────────────────────── */
+  let errorTimer;
+  function showError(msg) {
+    clearTimeout(errorTimer);
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('show');
+    errorTimer = setTimeout(() => errorMsg.classList.remove('show'), 3500);
+  }
+
+  /* ─── SPIRAL path generator ─────────────────────────────────── */
+  function buildSpiralPath(offset) {
+    const cx = 14, cy = 14, radius = 45, coils = 17, points = 200;
+    let thetaMax = coils * 2 * Math.PI;
+    const awayStep = radius / thetaMax;
+    const chord    = 2 * Math.PI / points;
+    thetaMax -= offset * points * chord;
+
+    let d = '';
+    for (let theta = 0; theta <= thetaMax; theta += chord) {
+      const away = awayStep * theta;
+      const x = cx + Math.cos(theta) * away;
+      const y = cy + Math.sin(theta) * away;
+      if (theta === 0) {
+        d += `M${x},${y}`;
+      } else {
+        const prevAway = awayStep * (theta - chord);
+        const ar = (away + prevAway) / 2;
+        d += ` A${ar},${ar} 0 0,1 ${x},${y}`;
+      }
+    }
+    const outerAngle  = thetaMax + Math.PI * .5;
+    const outerLength = 50 + 25 * offset;
+    d += ` l${Math.cos(outerAngle) * outerLength},${Math.sin(outerAngle) * outerLength}`;
+
+    spiralPath.setAttribute('d', d);
+    gsap.set(weightBig, { x: -47 + 3 * offset, y: 12 + outerLength });
+  }
+
+  /* ─── PASSWORD TIMELINE ─────────────────────────────────────── */
+  const SPIRAL_TURNS = 8;
+  const spiralProg   = { v: 0 };
+  const HAMMER_T     = 1.85;
+  const F_DELAY      = 0.5;
+  const F_DELTA      = 0.03;
+
+  const passwordTl = gsap.timeline({
+    paused: true,
+    defaults: { ease: 'none', duration: 2 },
+    onUpdate() {
+      buildSpiralPath(SPIRAL_TURNS * spiralProg.v);
+    }
+  });
+
+  passwordTl
+    .to(spiralProg,       { v: 1 }, 0)
+    .to(spiralContainer,  { rotation: -SPIRAL_TURNS * 360 }, 0)
+    .fromTo(scalesMovingLine,
+      { rotation: -20, svgOrigin: '92 20' },
+      { duration: .15, rotation: -1, svgOrigin: '92 20' }, HAMMER_T)
+    .fromTo(timingChains[0],
+      { attr: { 'stroke-dashoffset': 2  } },
+      { duration: .15, attr: { 'stroke-dashoffset': 20 } }, HAMMER_T)
+    .fromTo(timingChains[1],
+      { attr: { 'stroke-dashoffset': 24 } },
+      { duration: .15, attr: { 'stroke-dashoffset': 6  } }, HAMMER_T)
+    .to(reelsConnector,    { duration: .15, y:  18 }, HAMMER_T)
+    .to(carWeightConnector,{ duration: .15, y: -18 }, HAMMER_T)
+    .to(carInclineWrapper, { duration: .15, rotation: 6, svgOrigin: '120 93' }, HAMMER_T)
+    .fromTo(car, { x: -50 }, { duration: .6, x: 95, ease: 'power2.in' }, HAMMER_T);
+
+  for (let i = 0; i < 5; i++) {
+    passwordTl
+      .set(openFingers[i],   { opacity: 0 }, HAMMER_T + F_DELAY + F_DELTA * (i + 1))
+      .set(closedFingers[i], { opacity: 1 }, HAMMER_T + F_DELAY + F_DELTA * (i + 1));
+  }
+  passwordTl
+    .to(grabbingHands, { duration: F_DELTA * 5, x: '+=20' }, HAMMER_T + F_DELAY);
+
+  passwordTl.progress(0.001);
+
+  /* ─── GEAR TIMELINES ────────────────────────────────────────── */
+  const GEAR_PARAMS = {
+    baseSize: 15, pitch: 11, teethCurve: .6,
+    startX: 634, startY: 389, speed: .2
+  };
+  const GEAR_DATA = [
+    { angle: 0,    teeth: 10, hole: true  },
+    { angle: -.5,  teeth: 32, hole: true  },
+    { angle: 1.65, teeth: 12, hole: false }
+  ];
+  const HANDLE_R = 14;
+
+  const gearTimelines = [];
+  const gearMeta      = [];
+
+  GEAR_DATA.forEach((d, i) => {
+    const radius = (d.teeth * GEAR_PARAMS.baseSize) / (2 * Math.PI);
+    let cx, cy, startAngle;
+
+    if (i === 0) {
+      cx = GEAR_PARAMS.startX; cy = GEAR_PARAMS.startY; startAngle = 0;
+    } else {
+      const p   = gearMeta[i - 1];
+      const siz = p.teeth / d.teeth;
+      cx = p.cx + Math.cos(d.angle) * (p.radius + radius);
+      cy = p.cy + Math.sin(d.angle) * (p.radius + radius);
+      startAngle = (1 + siz) * d.angle - siz * p.startAngle;
+    }
+
+    const rOut      = radius + .25 * GEAR_PARAMS.pitch;
+    const rIn       = rOut   - .75 * GEAR_PARAMS.pitch;
+    const toothA    = 2 * Math.PI / d.teeth;
+    const toothCurA = GEAR_PARAMS.teethCurve / d.teeth;
+
+    let pathD = `M${cx + Math.cos(startAngle - toothA + toothCurA) * rOut},${cy + Math.sin(startAngle - toothA + toothCurA) * rOut} `;
+    for (let a = startAngle; a < startAngle + 2 * Math.PI - .5 * toothA; a += toothA) {
+      const pa = a - .5 * toothA;
+      pathD += `L${cx + Math.cos(pa - toothCurA) * rOut},${cy + Math.sin(pa - toothCurA) * rOut} `;
+      pathD += `L${cx + Math.cos(pa)  * rIn},${cy + Math.sin(pa)  * rIn} `;
+      pathD += `L${cx + Math.cos(a)   * rIn},${cy + Math.sin(a)   * rIn} `;
+      pathD += `L${cx + Math.cos(a + toothCurA) * rOut},${cy + Math.sin(a + toothCurA) * rOut} `;
+    }
+    if (d.hole) {
+      const hr = .5 * rIn;
+      pathD += `M${cx - hr},${cy} A${hr} ${hr} 1 1 0 ${cx + hr} ${cy} A${hr} ${hr} 1 1 0 ${cx - hr} ${cy}`;
+    }
+
+    const g   = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const pEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pEl.setAttribute('d', pathD);
+    g.appendChild(pEl);
+    gearsContainerEl.appendChild(g);
+
+    if (i === 0) {
+      pEl.setAttribute('fill', '#000');
+      pEl.setAttribute('fill-opacity', '.25');
+      pEl.setAttribute('stroke', '#000');
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', cx); dot.setAttribute('cy', cy);
+      dot.setAttribute('r', '5');  dot.setAttribute('fill', '#000');
+      dot.setAttribute('stroke', 'none');
+      gearsContainerEl.appendChild(dot);
+    } else if (i === GEAR_DATA.length - 1) {
+      pEl.setAttribute('fill', '#000');
+      pEl.setAttribute('fill-opacity', '.25');
+      pEl.setAttribute('stroke', '#000');
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', cx + HANDLE_R); dot.setAttribute('cy', cy);
+      dot.setAttribute('r', '5');             dot.setAttribute('fill', '#000');
+      dot.setAttribute('stroke', 'none');
+      g.appendChild(dot);
+    }
+
+    gearMeta.push({ cx, cy, radius, teeth: d.teeth, startAngle });
+
+    const dir = i % 2 === 0 ? 1 : -1;
+    const tl  = gsap.timeline({ repeat: -1, paused: true })
+      .to(g, {
+        rotation: 360 * dir,
+        svgOrigin: `${cx} ${cy}`,
+        duration: GEAR_PARAMS.speed * d.teeth,
+        ease: 'none'
+      });
+
+    if (i === GEAR_DATA.length - 1) {
+      tl.eventCallback('onUpdate', () => {
+        const angle  = tl.progress() * 2 * Math.PI;
+        const deltaY = Math.sin(angle) * HANDLE_R;
+
+        pushingHand.setAttribute('transform', `translate(0,${deltaY})`);
+
+        if (deltaY > 8) {
+          const push = Math.max(0, deltaY - 8);
+          sprayerHead.setAttribute('transform', `translate(0,${push})`);
+
+          let sp = Math.max(0, tl.progress() - .1) / .2;
+          let bo = sp > 1 ? 0 : sp;
+          bo *= (1 - Math.pow(bo, 8));
+
+          const dashOff = 70 * sp;
+          const lineOp  = Math.pow(bo, 2);
+          sprayLines.forEach(l => {
+            l.setAttribute('stroke-dashoffset', dashOff);
+            l.style.opacity = lineOp;
+          });
+
+          sprayBubbles.forEach((b, bi) => {
+            const bx  = 25 * (1 - sp) * (1 + .1 * bi);
+            const bsc = .5 + 1.4 * Math.pow(sp, 2);
+            b.setAttribute('transform', `translate(${bx},0) scale(${bsc})`);
+            b.style.opacity = bo;
+          });
+
+          if (!btnOnPlace) {
+            const tp = Math.pow(sp / 1.5, 6);
+            submitOpacity = Math.pow(Math.max(0, (sprayCount - 1) * .3 + .3 * tp), 2);
+            submitBtn.style.color = `rgba(0,0,0,${submitOpacity})`;
+          }
+        } else {
+          sprayerHead.setAttribute('transform', '');
+        }
+
+        gearConnector.setAttribute('x1', cx + HANDLE_R * Math.cos(angle));
+        gearConnector.setAttribute('y1', cy + HANDLE_R * Math.sin(angle));
+        gearConnector.setAttribute('x2', 718);
+        gearConnector.setAttribute('y2', 546 + deltaY);
+      });
+
+      tl.eventCallback('onRepeat', () => {
+        if (!btnOnPlace) sprayCount++;
+      });
+    }
+
+    tl.progress(0.6);
+    gearTimelines.push(tl);
+  });
+
+  /* ─── PULLING TIMELINE ───────────────────────────────────────── */
+  function drawPullLine() {
+    const originX  = 260, originY = -76;
+    const btnWidth = 270;
+    const rot      = gsap.getProperty(submitBtn, 'rotation');
+    const deg      = (rot - 4) * Math.PI / 180;
+    const ex = originX - (btnWidth - 20) * Math.cos(deg);
+    const ey = originY - (btnWidth - 20) * Math.sin(deg);
+
+    btnCircle.setAttribute('cx', ex);
+    btnCircle.setAttribute('cy', ey);
+
+    const h = 7, r = 10;
+    const sa = .3 * Math.PI * (1 - .5 * pullProgress);
+    let p = `M${-r - h},${250 - pullProgress * 300}`;
+    p += `h${2 * h}h${-h}`;
+    p += ` V${44 - pullProgress * 130}`;
+    p += `a${r},${r} 0 0 1 ${r + r * Math.cos(sa)} ${-r * Math.sin(sa)}`;
+    p += ` L${ex},${ey}`;
+    btnConnector.setAttribute('d', p);
+    btnConnector.setAttribute('stroke-width', '3');
+  }
+
+  function setPullProgress(val, rotatebtn) {
+    gsap.to({ p: pullProgress }, {
+      p: val, duration: 1, ease: 'power1.inOut',
+      onUpdate: function() {
+        pullProgress = this.targets()[0].p;
+        drawPullLine();
+      }
+    });
+    gsap.to(cbPullCircle,  { y: 44 - val * 130, duration: 1, ease: 'power1.inOut' });
+    gsap.to(cbPullLine, {
+      attr: { y2: 44 - val * 130 }, duration: 1, ease: 'power1.inOut'
+    });
+    if (rotatebtn) {
+      gsap.to(submitBtn, {
+        rotation: val > 0 ? 0 : -90, duration: 1, ease: 'power1.inOut',
+        onUpdate: drawPullLine,
+        onComplete: () => { btnOnPlace = val > 0; }
+      });
+    }
+  }
+
+  agreeCheck.addEventListener('change', () => {
+    setPullProgress(agreeCheck.checked ? 1 : 0, true);
+  });
+
+  drawPullLine();
+
+  /* ─── EMAIL input → gears ────────────────────────────────────── */
+  const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
+  emailInput.addEventListener('input', () => {
+    emailValid = EMAIL_RE.test(emailInput.value);
+    emailInput.classList.toggle('valid', emailValid);
+
+    if (emailValid) {
+      gearTimelines.forEach(tl => {
+        if (tl.paused()) {
+          tl.play();
+          gsap.fromTo(tl, { timeScale: 0 }, { timeScale: 1, duration: .4, ease: 'power1.in' });
+        }
+      });
+    } else {
+      gearTimelines.forEach(tl => {
+        if (!tl.paused()) {
+          gsap.to(tl, {
+            timeScale: 0, duration: .4, ease: 'power1.out',
+            onComplete: () => tl.pause()
+          });
+        }
+      });
+      sprayCount = 0;
+      submitOpacity = 0;
+      submitBtn.style.color = 'rgba(0,0,0,0)';
+    }
+  });
+
+  /* ─── PASSWORD input → spiral ────────────────────────────────── */
+  passwordInput.addEventListener('input', () => {
+    passwordValid = passwordInput.value.length >= 6;
+    passwordInput.classList.toggle('valid', passwordValid);
+    if (passwordValid) {
+      passwordTl.play();
+    } else {
+      passwordTl.reverse();
+    }
+  });
+
+  /* ─── SUBMIT → Firebase Auth ─────────────────────────────────── */
+  submitBtn.addEventListener('click', async () => {
+    if (submitting) return;
+
+    if (!emailValid)        { showError('Veera Cloud: Enter a valid email.');       return; }
+    if (!passwordValid)     { showError('Veera Cloud: Password must be 6+ chars.'); return; }
+    if (!agreeCheck.checked){ showError('Veera Cloud: Please agree to continue.');  return; }
+
+    submitting = true;
+    submitBtn.value = '…';
+    errorMsg.classList.remove('show');
+
+    try {
+      await firebaseReady;
+      if (!auth) {
+        showError('Veera Cloud: Service unavailable. Please refresh and try again.');
+        submitting = false;
+        submitBtn.value = 'submit';
+        return;
+      }
+
+      const cred = await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
+      const user  = cred.user;
+      const name  = user.displayName || user.email.split('@')[0];
+
+      /* ── Store login info for privategit.html ── */
+      sessionStorage.setItem('firebaseUserName',  name);
+      sessionStorage.setItem('firebaseUserEmail', user.email);
+      sessionStorage.setItem('firebaseUserPhoto', user.photoURL || '');
+      sessionStorage.setItem('isLoggedIn', 'true');
+
+      welcomeTitle.textContent = `Welcome, ${name}!`;
+      welcomeSub.textContent   = 'Checking…';
+
+      gsap.to('svg > *', {
+        opacity: 0, duration: .08,
+        stagger: { each: .02, from: 'random' }
+      });
+      gsap.to('.form-row', {
+        opacity: 0, duration: .12, stagger: .07, delay: .3
+      });
+      gsap.to(welcomeScreen, {
+        opacity: 1, duration: .5, delay: .7, ease: 'power2.out',
+        onStart() { welcomeScreen.style.pointerEvents = 'all'; }
+      });
+      gsap.to(welcomeTitle, {
+        opacity: 1, y: 0, duration: .5, delay: 1.0, ease: 'power3.out'
+      });
+      gsap.to(welcomeSub, {
+        opacity: 1, y: 0, duration: .5, delay: 1.3, ease: 'power3.out',
+        onComplete() {
+          setTimeout(() => { window.location.href = 'privategit.html'; }, 900);
+        }
+      });
+
+    } catch (err) {
+      submitting = false;
+      submitBtn.value = 'submit';
+
+      const c = err.code || '';
+      let msg = 'Veera Cloud: Login failed. Check your details.';
+      if (c.includes('user-not-found') || c.includes('invalid-credential') || c.includes('invalid-email')) {
+        msg = 'Veera Cloud: No account found with that email.';
+      } else if (c.includes('wrong-password')) {
+        msg = 'Veera Cloud: Incorrect password. Try again.';
+      } else if (c.includes('too-many-requests')) {
+        msg = 'Veera Cloud: Too many attempts. Please wait.';
+      } else if (c.includes('user-disabled')) {
+        msg = 'Veera Cloud: This account has been disabled.';
+      } else if (c.includes('network-request-failed')) {
+        msg = 'Veera Cloud: Network error. Check your connection.';
+      }
+      showError(msg);
+    }
+  });
+
+</script>
+<script src="ai-agent-widget.js"></script>
+</body>
+</html>

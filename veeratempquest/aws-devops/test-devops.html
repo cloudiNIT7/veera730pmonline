@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Mock Test | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#10b981;--correct:#10b981;--wrong:#ef4444;--neutral:#3b82f6}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(16,185,129,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#10b981,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 800px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 900px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--neutral); color: var(--neutral); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:850px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(16, 185, 129, 0.05)}
+.option.disabled{cursor:default}
+
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(16, 185, 129, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="overall-test.html">← Back to Overall Tests</a>
+</div>
+
+<header>
+    <div class="topic-badge">DEVOPS_EXAM_PROTOCOL_MOCK</div>
+    <h1>Comprehensive DevOps Mock</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">80:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/110</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Full Audit Success</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">DevOps comprehensive logic verified. Mock test state cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_MOCK_EXAM</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  // ── GIT (14 questions) ──
+  {topic:"GIT",q:"How can you create a local repository in Git?",opts:["Use the command git clone <repository-url>","Use the command git init in the desired directory","Use the command git create-repo","Use the command git local-repo create"],ans:1,exp:"git init initializes a new empty Git repository in the current directory."},
+  {topic:"GIT",q:"You have updated multiple files in your Git repository and want to both stage and commit these changes with a single command. Which command should you use?",opts:["git add -c","git commit -a","git commit -am \"message\"","git add . && git commit"],ans:2,exp:"git commit -am stages all tracked modified files and commits them in one step with a message."},
+  {topic:"GIT",q:"You are working on a Git repository and encounter the term HEAD. Which of the following best explains this?",opts:["HEAD is a reference to the last commit in the repository, and only one HEAD can exist at a time","HEAD is a pointer to the current branch's latest commit, and multiple HEADs can exist during branching operations","HEAD is a snapshot of all commits in the repository","HEAD refers to the working directory"],ans:1,exp:"HEAD points to the current branch's latest commit. Multiple HEADs (detached heads) can exist during branching/rebasing operations."},
+  {topic:"GIT",q:"You want to prevent Git from tracking logs and temporary build files. Which of the following achieves this?",opts:["Use the .gitignore file to specify the files and directories Git should ignore","Use the git config command to exclude specific files globally","Manually delete the files from the repository","Use the git remove --ignore command to untrack the files"],ans:0,exp:".gitignore lets you specify patterns for files that Git should not track."},
+  {topic:"GIT",q:"Your friend is unable to merge the changes, getting conflict issues. What is the cause of conflicts in git?",opts:["A conflict arises when the commit that has to be merged has some change in same file","A conflict arises when the commit that has to be merged has some change in one place","A conflict arises without pull","A conflict arises if two developers work on different branches"],ans:0,exp:"Merge conflicts occur when two branches have made changes to the same part of the same file."},
+  {topic:"GIT",q:"How to save the current state of your code in git?",opts:["By validating the modifications staged with git commit","By adding all the changes and staging them with git stage","By adding all the changes and organizing them with git add","By creating a new commit with git init"],ans:0,exp:"git commit saves the staged snapshot to the project history."},
+  {topic:"GIT",q:"Which command will let you know who modified a file?",opts:["git blame","git diff","git log","git log --source"],ans:0,exp:"git blame shows who last modified each line of a file and in which commit."},
+  {topic:"GIT",q:"How do you remove untracked files from your working directory?",opts:["git clean","git erase","git purge","git remove"],ans:0,exp:"git clean removes untracked files from the working directory."},
+  {topic:"GIT",q:"How to revert a bad commit that is already pushed?",opts:["A new commit can be created that reverts changes using git revert","git reset head~1","Use git revert to create a new commit that reverts the bad commit","Not possible - already pushed"],ans:2,exp:"git revert creates a new commit that undoes the changes of a specific commit, making it safe for shared branches."},
+  {topic:"GIT",q:"Your team needs to update a feature branch with the latest changes from main while keeping a clean commit history. Which command should you use?",opts:["git merge main","git pull origin main","git rebase main","git cherry-pick main"],ans:2,exp:"git rebase replays commits on top of another branch, keeping a linear and clean commit history."},
+  {topic:"GIT",q:"You committed a change locally but haven't pushed it yet. You want to undo the commit but keep the changes staged. Which command should you use?",opts:["git reset --hard HEAD~1","git revert HEAD","git reset --soft HEAD~1","git stash pop"],ans:2,exp:"git reset --soft HEAD~1 undoes the last commit but keeps your changes staged in the index."},
+  {topic:"GIT",q:"You get an error 'failed to push some refs to origin/main'. What is the likely cause?",opts:["You are on a detached HEAD","The remote branch has new changes that are not in your local branch","You have uncommitted changes in your working directory","The repository does not have a main branch"],ans:1,exp:"This error means the remote has commits you don't have locally. You need to pull/rebase first."},
+  {topic:"GIT",q:"You pulled the latest changes from main into your feature branch and encountered merge conflicts. What should you do?",opts:["Manually edit the conflicted files and commit the changes","Run git reset --hard to discard all changes","Delete the conflicted files and re-clone the repo","Use git stash to remove conflicts"],ans:0,exp:"You must manually resolve conflicts in the affected files, then stage and commit the resolution."},
+  {topic:"GIT",q:"You need to apply a single commit from feature-x branch to main without merging the entire branch. Which command?",opts:["git merge feature-x","git rebase feature-x","git cherry-pick <commit-hash>","git checkout feature-x"],ans:2,exp:"git cherry-pick applies a specific commit from another branch to the current branch."},
+
+  // ── MAVEN (5 questions) ──
+  {topic:"MAVEN",q:"What is a Maven repository?",opts:["A location where Java classes are stored","A tool to manage project versions","A storage place for Java documentation","A place where Maven stores project binaries and artifacts"],ans:3,exp:"A Maven repository stores project artifacts (JARs, POMs, etc.) that Maven uses to resolve dependencies."},
+  {topic:"MAVEN",q:"In which directory are the resource files placed by default in a Maven project?",opts:["/src/main/resources","/src/main/java","/src/resources","/resources"],ans:0,exp:"Maven convention places resource files in /src/main/resources, included in the classpath."},
+  {topic:"MAVEN",q:"What does the archetype in Maven refer to?",opts:["An official Maven plugin","A Maven repository","A template or pattern to generate project structures","A lifecycle phase"],ans:2,exp:"Maven archetypes are project templates that help create new projects with a standard structure."},
+  {topic:"MAVEN",q:"A developer builds a Maven project, but the build fails due to a missing dependency. What should they do?",opts:["Manually download the dependency and add it to the project","Add the correct dependency in the pom.xml and run mvn clean install","Delete the target folder and rebuild the project","Restart the computer and try again"],ans:1,exp:"Adding the dependency to pom.xml and running mvn clean install will download and include it automatically."},
+  {topic:"MAVEN",q:"A Maven build is successful, but the jar file is not generated. What might be the reason?",opts:["The jar plugin is missing from pom.xml","The project type is not set to jar","The mvn package command was not run","Any of the above"],ans:3,exp:"All three can cause this: missing jar plugin, wrong packaging type, or not running the package phase."},
+
+  // ── JENKINS (9 questions) ──
+  {topic:"JENKINS",q:"What if the number of executors of the master node is set to 0?",opts:["Job can build and run","We can't build and run","Job can't create","Job can build but can't run"],ans:3,exp:"Setting master executors to 0 means no jobs run on the master itself, but jobs can be created and delegated to agent nodes."},
+  {topic:"JENKINS",q:"What is the difference between Jenkins Master and Jenkins Slave?",opts:["Jenkins Master is the central server, while Jenkins Slave is a remote agent","Jenkins Master builds software, while Jenkins Slave tests it","Jenkins Master is a component of Jenkins, while Jenkins Slave is a separate tool","Jenkins Master is used for local builds, while Jenkins Slave is used for cloud-based builds"],ans:0,exp:"Jenkins Master handles scheduling and configuration. Slave/Agent is a remote machine that executes jobs."},
+  {topic:"JENKINS",q:"What could be the reason that a job executes on the master instead of on the nodes, even after configuring Jenkins master and nodes?",opts:["Labels mismatch","Less resource available on node","Connection issues","All of these"],ans:3,exp:"All of these can cause jobs to fall back to the master: label mismatches, resource issues, or connectivity problems."},
+  {topic:"JENKINS",q:"What is the purpose of the Jenkins Environment Variables?",opts:["To manage the installation of plugins in Jenkins","To enable Jenkins to communicate with external systems","To define global settings for tools used in Jenkins jobs","To define parameters that can be passed to Jenkins jobs"],ans:3,exp:"Jenkins Environment Variables define parameters and settings passed to and used within Jenkins jobs."},
+  {topic:"JENKINS",q:"What is the role of an agent, stage, and step in a Jenkins pipeline?",opts:["Agent defines where the pipeline runs, stage organizes pipeline into phases, and step represents individual tasks within a stage","Agent is a task within the pipeline, stage defines where to deploy, and step groups tasks into stages","Agent runs tasks sequentially, stage is used for task repetition, and step defines the environment","Agent executes tasks in parallel, stage defines global variables, and step stores configurations"],ans:0,exp:"Agent = execution environment, Stage = logical phase, Step = individual command/action within a stage."},
+  {topic:"JENKINS",q:"What is the best way to manage secrets (API keys, passwords) in Jenkins?",opts:["Store the secrets directly in the pipeline configuration files","Store the secrets in the Jenkins credentials store and access them using credential bindings","Hardcode the secrets in the code repository","Use a third-party service and manually import them into Jenkins"],ans:1,exp:"Jenkins credentials store encrypts secrets and provides secure injection into jobs without exposing them in logs."},
+  {topic:"JENKINS",q:"How can Jenkins be integrated with Git to automatically trigger builds on code changes?",opts:["Configure Jenkins to manually pull the repository changes using git pull","Install the Jenkins Git plugin and configure a Git repository URL in the Jenkins job configuration","Manually upload the Git repository code into Jenkins and trigger builds manually","Use Jenkins' built-in GitHub integration to create a webhook without the need for a plugin"],ans:1,exp:"The Git plugin allows Jenkins to clone repos and track changes. Webhooks in GitHub push notifications to Jenkins to trigger builds."},
+  {topic:"JENKINS",q:"What is the purpose of Jenkins' Workspace directory?",opts:["The Workspace directory stores configuration files for Jenkins jobs","The Workspace directory is where Jenkins stores files related to the build process such as source code and build artifacts","The Workspace directory holds the Jenkins server logs and execution history for all jobs","The Workspace directory stores Jenkins plugins"],ans:1,exp:"The Jenkins workspace is a dedicated directory per job where source code is checked out and builds are executed."},
+  {topic:"JENKINS",q:"In a CI/CD pipeline, if SonarQube detects critical vulnerabilities, what should happen?",opts:["The pipeline should automatically fail the build","The pipeline should continue without reporting vulnerabilities","Developers should manually check scan results after deployment","The pipeline should ignore vulnerabilities for faster builds"],ans:0,exp:"Failing the build on critical vulnerabilities is a CI/CD best practice to prevent security issues from reaching production."},
+
+  // ── SONARQUBE (3 questions) ──
+  {topic:"SONARQUBE",q:"Which languages does SonarQube support?",opts:["Java","Python","PHP","All of the above"],ans:3,exp:"SonarQube supports 30+ programming languages including Java, Python, PHP, C#, JavaScript, TypeScript, and many more."},
+  {topic:"SONARQUBE",q:"What is a plugin in SonarQube?",opts:["A collection of rules and metrics for code analysis","A tool to manage users and permissions","A module to integrate SonarQube with your code repository","A visualization tool for code coverage reports"],ans:0,exp:"SonarQube plugins extend analysis capabilities by adding new rules, metrics, and language support."},
+  {topic:"SONARQUBE",q:"What is the purpose of a quality gate in SonarQube?",opts:["To set the quality standards for a project","To track the progress of a project","To verify that a project meets certain quality criteria before it can proceed","To generate reports on a project's code quality"],ans:2,exp:"Quality Gates define pass/fail criteria (e.g., code coverage > 80%, no critical bugs) that must be met before code moves forward."},
+
+  // ── DOCKER (11 questions) ──
+  {topic:"DOCKER",q:"What is Docker Compose?",opts:["A scripting language for Docker","A continuous integration tool for Docker","A tool for defining and running multi-container Docker applications","A Docker CLI plugin"],ans:2,exp:"Docker Compose uses a YAML file to define and manage multi-container applications as a single service."},
+  {topic:"DOCKER",q:"What does the -d flag do in the docker run command?",opts:["Deletes the container","Displays detailed information","Detaches the container and runs it in the background","Downloads the latest image"],ans:2,exp:"The -d flag runs the container in detached mode, returning control to the terminal while the container runs in background."},
+  {topic:"DOCKER",q:"Which of the following is not a valid storage driver for Docker?",opts:["aufs","btrfs","zfs","ntfs"],ans:3,exp:"NTFS is a Windows filesystem and not a Docker storage driver. aufs, btrfs, and zfs are all valid storage drivers."},
+  {topic:"DOCKER",q:"Which Docker command shows the history and intermediate layers of an image?",opts:["docker inspect","docker details","docker history","docker layers"],ans:2,exp:"docker history shows the image layers and the commands used to create each layer."},
+  {topic:"DOCKER",q:"In a docker-compose.yml file, what is the function of the depends_on key?",opts:["Specifies the base images for services","Specifies the build context for services","Specifies the order in which services are started","Specifies the network links between services"],ans:2,exp:"depends_on controls startup order, ensuring a service waits for its dependencies to start first."},
+  {topic:"DOCKER",q:"Docker is written in which programming language?",opts:["Ruby","Go","Kotlin","Python"],ans:1,exp:"Docker is written in Go (Golang), which provides excellent performance for system-level programming."},
+  {topic:"DOCKER",q:"You want to run a web server in a Docker container and make it accessible on port 8080 of the host machine. Which option in docker run achieves this?",opts:["-v 8080:80","--port 8080:80","-p 8080:80","--expose 8080"],ans:2,exp:"-p host_port:container_port maps host port 8080 to container port 80."},
+  {topic:"DOCKER",q:"You start a container using: docker run -p 8080:80 nginx. What does this command do?",opts:["It binds port 80 of the container to port 8080 of the host","It exposes port 8080 of the container to the host","It binds port 8080 of the container to port 80 of the host","It starts nginx with no port bindings"],ans:0,exp:"docker run -p 8080:80 maps host port 8080 to container port 80, making nginx accessible at localhost:8080."},
+  {topic:"DOCKER",q:"What is the purpose of a multi-stage build in Docker?",opts:["To build multiple images simultaneously","To separate the build environment from the runtime environment, reducing image size","To add multiple base images to a single container","To enable parallel execution of containers"],ans:1,exp:"Multi-stage builds use one image for building and a smaller image for the final artifact, drastically reducing image size."},
+  {topic:"DOCKER",q:"What is the primary purpose of Docker Hub?",opts:["To provide private hosting for Docker containers","To store and share Docker images publicly or privately","To monitor the health of Docker containers","To automate the deployment of containers to production"],ans:1,exp:"Docker Hub is a cloud-based registry for storing, managing, and sharing Docker images."},
+  {topic:"DOCKER",q:"Your containerized application crashes on startup due to a missing dependency. How do you fix it?",opts:["Install dependencies at runtime manually","Update the Dockerfile to include the missing dependencies and rebuild","Restart the container repeatedly","Remove dependency checks from the application"],ans:1,exp:"Dependencies should be baked into the Docker image. Update the Dockerfile and rebuild the image."},
+
+  // ── KUBERNETES (19 questions) ──
+  {topic:"KUBERNETES",q:"What is a PersistentVolume in Kubernetes?",opts:["A storage resource provisioned dynamically","A volume that exists as long as the pod is running","A network storage solution for containers","A volume that provides storage independent of the lifecycle of individual pods"],ans:3,exp:"PersistentVolumes (PV) are cluster-level storage resources that exist independently of any pod lifecycle."},
+  {topic:"KUBERNETES",q:"How can you scale a deployment in Kubernetes?",opts:["kubectl scale deployment <NAME> --replicas=<NUMBER>","kubectl configure deployment <NAME> --replicas=<NUMBER>","kubectl update deployment <NAME> --replicas=<NUMBER>","kubectl set deployment <NAME> --replicas=<NUMBER>"],ans:0,exp:"kubectl scale deployment is the correct command to update the number of replicas."},
+  {topic:"KUBERNETES",q:"Which description best fits a DaemonSet?",opts:["A system to connect nodes and pods","A method to manage clusters of pods","A way to run a copy of a pod on all or some nodes","A channel through which to pass information between nodes"],ans:2,exp:"A DaemonSet ensures a copy of a Pod runs on all (or some) nodes — useful for monitoring agents, log collectors, etc."},
+  {topic:"KUBERNETES",q:"In Kubernetes, which object is used to create a gateway for inbound traffic to your cluster?",opts:["Ingress","NetworkPolicy","Volume","ConfigMap"],ans:0,exp:"An Ingress resource manages external HTTP/HTTPS access to services in a cluster, using an Ingress Controller."},
+  {topic:"KUBERNETES",q:"How does Kubernetes' self-healing feature work?",opts:["Kubernetes automatically scales pods based on resource utilization but does not restart failed containers","Kubernetes automatically restarts failed containers, replaces unhealthy pods, and reschedules pods from failed nodes","Kubernetes requires manual intervention to restart or replace failed pods","Kubernetes only provides self-healing for persistent storage"],ans:1,exp:"Kubernetes self-healing includes: restarting failed containers (restartPolicy), replacing unhealthy pods (liveness probes), rescheduling pods from failed nodes."},
+  {topic:"KUBERNETES",q:"How can you achieve rollback to a previous version in Kubernetes?",opts:["Use kubectl delete to remove the deployment and manually redeploy the previous version","Use kubectl rollout undo to revert to the previous version","Edit the deployment YAML file and manually change the image version","Use kubectl apply with the --rollback flag"],ans:1,exp:"kubectl rollout undo deployment/<name> reverts to the previous ReplicaSet, effectively rolling back the deployment."},
+  {topic:"KUBERNETES",q:"What is the ClusterAutoScaler in AWS EKS?",opts:["It scales EC2 instances based on the CPU and memory usage of the pods","It automatically scales the number of EKS nodes based on the load and pod resource requests","It automatically resizes Kubernetes pods based on incoming traffic","It automatically upgrades the Kubernetes version on EKS nodes"],ans:1,exp:"Cluster Autoscaler adjusts the number of nodes in a node group when pods can't be scheduled or nodes are underutilized."},
+  {topic:"KUBERNETES",q:"What is the Ingress Controller in Kubernetes?",opts:["A service that monitors the health of pods","A component that manages and routes HTTP/HTTPS traffic to services based on Ingress resources","It automatically scales the number of pods based on network traffic","It is used to deploy applications inside a cluster and manage their lifecycles"],ans:1,exp:"An Ingress Controller (nginx, traefik, etc.) watches for Ingress resources and configures the underlying load balancer/proxy accordingly."},
+  {topic:"KUBERNETES",q:"Your application is experiencing high CPU usage. Which Kubernetes feature automatically scales the number of pods based on CPU utilization?",opts:["Node Autoscaler","Horizontal Pod Autoscaler (HPA)","Vertical Pod Autoscaler (VPA)","Cluster Autoscaler"],ans:1,exp:"HPA automatically scales the number of pod replicas based on observed CPU/memory utilization or custom metrics."},
+  {topic:"KUBERNETES",q:"A pod is stuck in the CrashLoopBackOff state. What should be your first step?",opts:["Restart the pod manually using kubectl delete pod","Check the logs using kubectl logs pod-name","Scale up the deployment to create more pods","Delete and recreate the pod"],ans:1,exp:"CrashLoopBackOff means the container is crashing repeatedly. First check logs with kubectl logs to understand the root cause."},
+  {topic:"KUBERNETES",q:"Users cannot access an application exposed via an Ingress resource. What could be the possible reason?",opts:["The Ingress controller is not deployed in the cluster","The application pods have high CPU usage","The application service type is ClusterIP","The Ingress resource has an incorrect YAML format"],ans:0,exp:"Without an Ingress Controller deployed, the Ingress resource has no effect — no controller processes the routing rules."},
+  {topic:"KUBERNETES",q:"Your team wants to deploy a complex Kubernetes application using Helm and customize values. Which command should they use?",opts:["helm install my-release my-chart","helm install my-release my-chart --set key=value","helm apply my-release my-chart --set key=value","helm deploy my-release my-chart"],ans:1,exp:"--set key=value overrides default values in the Helm chart's values.yaml during installation."},
+  {topic:"KUBERNETES",q:"Which is the correct lifecycle sequence of a Kubernetes Pod?",opts:["Pending → Running → Succeeded/Failed","Running → Pending → Terminated","Pending → Succeeded → Running","Failed → Pending → Running"],ans:0,exp:"Pods start as Pending (scheduling), move to Running (at least one container running), then to Succeeded or Failed when containers exit."},
+  {topic:"KUBERNETES",q:"A developer is unable to create a new deployment in the test-namespace, even though they have access to the cluster. What could be the reason?",opts:["The developer does not have a RoleBinding in the test-namespace","The kube-apiserver is down","The developer is using the wrong kubectl command","The cluster does not support RBAC"],ans:0,exp:"In Kubernetes RBAC, access is namespace-scoped. Without a RoleBinding in test-namespace, the developer cannot create resources there."},
+  {topic:"KUBERNETES",q:"After setting up a Kubernetes cluster with kubeadm and joining worker nodes, the worker nodes are in a NotReady state. What is the most likely reason?",opts:["The nodes are missing the CNI (Container Network Interface) plugin","The control plane node has insufficient resources","The worker nodes do not have enough CPU allocated","The kubelet service is stopped on the worker nodes"],ans:0,exp:"Nodes stay NotReady without a CNI plugin because pod networking is not configured. Install a CNI like Calico or Flannel."},
+  {topic:"KUBERNETES",q:"You deployed a pod using a YAML manifest, but it remains in the Pending state for a long time. What could be the possible reason?",opts:["The pod is using a non-existent image","No worker nodes have enough resources to schedule the pod","The pod has crashed due to an application error","The pod is not exposed via a Service"],ans:1,exp:"Pending pods are usually waiting for scheduling. Insufficient CPU/memory on nodes is the most common reason."},
+  {topic:"KUBERNETES",q:"If my pods are running on an untainted node and I apply a taint with NoSchedule on that node, what happens to the running pods?",opts:["Pod will be deleted","Remain the same","Delete and create in another node","All of the above"],ans:1,exp:"NoSchedule taints only affect new scheduling decisions. Existing running pods on a newly tainted node continue to run. Use NoExecute to evict existing pods."},
+  {topic:"KUBERNETES",q:"If the user taints the node, will the DaemonSet pod still be scheduled?",opts:["Yes","No","Depends on tolerations","Only if explicitly configured"],ans:0,exp:"DaemonSet pods automatically have tolerations added for common taints, so they can still be scheduled on tainted nodes."},
+  {topic:"KUBERNETES",q:"Your application needs to maintain user session state across multiple pods. Which Kubernetes resource ensures that each pod gets stable network identities and persistent storage?",opts:["Deployment","StatefulSet","DaemonSet","ReplicaSet"],ans:1,exp:"StatefulSets are used for stateful applications requiring stable network identifiers, persistent storage, and ordered deployment/scaling."},
+
+  // ── TERRAFORM (16 questions) ──
+  {topic:"TERRAFORM",q:"To avoid state file conflicts in a team Terraform project stored in S3, what additional configuration is required to lock the state file?",opts:["Enable versioning on the S3 bucket","Use DynamoDB for state locking","Enable encryption on the S3 bucket","Set acl = 'private' in the S3 backend configuration"],ans:1,exp:"DynamoDB is used for state locking with S3 backend to prevent concurrent modifications to the state file."},
+  {topic:"TERRAFORM",q:"Your team needs to manage Terraform configurations for dev, staging, and production environments sharing the same base configuration. What is the best approach?",opts:["Create separate Terraform files for each environment","Use terraform workspaces to manage different environments","Maintain separate Git branches for each environment","Write unique configuration files for each environment without reusing code"],ans:1,exp:"Terraform workspaces allow you to maintain separate state files for each environment while sharing the same configuration."},
+  {topic:"TERRAFORM",q:"You removed an EC2 instance entry from the Terraform state file manually. Now when you run terraform apply, what will happen?",opts:["Terraform will destroy the EC2 instance","Terraform will re-create the EC2 instance because it has no record in the state file","Terraform will detect the EC2 instance still exists and update it","Terraform will display an error stating the state file is missing"],ans:1,exp:"Without the state entry, Terraform thinks the resource doesn't exist and will try to create a new one even though the real EC2 instance still exists."},
+  {topic:"TERRAFORM",q:"Which Terraform feature prevents concurrent modifications to infrastructure by the team?",opts:["Terraform state locking ensures only one person can modify the state file at a time","Terraform automatically prevents concurrent changes by creating separate state files for each user","Terraform locks infrastructure resources to prevent simultaneous updates","Terraform state locking allows automatic rollback of changes in case of errors"],ans:0,exp:"Terraform state locking (via DynamoDB for S3 backend) prevents simultaneous state modifications."},
+  {topic:"TERRAFORM",q:"How does Terraform determine the deployment order of resources?",opts:["Terraform uses the order of module definitions in the configuration files","Terraform automatically figures out resource creation order based on dependencies defined within the resources","You must manually define the creation order using explicit depends_on directives for each resource","Terraform requires a custom script to define the resource creation order"],ans:1,exp:"Terraform builds a dependency graph from implicit references (e.g., resource attributes) and explicit depends_on to determine creation order."},
+  {topic:"TERRAFORM",q:"What would happen if a developer removed the version parameter from a module block and ran terraform init again?",opts:["Terraform would return an error, as the version parameter is required","Terraform would download the latest version of the module","Terraform would use the existing module already downloaded","Terraform would skip the module"],ans:1,exp:"Without a version constraint, terraform init downloads the latest available version of the module."},
+  {topic:"TERRAFORM",q:"Which of the following is NOT a benefit of Terraform state?",opts:["Reduces the amount of outbound traffic by requiring that state is stored locally","Determines the dependency order for deployed resources","Increases performance by reducing the requirement to query multiple resources at once","Provides a one-to-one mapping of the configuration to real-world resources"],ans:0,exp:"Terraform state can be stored remotely (S3, Terraform Cloud) — it does NOT require local storage. The other options are genuine benefits."},
+  {topic:"TERRAFORM",q:"A company uses Terraform and wants to enable detailed logging. Which environment variable does it need to set?",opts:["TF_help","TF_LOG","TF_Debug","TF_var_log"],ans:1,exp:"TF_LOG environment variable controls Terraform's logging level (TRACE, DEBUG, INFO, WARN, ERROR)."},
+  {topic:"TERRAFORM",q:"Which option will you use to run provisioners that are not associated with any specific resources?",opts:["Local-exec","Null_resource","Salt-masterless","Remote-exec"],ans:1,exp:"null_resource is a placeholder resource in Terraform that allows you to run provisioners without creating a real infrastructure resource."},
+  {topic:"TERRAFORM",q:"Your team wants to reuse Terraform configurations across multiple environments (dev, staging, prod). What is the best way?",opts:["Copy and paste Terraform configuration files for each environment","Use Terraform workspaces","Create a separate Terraform module and reuse it in different environments","Manually apply Terraform for each environment"],ans:2,exp:"Terraform modules allow you to create reusable, composable infrastructure components instantiated multiple times with different variables."},
+  {topic:"TERRAFORM",q:"Your Terraform project needs to manage multiple environments using the same configuration but with different values. Which feature should you use?",opts:["Modules","Workspaces","Variables","Providers"],ans:1,exp:"Workspaces maintain separate state files per environment, allowing the same configuration to manage multiple environments."},
+  {topic:"TERRAFORM",q:"You need to run a shell script inside an EC2 instance after Terraform provisions it. Which provisioner should you use?",opts:["local-exec","remote-exec","file","null_resource"],ans:1,exp:"remote-exec provisioner connects to the remote resource and runs commands on it after provisioning."},
+  {topic:"TERRAFORM",q:"How can you ensure that an EC2 instance is created only after a security group is created in Terraform?",opts:["Terraform automatically understands dependencies when you reference resource attributes","Use the depends_on attribute in the EC2 resource","Manually apply the security group first, then apply the EC2 instance","Use a module to manage dependencies"],ans:0,exp:"Terraform automatically detects dependencies when you reference a resource's attributes. Explicit depends_on is only needed for hidden dependencies."},
+  {topic:"TERRAFORM",q:"You need to delete only a specific resource from your Terraform-managed infrastructure without affecting others. Which command?",opts:["terraform destroy","terraform apply -destroy","terraform destroy -target resource_name","terraform remove resource_name"],ans:2,exp:"terraform destroy -target=<resource> destroys only the specified resource without affecting others."},
+  {topic:"TERRAFORM",q:"After running terraform apply, a resource already exists in AWS but is not tracked in Terraform state. How can you import it?",opts:["terraform import aws_instance.my_instance i-1234567890abcdef","terraform state add aws_instance.my_instance i-1234567890abcdef","terraform track aws_instance.my_instance","terraform refresh"],ans:0,exp:"terraform import associates an existing infrastructure resource with a Terraform resource configuration by adding it to the state file."},
+  {topic:"TERRAFORM",q:"A teammate accidentally deleted the Terraform state file from local storage. What should you do?",opts:["Recreate the resources manually","Run terraform apply to regenerate the state","Restore the state file from a remote backend (if configured)","Delete all resources and start from scratch"],ans:2,exp:"If you configured a remote backend (S3, Terraform Cloud), restore the state from there. This is why remote backends with versioning are recommended."},
+
+  // ── ANSIBLE (7 questions) ──
+  {topic:"ANSIBLE",q:"What is the purpose of the Ansible ad-hoc command?",opts:["To execute a single task on the target hosts","To run a playbook on the target hosts","To create a new module for Ansible","To generate a report of the host inventory"],ans:0,exp:"Ansible ad-hoc commands allow you to run a single, simple task against target hosts without writing a full playbook."},
+  {topic:"ANSIBLE",q:"How can you encrypt a file using Ansible Vault?",opts:["ansible-vault encrypt filename","ansible encrypt-vault filename","ansible-vault encrypt --file filename","ansible-encrypt filename"],ans:0,exp:"ansible-vault encrypt <filename> encrypts a file using AES256 encryption."},
+  {topic:"ANSIBLE",q:"What is the purpose of the Ansible Config file?",opts:["To store the playbook files","To store the inventory file","To configure the behavior of Ansible","To store the sensitive data"],ans:2,exp:"ansible.cfg configures Ansible's behavior including default inventory location, remote user, SSH settings, etc."},
+  {topic:"ANSIBLE",q:"Ansible fails with 'UNREACHABLE' errors when trying to manage remote servers. What is the most likely reason?",opts:["The SSH service is not running on the remote host","The Ansible control node is out of memory","The playbook syntax is incorrect","The Ansible version is outdated"],ans:0,exp:"UNREACHABLE errors typically mean SSH connectivity issues — the SSH daemon may be stopped or firewall rules are blocking port 22."},
+  {topic:"ANSIBLE",q:"A playbook should only run if a file exists on the target machine. How can this be done?",opts:["Use the when: condition with ansible.builtin.stat","Use ignore_errors: true","Use ansible.builtin.command to check manually","Restart the playbook after adding the file"],ans:0,exp:"ansible.builtin.stat checks file existence, and you use the when: condition to run tasks based on the result."},
+  {topic:"ANSIBLE",q:"How can you securely store sensitive credentials like passwords in Ansible?",opts:["Use ansible-vault to encrypt the credentials","Store them in plaintext in the inventory file","Hardcode them in the playbook","Use environment variables without encryption"],ans:0,exp:"Ansible Vault encrypts sensitive data like passwords and API keys, making it safe to store in version control."},
+  {topic:"ANSIBLE",q:"How can you execute only one specific task from a playbook?",opts:["Use --tags or --step options when running the playbook","Manually delete all other tasks","Rename the playbook to only include the required task","Use ansible single-task mode"],ans:0,exp:"--tags lets you run only tagged tasks. --step runs playbook interactively, prompting before each task."},
+
+  // ── GRAFANA (3 questions) ──
+  {topic:"GRAFANA",q:"What is the default port for the Grafana web interface?",opts:["3000","8080","8000","5000"],ans:0,exp:"Grafana's default web interface port is 3000."},
+  {topic:"GRAFANA",q:"How does Grafana support team collaboration?",opts:["Through shared dashboards and panels","By providing a team chat feature","Through integrated project management tools","It does not support team collaboration"],ans:0,exp:"Grafana supports collaboration through shared dashboards, panels, folders, and team-based permissions."},
+  {topic:"GRAFANA",q:"A user wants to create a new dashboard in Grafana. What is the first step?",opts:["Add a new Data Source","Install Grafana plugins","Write SQL queries","Restart Grafana"],ans:0,exp:"Before creating dashboards, you need to add a Data Source so Grafana knows where to fetch the metrics/logs from."},
+
+  // ── CI/CD (12 questions) ──
+  {topic:"CI/CD",q:"In a CI/CD pipeline, a developer pushes faulty code that causes the production deployment to fail. What is the best action?",opts:["Roll back to the previous stable version automatically","Manually debug the issue and redeploy when fixed","Ignore the issue and wait for the next deployment","Restart the application and hope it resolves itself"],ans:0,exp:"Automated rollback to the previous stable version minimizes downtime — a CI/CD best practice for failed deployments."},
+  {topic:"CI/CD",q:"Your application deployment on Kubernetes fails due to missing environment variables. What should you do?",opts:["Hardcode the environment variables in the application code","Use Kubernetes Secrets or ConfigMaps to inject the required values","Restart the pods multiple times until they work","Remove the environment variable dependencies from the application"],ans:1,exp:"ConfigMaps store non-sensitive config, Secrets store sensitive data. Both provide proper environment variable injection."},
+  {topic:"CI/CD",q:"A new feature branch is merged into main, causing performance degradation in production. How should you handle this?",opts:["Immediately revert the merge and investigate the issue","Increase server resources to handle the performance drop","Inform users about the issue and delay fixing it","Ask the developer to manually optimize the code without rolling back"],ans:0,exp:"Reverting the merge restores stability quickly. Investigation and optimization should happen in a non-production environment."},
+  {topic:"CI/CD",q:"Your CI/CD pipeline takes over an hour to complete, delaying feature releases. What is the best approach to optimize it?",opts:["Reduce the number of automated tests","Parallelize build and test processes","Manually approve each step before execution","Increase the timeout limit of the pipeline"],ans:1,exp:"Parallelizing build and test stages significantly reduces total pipeline execution time."},
+  {topic:"CI/CD",q:"A CI/CD pipeline is frequently failing due to flaky tests. What is the best way to handle this?",opts:["Disable the failing tests","Run tests multiple times and take the best result","Investigate and fix the root cause of the flaky tests","Move the failing tests to a separate pipeline"],ans:2,exp:"Flaky tests undermine trust in CI. The correct approach is to identify and fix the root cause — usually timing, test isolation, or environment issues."},
+  {topic:"CI/CD",q:"Your CI/CD pipeline is too slow. What is the best way to optimize it?",opts:["Reduce the number of unit tests","Run tests and builds in parallel","Skip testing in lower environments","Increase pipeline timeout values"],ans:1,exp:"Running parallel stages dramatically speeds up pipelines without sacrificing quality."},
+  {topic:"CI/CD",q:"After a deployment, users report errors. What should you check first?",opts:["Logs and monitoring dashboards","Restart the application","Increase CPU and memory limits","Rollback immediately without investigation"],ans:0,exp:"Logs and monitoring dashboards provide immediate insight into what's failing and why."},
+  {topic:"CI/CD",q:"Your team uses GitOps for managing Kubernetes deployments. How do you apply changes?",opts:["Manually update Kubernetes resources","Push changes to a Git repository, triggering an automated deployment","Edit the cluster configuration directly","SSH into nodes and apply changes manually"],ans:1,exp:"GitOps uses Git as the single source of truth. Changes pushed to Git trigger automated sync tools like ArgoCD or Flux."},
+  {topic:"CI/CD",q:"You need to roll out an application update with zero downtime. What strategy should you use?",opts:["Rolling updates","Blue-green deployment","Canary deployment","Any of the above"],ans:3,exp:"All three strategies can achieve zero downtime: Rolling gradually replaces instances, Blue-Green switches traffic instantly, Canary gradually shifts traffic."},
+  {topic:"CI/CD",q:"In GitLab CI/CD, how can security scans be integrated into the pipeline?",opts:["By adding security scan jobs in the .gitlab-ci.yml file","By manually running security tools after deployment","By scheduling periodic security assessments outside the CI/CD pipeline","By relying solely on third-party security audits"],ans:0,exp:"GitLab provides native security scanning templates (SAST, DAST, Dependency Scanning) that can be included directly in .gitlab-ci.yml."},
+  {topic:"CI/CD",q:"Which JFrog tool is specifically designed for deep recursive scanning of artifacts to identify security vulnerabilities and license compliance issues?",opts:["JFrog Artifactory","JFrog Xray","JFrog Pipelines","JFrog Distribution"],ans:1,exp:"JFrog Xray provides deep recursive scanning of artifacts and their dependencies for security vulnerabilities and license compliance."},
+  {topic:"CI/CD",q:"What is the command to scan a container image using Trivy?",opts:["trivy image <image-name>","trivy scan <image-name>","trivy inspect <image-name>","trivy security <image-name>"],ans:0,exp:"trivy image <image-name> scans a Docker image for OS and application vulnerabilities."},
+
+  // ── LINUX (4 questions) ──
+  {topic:"LINUX",q:"To add a user named 'john' to the group 'developers', which command would you use?",opts:["useradd developers john","usermod -aG developers john","useradd john developers","usermod -aG john developers"],ans:1,exp:"usermod -aG <group> <user> appends the user to the specified group without removing them from other groups."},
+  {topic:"LINUX",q:"You manually upgraded the EBS volume in the console. How do you update the filesystem in the EC2 instance?",opts:["sudo xfs_growfs /dev/xvda1","sudo xfs_lsdk /dev/xvda1","sudo volume update /dev/xvda1","You cannot update volume without rebooting"],ans:0,exp:"After resizing an EBS volume, use sudo xfs_growfs /dev/xvda1 (for XFS) or sudo resize2fs /dev/xvda1 (for ext4) to extend the filesystem without rebooting."},
+  {topic:"LINUX",q:"You need to create a new user 'john' with home directory /home/john and default shell /bin/bash. Which command?",opts:["useradd john","useradd -m john","useradd -m -s /bin/bash john","adduser john"],ans:2,exp:"useradd -m creates the home directory and -s /bin/bash sets the default shell."},
+  {topic:"LINUX",q:"When hardening a Linux system running a web server, which of the following actions is NOT appropriate?",opts:["Disable root login via SSH and use key-based authentication","Configure iptables or firewalld to block unnecessary ports","Enable SELinux or AppArmor for additional security","Install and enable Telnet for remote administration as a fallback option"],ans:3,exp:"Telnet transmits data in plaintext and is highly insecure. SSH should always be used instead. The other options are valid hardening steps."},
+
+  // ── DEVOPS SCENARIOS (7 questions) ──
+  {topic:"DEVOPS",q:"Your monitoring tool detects a sudden spike in CPU usage for an application running in a cloud-based Kubernetes cluster. What should you do first?",opts:["Scale out by increasing the number of pods automatically","Restart the affected pods","Disable monitoring to avoid unnecessary alerts","Ignore it if the application is still running"],ans:0,exp:"Investigate and scale out pods to handle the spike. HPA can automate this response."},
+  {topic:"DEVOPS",q:"A team member accidentally deletes a critical production database. How should you recover?",opts:["Restore from the latest backup","Recreate the database manually","Ask the developer to rewrite the lost data","Do nothing"],ans:0,exp:"Always restore from the latest backup. This is why regular automated backups and tested recovery procedures are essential."},
+  {topic:"DEVOPS",q:"You are managing infrastructure as code using Terraform. A team member manually modifies cloud resources outside of Terraform. What should you do?",opts:["Run terraform apply to override the manual changes","Manually update Terraform state to reflect the changes","Ignore the manual changes","Delete the manually modified resources"],ans:0,exp:"Running terraform apply will reconcile the actual state with the desired state in code, overriding manual changes."},
+  {topic:"DEVOPS",q:"You need to ensure your Terraform infrastructure is always in sync. What should you do?",opts:["Run terraform apply manually after changes","Use a CI/CD pipeline to automate Terraform deployments","Allow manual updates to infrastructure without Terraform","Delete and recreate infrastructure periodically"],ans:1,exp:"A CI/CD pipeline ensures Terraform is the only way to make infrastructure changes, maintaining consistency."},
+  {topic:"DEVOPS",q:"A critical Kubernetes service is down. How do you troubleshoot?",opts:["Check pod logs and events","Restart the cluster","Delete the service and recreate it","Increase resource limits immediately"],ans:0,exp:"kubectl logs and kubectl describe pod/events provide the most direct insight into what's wrong."},
+  {topic:"DEVOPS",q:"As a DevOps engineer, you need to implement a robust logging and monitoring system for a cloud-based application. Which tool is most suitable for centralized log management and real-time insights?",opts:["Elasticsearch with Kibana","Jenkins for Continuous Integration","Docker for Containerization","Ansible for Configuration Management"],ans:0,exp:"The ELK stack (Elasticsearch, Logstash, Kibana) is the industry standard for centralized log management and real-time analysis."},
+  {topic:"DEVOPS",q:"You are tasked with improving security in the CI/CD pipeline. What practice should be implemented to detect vulnerabilities in third-party dependencies during the build process?",opts:["Manual code review by security experts","Regularly updating dependencies without security analysis","Implementing automated Dependency Scanning in the CI/CD pipeline","Ignoring third-party dependencies to prioritize faster builds"],ans:2,exp:"Automated dependency scanning (Snyk, OWASP Dependency-Check) integrated into CI/CD catches vulnerabilities early in the pipeline."}
+];
+
+let questions = [];
+let current = 0, score = 0, answeredCount = 0, timeLeft = 4800; // 80 mins
+let answered = [];
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('devopsMockMasteryCache_v2');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            // Cache-breaker: if stored time is wrong or old default, reset to 80 mins
+            timeLeft = (data.timeLeft === 3600 || data.timeLeft === 6000) ? 4800 : data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            topic: q.topic,
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 4800; // Force 80 mins
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('devopsMockMasteryCache_v2', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 300) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/${questions.length}`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-meta"><span class="q-num">devops: Q ${current+1}</span></div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>⚡ EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === (questions.length - 1)) ? "FINISH AUDIT ✓" : "NEXT NODE →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === (questions.length - 1)) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('devopsMockMasteryCache_v2');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / ${questions.length}`;
+}
+
+function retryQuiz() { 
+    localStorage.removeItem('devopsMockMasteryCache_v2'); 
+    location.reload(); 
+}
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

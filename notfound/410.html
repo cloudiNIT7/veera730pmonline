@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>410 — Gone</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    font-family:'Space Grotesk', sans-serif;
+    background: radial-gradient(1200px 700px at 50% 20%, #1a1030, #05030d 70%);
+    color:#eae6ff; height:100vh; overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  }
+  .stars { position:fixed; inset:0; pointer-events:none; }
+  .stars span {
+    position:absolute; width:2px; height:2px; background:#fff; border-radius:50%;
+    opacity:.6; animation:tw 3s infinite ease-in-out;
+  }
+  @keyframes tw { 0%,100%{opacity:.15} 50%{opacity:.9} }
+  .ghost {
+    width:150px; height:180px; position:relative; margin-bottom:30px;
+    animation:float 4s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-22px)} }
+  .ghost-body {
+    width:150px; height:150px; background:linear-gradient(180deg,#c9b6ff,#8a6bff);
+    border-radius:75px 75px 0 0; position:absolute; top:0; box-shadow:0 0 60px rgba(138,107,255,.5);
+    opacity:.92;
+  }
+  .ghost-body::before, .ghost-body::after {
+    content:''; position:absolute; width:26px; height:34px; background:#1a1030;
+    border-radius:50%; top:56px;
+  }
+  .ghost-body::before { left:38px; } .ghost-body::after { right:38px; }
+  .tail { position:absolute; bottom:0; left:0; width:150px; height:26px; display:flex; }
+  .tail i { flex:1; height:26px; background:#8a6bff; border-radius:0 0 50% 50%; }
+  h1 { font-size:clamp(70px,16vw,150px); font-weight:700; letter-spacing:-4px;
+       background:linear-gradient(90deg,#c9b6ff,#7a54dc); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  p.big { font-size:22px; font-weight:600; margin:2px 0 8px; }
+  p.small { color:#9d92c9; max-width:420px; margin:0 22px 26px; line-height:1.6; font-size:14px; }
+  a.btn {
+    text-decoration:none; color:#fff; padding:13px 28px; border-radius:99px;
+    background:linear-gradient(135deg,#7a54dc,#9b6bff); font-weight:600; font-size:14px;
+    box-shadow:0 10px 30px rgba(122,84,220,.45); transition:transform .25s, box-shadow .25s;
+  }
+  a.btn:hover { transform:translateY(-3px); box-shadow:0 16px 40px rgba(122,84,220,.6); }
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="ghost">
+  <div class="ghost-body"></div>
+  <div class="tail"><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+<h1>410</h1>
+<p class="big">This page is Gone.</p>
+<p class="small">The resource you're after packed up and left for good. It's not coming back — but the dashboard still is.</p>
+<a class="btn" href="../dashboard.html">← Back to Dashboard</a>
+<script>
+  const s = document.getElementById('stars');
+  for (let i=0;i<80;i++){ const d=document.createElement('span');
+    d.style.left=Math.random()*100+'%'; d.style.top=Math.random()*100+'%';
+    d.style.animationDelay=(Math.random()*3)+'s';
+    d.style.transform='scale('+(0.5+Math.random()*1.5)+')'; s.appendChild(d); }
+</script>
+</body>
+</html>

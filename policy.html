@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Enterprise Sandbox | Admin: Abinash Kumar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --aws-navy: #232f3e;
+            --aws-squid-ink: #16191f;
+            --aws-orange: #ff9900;
+            --aws-blue: #0073bb;
+            --success: #2ed573;
+            --danger: #ff4757;
+            --text-main: #16191f;
+            --text-muted: #545b64;
+            --bg-light: #f1f3f4;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        * { box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg-light); color: var(--text-main); display: flex; }
+
+        /* --- Sidebar Navigation --- */
+        .sidebar {
+            width: 320px; background: var(--white); height: 100vh; position: fixed;
+            border-right: 1px solid #e1e4e8; padding: 2rem; overflow-y: auto; z-index: 1000;
+        }
+
+        .logo { font-weight: 800; font-size: 1.4rem; color: var(--aws-navy); margin-bottom: 2rem; display: flex; align-items: center; gap: 12px; }
+        .logo img { width: 34px; height: 34px; object-fit: contain; border-radius: 8px; }
+
+        .admin-pill {
+            background: var(--aws-navy); color: white; padding: 1.2rem; border-radius: 12px; margin-bottom: 2rem;
+            position: relative; overflow: hidden;
+        }
+        .admin-pill::after { content: ''; position: absolute; top: -50%; right: -20%; width: 100px; height: 100px; background: rgba(255,153,0,0.1); border-radius: 50%; }
+        .admin-pill h4 { margin: 0; font-size: 0.7rem; text-transform: uppercase; color: var(--aws-orange); letter-spacing: 1px; }
+        .admin-pill .name { font-size: 1.1rem; font-weight: 700; margin: 5px 0; }
+        .admin-pill .email { font-size: 0.8rem; opacity: 0.8; text-decoration: none; color: white; display: block; }
+
+        .nav-menu { list-style: none; padding: 0; }
+        .nav-item { margin-bottom: 0.5rem; }
+        .nav-link { 
+            display: flex; align-items: center; gap: 10px; padding: 10px; 
+            text-decoration: none; color: var(--text-muted); font-weight: 500; border-radius: 8px; transition: 0.2s;
+        }
+        .nav-link:hover { background: var(--bg-light); color: var(--aws-blue); }
+
+        /* --- Main Content --- */
+        .main-content { margin-left: 320px; padding: 3rem 4rem; width: 100%; max-width: 1200px; }
+
+        header { margin-bottom: 3rem; }
+        .status-indicator { display: inline-flex; align-items: center; gap: 8px; background: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .dot { width: 8px; height: 8px; background: #2e7d32; border-radius: 50%; animation: pulse 2s infinite; }
+
+        .card { background: var(--white); border-radius: 16px; padding: 2.5rem; box-shadow: var(--shadow); margin-bottom: 2.5rem; border: 1px solid rgba(0,0,0,0.05); }
+        h1 { font-size: 2.8rem; font-weight: 800; margin: 0.5rem 0; letter-spacing: -1px; }
+        h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--aws-navy); display: flex; align-items: center; gap: 10px; }
+
+        /* --- Grid Metrics --- */
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 2rem; }
+        .metric-item { background: #f8f9fa; padding: 1.5rem; border-radius: 12px; border: 1px solid #eee; }
+        .metric-item strong { display: block; font-size: 0.9rem; color: var(--text-muted); }
+        .metric-item span { font-size: 1.2rem; font-weight: 700; color: var(--aws-navy); }
+
+        /* --- Table Styling --- */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; padding: 1.2rem; background: #f8f9fa; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
+        td { padding: 1.2rem; border-bottom: 1px solid #f1f3f4; vertical-align: top; }
+        
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .b-supported { background: #e3f2fd; color: #1565c0; }
+        .b-conditional { background: #fff3e0; color: #ef6c00; }
+        .b-not { background: #ffebee; color: #c62828; }
+
+        /* --- Contact Form --- */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-family: inherit; transition: 0.3s; }
+        .form-control:focus { border-color: var(--aws-orange); outline: none; }
+        
+        .submit-btn {
+            background: var(--aws-navy); color: white; border: none; padding: 15px 30px; 
+            border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; font-size: 1rem;
+        }
+        .submit-btn:hover { background: var(--aws-orange); transform: translateY(-2px); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        @media (max-width: 1024px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 2rem; } .form-grid { grid-template-columns: 1fr; } .metrics-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <img src="https://i.ibb.co/C5XqXXx5/d2a09cd4-f07d-4034-99ad-51292342123d.png" alt="CloudInit logo">
+            <span>CloudInit</span>
+        </div>
+
+        <div class="admin-pill">
+            <h4>Environment Admin</h4>
+            <div class="name">Abinash Kumar</div>
+            <a href="mailto:abinashkumar5593@gmail.com" class="email">abinashkumar</a>
+        </div>
+
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#overview" class="nav-link"><i class="fa-solid fa-gauge"></i> Dashboard Overview</a></li>
+                <li class="nav-item"><a href="#restrictions" class="nav-link"><i class="fa-solid fa-shield-halved"></i> Global Restrictions</a></li>
+                <li class="nav-item"><a href="#services" class="nav-link"><i class="fa-solid fa-list-check"></i> Service Catalog</a></li>
+                <li class="nav-item"><a href="#request" class="nav-link"><i class="fa-solid fa-paper-plane"></i> Request Access</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <div class="status-indicator"><div class="dot"></div> Sandbox System Online</div>
+            <h1>CloudInit AWS Sandbox</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">A live production-grade environment for hands-on technical learning.</p>
+        </header>
+
+        <section id="restrictions" class="card">
+            <h2><i class="fa-solid fa-circle-info" style="color:var(--aws-blue)"></i> Global Restrictions</h2>
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <strong>Operating Regions</strong>
+                    <span>us-east-1, us-west-2</span>
+                </div>
+                <div class="metric-item">
+                    <strong>Identity Role</strong>
+                    <span>cloud_user</span>
+                </div>
+                <div class="metric-item">
+                    <strong>Max Concurrent Instances</strong>
+                    <span>9 Instances</span>
+                </div>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Users cannot access purchasing or billing permissions, including access to cost data or budgets. All actions are logged and monitored by <strong>Abinash Kumar</strong>.</p>
+        </section>
+
+        <section id="services" class="card">
+            <h2><i class="fa-solid fa-microchip" style="color:var(--aws-orange)"></i> Supported Service Catalog</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service Category</th>
+                            <th>Service Name</th>
+                            <th>Level of Support</th>
+                            <th>Additional Limits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Compute</strong></td>
+                            <td>Amazon EC2</td>
+                            <td><span class="badge b-conditional">Conditional</span></td>
+                            <td>Types: t2, t3, t3a, t4g (micro to medium). Max 100GB volume.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Analytics</strong></td>
+                            <td>Amazon Athena</td>
+                            <td><span class="badge b-supported">Supported</span></td>
+                            <td>Full access for SQL queries on S3 data.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database</strong></td>
+                            <td>Amazon RDS</td>
+                            <td><span class="badge b-conditional">Conditional</span></td>
+                            <td>Instance types: t3 or t4g micro/small. Max 50GB storage.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Containers</strong></td>
+                            <td>Amazon EKS</td>
+                            <td><span class="badge b-conditional">Conditional</span></td>
+                            <td>Standard support versions only. No extended support.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI/ML</strong></td>
+                            <td>Amazon Lex / Polly</td>
+                            <td><span class="badge b-supported">Supported</span></td>
+                            <td>Standard API usage limits apply.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Storage</strong></td>
+                            <td>Amazon S3</td>
+                            <td><span class="badge b-supported">Supported</span></td>
+                            <td>Standard bucket creation and object storage.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="request" class="card">
+            <h2><i class="fa-solid fa-envelope-open-text" style="color:var(--aws-navy)"></i> Request Custom Resources</h2>
+            <p>If your project requires a service not listed above, please submit this formal request to the administrator.</p>
+            
+            <form id="tgForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="name" class="form-control" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Professional Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Resource Requirement</label>
+                    <textarea id="message" class="form-control" rows="5" placeholder="Please list the services and instance types you need..." required></textarea>
+                </div>
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fa-solid fa-paper-plane"></i> Send Request to Admin
+                </button>
+            </form>
+            <div id="statusMsg" style="margin-top: 1rem; font-weight: 700; text-align: center;"></div>
+        </section>
+
+        <footer style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 4rem;">
+            &copy; 2026 CloudInit AWS Sandbox Portal. Maintained by Abinash Kumar.
+        </footer>
+    </main>
+
+    <script>
+        const BOT_TOKEN = '7878047212:AAFtWO7f6Ws2sYHqHSviasJUOy7cO11lZ4o';
+        const CHAT_ID = '5025112538';
+
+        document.getElementById('tgForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const status = document.getElementById('statusMsg');
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            const text = `🚨 *New Sandbox Resource Request*\n\n👤 *Admin:* Abinash Kumar\n👤 *User:* ${name}\n📧 *Email:* ${email}\n\n📝 *Request:* \n${message}`;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: text, parse_mode: 'Markdown' })
+                });
+
+                if(res.ok) {
+                    status.style.color = 'var(--success)';
+                    status.innerHTML = '✅ Request Sent! Abinash Kumar will review it shortly.';
+                    this.reset();
+                } else { throw new Error(); }
+            } catch (err) {
+                status.style.color = 'var(--danger)';
+                status.innerHTML = '❌ Connection Error. Please contact abinashkumar5593@gmail.com directly.';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Request to Admin';
+            }
+        });
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MBJM2CCKJ6"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MBJM2CCKJ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MBJM2CCKJ6');
+</script>
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vv8bw0cwsp");
+</script>
+<!-- Paste this right before your closing </head> tag -->
+<script type="text/javascript">
+  (function(e,c){if(!c.__SV){var l,h;window.mixpanel=c;c._i=[];c.init=function(q,r,f){function t(d,a){var g=a.split(".");2==g.length&&(d=d[g[0]],a=g[1]);d[a]=function(){d.push([a].concat(Array.prototype.slice.call(arguments,0)))}}var b=c;"undefined"!==typeof f?b=c[f]=[]:f="mixpanel";b.people=b.people||[];b.toString=function(d){var a="mixpanel";"mixpanel"!==f&&(a+="."+f);d||(a+=" (stub)");return a};b.people.toString=function(){return b.toString(1)+".people (stub)"};l="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders start_session_recording stop_session_recording people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");
+  for(h=0;h<l.length;h++)t(b,l[h]);var n="set set_once union unset remove delete".split(" ");b.get_group=function(){function d(p){a[p]=function(){b.push([g,[p].concat(Array.prototype.slice.call(arguments,0))])}}for(var a={},g=["get_group"].concat(Array.prototype.slice.call(arguments,0)),m=0;m<n.length;m++)d(n[m]);return a};c._i.push([q,r,f])};c.__SV=1.2;var k=e.createElement("script");k.type="text/javascript";k.async=!0;k.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===
+  e.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";e=e.getElementsByTagName("script")[0];e.parentNode.insertBefore(k,e)}})(document,window.mixpanel||[])
+
+  
+  mixpanel.init('89c48b1d28413f9f6d544345a141e8c0', {
+    autocapture: true,
+    record_sessions_percent: 100,
+    api_host: 'https://api-eu.mixpanel.com',
+  })
+
+</script>
+<!-- Paste this right before your closing </head> tag -->
+<script type="text/javascript">
+  (function(e,c){if(!c.__SV){var l,h;window.mixpanel=c;c._i=[];c.init=function(q,r,f){function t(d,a){var g=a.split(".");2==g.length&&(d=d[g[0]],a=g[1]);d[a]=function(){d.push([a].concat(Array.prototype.slice.call(arguments,0)))}}var b=c;"undefined"!==typeof f?b=c[f]=[]:f="mixpanel";b.people=b.people||[];b.toString=function(d){var a="mixpanel";"mixpanel"!==f&&(a+="."+f);d||(a+=" (stub)");return a};b.people.toString=function(){return b.toString(1)+".people (stub)"};l="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders start_session_recording stop_session_recording people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");
+  for(h=0;h<l.length;h++)t(b,l[h]);var n="set set_once union unset remove delete".split(" ");b.get_group=function(){function d(p){a[p]=function(){b.push([g,[p].concat(Array.prototype.slice.call(arguments,0))])}}for(var a={},g=["get_group"].concat(Array.prototype.slice.call(arguments,0)),m=0;m<n.length;m++)d(n[m]);return a};c._i.push([q,r,f])};c.__SV=1.2;var k=e.createElement("script");k.type="text/javascript";k.async=!0;k.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===
+  e.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";e=e.getElementsByTagName("script")[0];e.parentNode.insertBefore(k,e)}})(document,window.mixpanel||[])
+
+  
+  mixpanel.init('89c48b1d28413f9f6d544345a141e8c0', {
+    autocapture: true,
+    record_sessions_percent: 100,
+    api_host: 'https://api-eu.mixpanel.com',
+  })
+
+</script>
+<script src="ai-agent-widget.js"></script>
+</body>
+</html>

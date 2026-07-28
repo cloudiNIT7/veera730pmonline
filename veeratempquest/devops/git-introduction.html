@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Intro | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#3b82f6;--correct:#10b981;--wrong:#ef4444;--neutral:#a78bfa}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(59,130,246,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#3b82f6,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 600px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:780px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(59, 130, 246, 0.05)}
+.option.disabled{cursor:default}
+
+/* HIGH VISIBILITY HIGHLIGHTING */
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(59, 130, 246, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="devops.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">GIT_CORE_PROTOCOL_04</div>
+    <h1>Git Introduction</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Final Integrity Result</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">Git fundamental logic verified. Session cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_EXAM</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is Git?",opts:["A programming language","A distributed version control system that tracks changes in source code","A cloud hosting service","A project management tool"],ans:1,exp:"Git is a free, open-source distributed version control system (DVCS) that allows for non-linear development."},
+  {q:"Who created Git and in which year?",opts:["James Gosling, 2000","Linus Torvalds, 2005","Guido van Rossum, 1991","Mark Zuckerberg, 2008"],ans:1,exp:"Linus Torvalds created Git in 2005 specifically to manage the Linux kernel development process."},
+  {q:"What is the main difference between Git and centralized VCS like SVN?",opts:["Git requires internet","Git is distributed — every developer has a full copy of the repo","Git cannot handle branching","Git only works on Linux"],ans:1,exp:"In a distributed system, everyone has the complete history locally, allowing for offline work and better redundancy."},
+  {q:"Which of the following is a key feature of Git?",opts:["Stores only latest version","Branching is slow","Supports non-linear development through cheap branching","Requires internet"],ans:2,exp:"Git's branching model is its 'killer feature' because branches are just tiny files pointing to commit hashes."},
+  {q:"How does Git fundamentally think about data?",opts:["As a series of deltas","As snapshots of the filesystem at each commit","As a linear list of mods","As file contents only"],ans:1,exp:"Unlike older systems that store file differences (deltas), Git stores a reference to a snapshot of what the file looked like."},
+  {q:"What is the Git 'Working Directory'?",opts:["The .git folder","The local copy of one version of a project that you actively work on","A remote server","Staging area"],ans:1,exp:"The working directory is where you actually edit your files before telling Git to remember the changes."},
+  {q:"What are the three main states that files can be in with Git?",opts:["New, Changed, Saved","Modified, Staged, Committed","Untracked, Tracked, Deleted","Open, Closed, Merged"],ans:1,exp:"Files move from modified (edited) to staged (ready) to committed (recorded in database)."},
+  {q:"What is the Git Staging Area (Index)?",opts:["Remote server","A file that stores information about what will go into the next commit","The .git folder","A backup"],ans:1,exp:"Staging allows you to selectively choose which changes you want to include in your next snapshot."},
+  {q:"Which command is used to add files to the staging area?",opts:["git commit","git stage","git add","git push"],ans:2,exp:"The 'git add' command moves changes from the working tree into the index (staging area)."},
+  {q:"What does the '.git' directory contain?",opts:["Project source files","The Git repository database including objects, refs, and config","Only commit history","Only staged files"],ans:1,exp:"The .git folder is the brain of your repository; deleting it removes all version control history."},
+  {q:"What is the correct basic Git workflow sequence?",opts:["Commit → Stage → Modify","Modify files → Stage files → Commit","Push → Pull → Commit","Init → Push → Merge"],ans:1,exp:"You edit first, then stage the specific edits, and finally commit that group of changes."},
+  {q:"What does 'git init' do?",opts:["Clones a repo","Creates a new empty Git repository by creating the .git directory","Stages all files","Pushes code"],ans:1,exp:"Initializing creates the underlying metadata structures Git needs to track the current folder."},
+  {q:"What is a Git 'commit'?",opts:["Uploading to GitHub","A snapshot of staged changes saved to the repo with a unique hash ID","Merging branches","Deleting files"],ans:1,exp:"A commit is a permanent record of a specific state of your project, identifiable by its SHA-1 hash."},
+  {q:"What hashing algorithm does Git use to identify objects?",opts:["MD5","SHA-256","SHA-1","Base64"],ans:2,exp:"Git uses SHA-1 to ensure data integrity; if a file changes even slightly, the hash becomes entirely different."},
+  {q:"Which feature allows developers to work on features simultaneously without interference?",opts:["Stashing","Tagging","Branching","Rebasing"],ans:2,exp:"Branching creates an isolated workspace where you can experiment without breaking the 'main' code."},
+  {q:"What does 'git status' show?",opts:["List of commits","Current state of working directory and staging area","List of branches","Remote URL"],ans:1,exp:"Status is the most frequent command; it tells you what Git is seeing and what it's ready to record."},
+  {q:"What is an 'untracked' file in Git?",opts:["Deleted file","A new file Git hasn't been told to track yet","Failed commit","Corrupted file"],ans:1,exp:"Untracked files are files in your folder that Git is currently ignoring because they haven't been 'added' yet."},
+  {q:"What is the purpose of a .gitignore file?",opts:["Store messages","List files and patterns Git should intentionally ignore","Configure settings","Store branches"],ans:1,exp:"Gitignore prevents junk files (logs, dependencies) from being accidentally committed to the project."},
+  {q:"What does 'git log' display?",opts:["Staged only","The commit history — list of hashes, authors, and dates","Modified files","Remote info"],ans:1,exp:"Log allows you to look back through time and see the evolution of the codebase."},
+  {q:"What is a 'repository' in Git?",opts:["Cloud bucket","A database storing all versions of project files and history","A branch type","A message"],ans:1,exp:"The repository is the collection of all snapshots and the history of how they are related."},
+  {q:"What does 'git clone' do?",opts:["Creates empty repo","Makes a full local copy of an existing remote repository","Stages all","Merges"],ans:1,exp:"Cloning downloads the entire history and all branches from a server to your local machine."},
+  {q:"What happens after you run 'git add'?",opts:["Files go remote","Files move from working directory to staging area","Files deleted","Committed"],ans:1,exp:"After adding, Git has a 'draft' of the changes you want to finalize in the next commit."},
+  {q:"What is 'HEAD' in Git?",opts:["First commit","A pointer referring to the current branch or commit you are on","Remote URL","Staging contents"],ans:1,exp:"HEAD is like a 'You Are Here' sticker on a map; it indicates your current context."},
+  {q:"Which feature enables multiple devs to work without overwriting work?",opts:["Tags","Hooks","Distributed development with branching and merging","Stash only"],ans:2,exp:"The combination of everyone having their own repo and using branches makes concurrent work safe."},
+  {q:"What does 'git diff' show?",opts:["Branches","Differences between working directory and staging area","Commit history","Remotes"],ans:1,exp:"Diff shows exactly which lines of code were modified since your last staging action."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('gitIntroMasteryCache_v1');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('gitIntroMasteryCache_v1', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH EXAM ✓" : "NEXT STEP →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('gitIntroMasteryCache_v1');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 25`;
+}
+
+function retryQuiz() { localStorage.removeItem('gitIntroMasteryCache_v1'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

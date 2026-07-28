@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArgoCD Mastery | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#e879f9;--correct:#10b981;--wrong:#ef4444;--neutral:#3b82f6}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(232,121,249,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(232,121,249,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,121,249,.08);border:1px solid rgba(232,121,249,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#e879f9,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 600px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--neutral); color: var(--neutral); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:780px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(232, 121, 249, 0.05)}
+.option.disabled{cursor:default}
+
+/* FIXED HIGHLIGHT LOGIC */
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(232, 121, 249, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="devops.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">GITOPS_PROTOCOL_01</div>
+    <h1>ArgoCD Mastery</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Sync State: Verified</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">GitOps reconciliation complete. Application state cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_RECONCILIATION</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q: "What is GitOps?", opts: ["A branching strategy","Model using Git as the single source of truth for infra and apps","A CI script","A container registry"], ans: 1, exp: "GitOps uses Git repositories as the authoritative source for declarative infrastructure and applications."},
+  {q: "What is ArgoCD?", opts: ["A CI server","Declarative GitOps continuous delivery tool for Kubernetes","A Docker registry","A monitoring dashboard"], ans: 1, exp: "ArgoCD automates the deployment of desired application states specified in Git repositories."},
+  {q: "Default namespace for ArgoCD installation?", opts: ["default","kube-system","argocd","gitops"], ans: 2, exp: "Standard installations reside in the 'argocd' namespace to isolate management components."},
+  {q: "Primary command to install ArgoCD via manifest?", opts: ["helm install","kubectl apply -f https://.../install.yaml","argocd install","kubectl run"], ans: 1, exp: "Official documentation provides a YAML manifest that sets up all necessary CRDs and controllers."},
+  {q: "What is an ArgoCD Application?", opts: ["A Docker image","CRD defining source Git and destination K8s cluster","A Helm chart","A pipeline"], ans: 1, exp: "The Application resource links a specific path in a Git repo to a target cluster and namespace."},
+  {q: "What does 'Sync' mean in ArgoCD?", opts: ["Pushing code","Process of matching live cluster state to Git desired state","Pulling images","Scaling pods"], ans: 1, exp: "Reconciliation (Syncing) ensures that whatever is in Git is exactly what is running in Kubernetes."},
+  {q: "Effect of 'Sync Policy: Automated'?", opts: ["Manual triggers","Automatically syncs cluster when Git changes are detected","Disables syncing","Schedule-only"], ans: 1, exp: "Automated sync removes the need for manual approval to deploy changes after a Git commit."},
+  {q: "Default port for ArgoCD API Server?", opts: ["8080","443","8443","3000"], ans: 1, exp: "The argocd-server service defaults to HTTPS port 443 for secure communication."},
+  {q: "How to retrieve initial admin password?", opts: ["'admin'","From the initial-admin-secret in K8s","Server logs","Inside install.yaml"], ans: 1, exp: "ArgoCD creates a unique password during installation stored as a base64 encoded secret."},
+  {q: "What does 'Health Status' represent?", opts: ["Git connection","Whether deployed resources (Pods/Svcs) are operational","Network speed","Storage"], ans: 1, exp: "ArgoCD monitors the workload status to ensure the app isn't just deployed, but actually running correctly."},
+  {q: "What is the 'App of Apps' pattern?", opts: ["Sidecar containers","A parent Application managing multiple child Applications","Multi-cluster","Nested Helm"], ans: 1, exp: "This pattern allows a single 'root' application to bootstrap an entire environment of services."},
+  {q: "ArgoCD 'OutOfSync' status meaning?", opts: ["Cluster down","Git state differs from live cluster state","ArgoCD disconnected","Pod crash"], ans: 1, exp: "OutOfSync indicates that a new commit exists in Git that hasn't been applied to K8s yet."},
+  {q: "Feature that reverts unauthorized manual changes?", opts: ["Auto-healing","Self-Sync","Auto-Prune","Rollback"], ans: 0, exp: "Auto-healing detects manual cluster edits and immediately overwrites them with the Git-defined state."},
+  {q: "What does 'Auto-Prune' do?", opts: ["Deletes commits","Deletes K8s resources removed from Git","Cleans images","Prunes nodes"], ans: 1, exp: "Pruning ensures that if you delete a manifest from Git, the corresponding object is removed from K8s."},
+  {q: "CLI command to create a new application?", opts: ["argocd app deploy","argocd app create","argocd sync","argocd init"], ans: 1, exp: "The 'app create' command defines the source repo, path, and destination cluster parameters."},
+  {q: "Source of Truth in GitOps?", opts: ["K8s API","The Git repository","Container registry","Jenkins"], ans: 1, exp: "In GitOps, we never treat the live cluster as the source of truth; only the code in Git matters."},
+  {q: "How does ArgoCD detect Git changes?", opts: ["Jenkins link","Polling (3m default) or Webhooks","Registry monitor","Slack"], ans: 1, exp: "ArgoCD periodically checks the repo or reacts instantly to Webhook signals from GitHub/GitLab."},
+  {q: "Resource type ArgoCD uses for apps?", opts: ["Deployment","ConfigMap","CRD (Custom Resource Definition)","StatefulSet"], ans: 2, exp: "ArgoCD extends the K8s API with its own 'Application' and 'AppProject' custom types."},
+  {q: "A major benefit of GitOps workflow?", opts: ["No K8s","Full audit trail and easy rollbacks","Faster builds","No SSH"], ans: 1, exp: "Since every change is a commit, you have a perfect history of who changed what and when."},
+  {q: "ArgoCD 'Project' (AppProject) concept?", opts: ["Git board","Multi-tenancy grouping and access control","Namespace","Helm group"], ans: 1, exp: "Projects allow admins to restrict which repos and clusters a specific team can access."},
+  {q: "Safe command for local UI access?", opts: ["kubectl expose","kubectl port-forward svc/argocd-server 8080:443","argocd ui","kubectl proxy"], ans: 1, exp: "Port-forwarding is the most common way to access the dashboard without exposing it to the public web."},
+  {q: "Mechanism for SSO integration?", opts: ["LDAP only","Dex (OIDC connector)","Basic auth","RBAC only"], ans: 1, exp: "Dex allows ArgoCD to leverage external providers like GitHub or Google for user logins."},
+  {q: "Jenkins vs ArgoCD relationship?", opts: ["Interchangeable","Jenkins handles CI; ArgoCD handles CD","ArgoCD replaces Jenkins","Opposites"], ans: 1, exp: "Jenkins builds and pushes the image; ArgoCD ensures the cluster runs that specific version."},
+  {q: "Manual sync CLI command?", opts: ["argocd sync","argocd app sync <name>","argocd deploy","argocd refresh"], ans: 1, exp: "This forces a manual reconciliation regardless of the automated sync policy settings."},
+  {q: "Why is Pull-based (ArgoCD) safer than Push-based?", opts: ["More logic","Cluster credentials never leave the cluster","Faster","Easier"], ans: 1, exp: "Because ArgoCD runs inside the cluster, you don't need to store Kubeconfigs in external CI tools."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('argocdMasteryCache_v2');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp,
+            tag: "GITOPS_LOGIC"
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('argocdMasteryCache_v2', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH EXAM ✓" : "NEXT STEP →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('argocdMasteryCache_v2');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 25`;
+}
+
+function retryQuiz() { localStorage.removeItem('argocdMasteryCache_v2'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

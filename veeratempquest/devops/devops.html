@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps MCQs — Veera Sir</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;
+  --text:#dce8f5;--muted:#4a6080;
+  --fundamentals:#10b981;
+  --shell:#f59e0b;
+  --webserver:#f97316;
+  --vcs:#3b82f6;
+  --build:#a78bfa;
+  --cicd:#ec4899;
+  --container:#06b6d4;
+  --orchestration:#84cc16;
+  --gitops:#e879f9;
+  --monitoring:#fb923c;
+  --iac:#ef4444;
+  --config:#facc15;
+  --scripting:#38bdf8;
+}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(16,185,129,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.03) 1px,transparent 1px);background-size:40px 40px}
+.bg-glow{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(16,185,129,.07) 0%,transparent 70%);z-index:0;pointer-events:none}
+
+.back-nav{position:relative;z-index:2;padding:18px 40px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.back-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:6px 12px;transition:color .2s,border-color .2s}
+.back-btn:hover{color:var(--fundamentals);border-color:var(--fundamentals)}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted)}
+.breadcrumb span{color:var(--fundamentals)}
+
+header{position:relative;z-index:1;padding:50px 40px 44px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-badge{display:inline-block;background:linear-gradient(135deg,#0d2a1a,#0d1a2e);border:1px solid var(--border2);border-radius:12px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--fundamentals);letter-spacing:3px;text-transform:uppercase;margin-bottom:22px}
+h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;letter-spacing:-1px;line-height:1.1;background:linear-gradient(135deg,#10b981 15%,#3b82f6 55%,#e879f9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px}
+.subtitle{color:var(--muted);font-size:1rem;max-width:540px;margin:0 auto 36px;line-height:1.6}
+.stats-row{display:flex;justify-content:center;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;max-width:480px;margin:0 auto}
+.stat{flex:1;padding:18px 12px;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-n{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--fundamentals)}
+.stat-l{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+
+.search-wrap{position:relative;z-index:1;max-width:500px;margin:36px auto 0;padding:0 40px}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 18px 12px 44px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--fundamentals)}
+.search-input::placeholder{color:var(--muted)}
+.search-icon{position:absolute;left:54px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem}
+
+.main{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:50px 40px 80px}
+.cat-section{margin-bottom:48px}
+.cat-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cat-name{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:3px}
+.cat-count{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted)}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.topic-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 22px 18px;text-decoration:none;color:inherit;display:block;position:relative;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
+.topic-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c-glow),transparent 60%);opacity:0;transition:opacity .3s}
+.topic-card:hover{transform:translateY(-4px);border-color:var(--c-accent);box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 0 1px var(--c-accent)}
+.topic-card:hover::after{opacity:1}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;position:relative;z-index:1}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:4px}
+.topic-icon{font-size:1.4rem}
+.topic-title{font-size:1rem;font-weight:700;line-height:1.3;margin-bottom:8px;position:relative;z-index:1;color:var(--c-accent)}
+.topic-bullets{display:flex;flex-direction:column;gap:3px;margin-bottom:14px;position:relative;z-index:1}
+.bullet{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:6px;line-height:1.4}
+.bullet::before{content:'›';color:var(--c-accent);font-size:.8rem;flex-shrink:0}
+.card-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);position:relative;z-index:1}
+.mcq-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;background:var(--c-accent);color:#000;padding:3px 8px;border-radius:4px;opacity:.9}
+.file-badge{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:4px}
+.card-arrow{color:var(--c-accent);font-size:.9rem;transition:transform .2s}
+.topic-card:hover .card-arrow{transform:translateX(4px)}
+.hidden{display:none!important}
+
+/* Category colors */
+.cat-fundamentals{--c-accent:var(--fundamentals);--c-glow:rgba(16,185,129,.06)}
+.cat-shell{--c-accent:var(--shell);--c-glow:rgba(245,158,11,.06)}
+.cat-webserver{--c-accent:var(--webserver);--c-glow:rgba(249,115,22,.06)}
+.cat-vcs{--c-accent:var(--vcs);--c-glow:rgba(59,130,246,.06)}
+.cat-build{--c-accent:var(--build);--c-glow:rgba(167,139,250,.06)}
+.cat-cicd{--c-accent:var(--cicd);--c-glow:rgba(236,72,153,.06)}
+.cat-container{--c-accent:var(--container);--c-glow:rgba(6,182,212,.06)}
+.cat-orchestration{--c-accent:var(--orchestration);--c-glow:rgba(132,204,22,.06)}
+.cat-gitops{--c-accent:var(--gitops);--c-glow:rgba(232,121,249,.06)}
+.cat-monitoring{--c-accent:var(--monitoring);--c-glow:rgba(251,146,60,.06)}
+.cat-iac{--c-accent:var(--iac);--c-glow:rgba(239,68,68,.06)}
+.cat-config{--c-accent:var(--config);--c-glow:rgba(250,204,21,.06)}
+.cat-scripting{--c-accent:var(--scripting);--c-glow:rgba(56,189,248,.06)}
+
+footer{text-align:center;padding:24px;color:var(--muted);font-size:.75rem;font-family:'JetBrains Mono',monospace;position:relative;z-index:1;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="back-nav">
+  <a class="back-btn" href="../index.html">← Home</a>
+  <span class="breadcrumb">Home / <span>DevOps MCQs</span></span>
+</div>
+
+<header>
+  <div class="logo-badge">⚙ DevOps MCQ HUB · Veera Sir · NareshIT</div>
+  <h1>DevOps MCQs</h1>
+  <p class="subtitle">34 topic-wise MCQ sets covering the complete DevOps pipeline — Shell to Kubernetes, Jenkins to Terraform</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n">34</div><div class="stat-l">Topics</div></div>
+    <div class="stat"><div class="stat-n">850</div><div class="stat-l">Questions</div></div>
+    <div class="stat"><div class="stat-n">13</div><div class="stat-l">Categories</div></div>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <span class="search-icon">🔍</span>
+  <input class="search-input" type="text" placeholder="Search DevOps topics..." oninput="filterTopics(this.value)">
+</div>
+
+<div class="main" id="mainContent">
+
+  <!-- DEVOPS FUNDAMENTALS -->
+  <div class="cat-section" data-cat="fundamentals">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--fundamentals)"></div>
+      <span class="cat-name" style="color:var(--fundamentals)">DevOps Fundamentals</span>
+      <span class="cat-count">1 topic · 25 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-fundamentals" href="devops-fundamentals.html">
+        <div class="card-top"><span class="topic-num">#01</span><span class="topic-icon">🚀</span></div>
+        <div class="topic-title">DevOps Overview</div>
+        <div class="topic-bullets">
+          <div class="bullet">What is DevOps? & Market Trends</div>
+          <div class="bullet">DevOps Engineer Skills</div>
+          <div class="bullet">Delivery Pipeline & Ecosystem</div>
+          <div class="bullet">Shell Script Basics</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">devops-fundamentals.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- SHELL SCRIPTING -->
+  <div class="cat-section" data-cat="shell">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--shell)"></div>
+      <span class="cat-name" style="color:var(--shell)">Shell Scripting</span>
+      <span class="cat-count">1 topic · 25 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-shell" href="shell-scripting.html">
+        <div class="card-top"><span class="topic-num">#02</span><span class="topic-icon">🖥️</span></div>
+        <div class="topic-title">Shell Scripting</div>
+        <div class="topic-bullets">
+          <div class="bullet">Types of Shells & Variables</div>
+          <div class="bullet">Types of Variables & Operators</div>
+          <div class="bullet">Input Arguments</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">shell-scripting.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- WEB SERVERS -->
+  <div class="cat-section" data-cat="webserver">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--webserver)"></div>
+      <span class="cat-name" style="color:var(--webserver)">Web Servers</span>
+      <span class="cat-count">1 topic · 25 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-webserver" href="web-servers.html">
+        <div class="card-top"><span class="topic-num">#03</span><span class="topic-icon">🌐</span></div>
+        <div class="topic-title">Apache & Tomcat</div>
+        <div class="topic-bullets">
+          <div class="bullet">Apache Webserver Installation & Config</div>
+          <div class="bullet">Tomcat Application Server</div>
+          <div class="bullet">Tomcat Manager & App Management</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">web-servers.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- VERSION CONTROL -->
+  <div class="cat-section" data-cat="vcs">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--vcs)"></div>
+      <span class="cat-name" style="color:var(--vcs)">Version Control (Git)</span>
+      <span class="cat-count">6 topics · 150 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-vcs" href="git-introduction.html">
+        <div class="card-top"><span class="topic-num">#04</span><span class="topic-icon">📂</span></div>
+        <div class="topic-title">Git Introduction</div>
+        <div class="topic-bullets">
+          <div class="bullet">What is Git? How Git Works</div>
+          <div class="bullet">Features & Git Workflow</div>
+          <div class="bullet">Working Directory & Staging</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">git-introduction.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-vcs" href="git-repositories.html">
+        <div class="card-top"><span class="topic-num">#05</span><span class="topic-icon">🗃️</span></div>
+        <div class="topic-title">Git Repositories</div>
+        <div class="topic-bullets">
+          <div class="bullet">Local Repository</div>
+          <div class="bullet">Remote Repository</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">git-repositories.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-vcs" href="git-setup.html">
+        <div class="card-top"><span class="topic-num">#06</span><span class="topic-icon">⚙️</span></div>
+        <div class="topic-title">Git Setup</div>
+        <div class="topic-bullets">
+          <div class="bullet">Installing Git</div>
+          <div class="bullet">First-Time Git Setup</div>
+          <div class="bullet">Getting a Git Repository</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">git-setup.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-vcs" href="git-commands.html">
+        <div class="card-top"><span class="topic-num">#07</span><span class="topic-icon">⌨️</span></div>
+        <div class="topic-title">Git Commands</div>
+        <div class="topic-bullets">
+          <div class="bullet">Recording Changes to Repository</div>
+          <div class="bullet">Viewing Commit History</div>
+          <div class="bullet">Undoing Things & Git Forking</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">git-commands.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-vcs" href="git-remotes.html">
+        <div class="card-top"><span class="topic-num">#08</span><span class="topic-icon">🔗</span></div>
+        <div class="topic-title">Git Remotes</div>
+        <div class="topic-bullets">
+          <div class="bullet">Showing & Adding Remotes</div>
+          <div class="bullet">Fetching, Pulling & Pushing</div>
+          <div class="bullet">Inspecting, Removing & Renaming</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">git-remotes.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-vcs" href="git-branching.html">
+        <div class="card-top"><span class="topic-num">#09</span><span class="topic-icon">🌿</span></div>
+        <div class="topic-title">Branching & Merging</div>
+        <div class="topic-bullets">
+          <div class="bullet">Branching Basics & Merging</div>
+          <div class="bullet">Branch Management & Workflows</div>
+          <div class="bullet">Remote Branches & Rebasing</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">git-branching.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- BUILD TOOLS -->
+  <div class="cat-section" data-cat="build">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--build)"></div>
+      <span class="cat-name" style="color:var(--build)">Build Tools & Code Quality</span>
+      <span class="cat-count">2 topics · 50 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-build" href="maven.html">
+        <div class="card-top"><span class="topic-num">#10</span><span class="topic-icon">🏗️</span></div>
+        <div class="topic-title">Maven</div>
+        <div class="topic-bullets">
+          <div class="bullet">Maven Installation & POM Builds</div>
+          <div class="bullet">Build Lifecycle & Repositories</div>
+          <div class="bullet">GroupID, ArtifactID, Dependencies</div>
+          <div class="bullet">Maven Plugins</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">maven.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-build" href="sonarqube.html">
+        <div class="card-top"><span class="topic-num">#11</span><span class="topic-icon">🔍</span></div>
+        <div class="topic-title">SonarQube</div>
+        <div class="topic-bullets">
+          <div class="bullet">Installation & Configuration</div>
+          <div class="bullet">Code Scan & Dashboard</div>
+          <div class="bullet">Maven + SonarQube Integration</div>
+          <div class="bullet">Real-Time Use Cases</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">sonarqube.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- CI/CD -->
+  <div class="cat-section" data-cat="cicd">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--cicd)"></div>
+      <span class="cat-name" style="color:var(--cicd)">CI/CD Pipelines</span>
+      <span class="cat-count">6 topics · 150 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-cicd" href="jenkins-introduction.html">
+        <div class="card-top"><span class="topic-num">#12</span><span class="topic-icon">🔄</span></div>
+        <div class="topic-title">Jenkins Introduction</div>
+        <div class="topic-bullets">
+          <div class="bullet">CI with Jenkins & Configuration</div>
+          <div class="bullet">Jenkins Management</div>
+          <div class="bullet">POLL SCM & Scheduled Builds</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">jenkins-introduction.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-cicd" href="jenkins-advanced.html">
+        <div class="card-top"><span class="topic-num">#13</span><span class="topic-icon">⚡</span></div>
+        <div class="topic-title">Jenkins Advanced</div>
+        <div class="topic-bullets">
+          <div class="bullet">Master & Slave Node Config</div>
+          <div class="bullet">Workspace Management</div>
+          <div class="bullet">Securing Jenkins: Authentication</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">jenkins-advanced.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-cicd" href="jenkins-security.html">
+        <div class="card-top"><span class="topic-num">#14</span><span class="topic-icon">🔐</span></div>
+        <div class="topic-title">Jenkins Security & Plugins</div>
+        <div class="topic-bullets">
+          <div class="bullet">Authorization & Confidentiality</div>
+          <div class="bullet">Creating Users</div>
+          <div class="bullet">SCM, Build & Test Plugins</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">jenkins-security.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-cicd" href="jenkins-integrations.html">
+        <div class="card-top"><span class="topic-num">#15</span><span class="topic-icon">🔌</span></div>
+        <div class="topic-title">Jenkins Integrations</div>
+        <div class="topic-bullets">
+          <div class="bullet">EC2, Lambda, S3, GitHub, Docker</div>
+          <div class="bullet">JFrog, SonarQube, Kubernetes</div>
+          <div class="bullet">Trivy, ArgoCD Integration</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">jenkins-integrations.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-cicd" href="gitlab-cicd.html">
+        <div class="card-top"><span class="topic-num">#16</span><span class="topic-icon">🦊</span></div>
+        <div class="topic-title">GitLab CI/CD</div>
+        <div class="topic-bullets">
+          <div class="bullet">GitLab CI/CD Pipelines</div>
+          <div class="bullet">GitLab Runners & Stages</div>
+          <div class="bullet">Pipeline Configuration (.gitlab-ci.yml)</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">gitlab-cicd.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-cicd" href="github-actions.html">
+        <div class="card-top"><span class="topic-num">#17</span><span class="topic-icon">🐙</span></div>
+        <div class="topic-title">GitHub Actions</div>
+        <div class="topic-bullets">
+          <div class="bullet">GitHub Actions Workflows</div>
+          <div class="bullet">Actions, Jobs & Steps</div>
+          <div class="bullet">Secrets & Environment Variables</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">github-actions.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- CONTAINERIZATION -->
+  <div class="cat-section" data-cat="container">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--container)"></div>
+      <span class="cat-name" style="color:var(--container)">Containerization</span>
+      <span class="cat-count">2 topics · 50 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-container" href="docker.html">
+        <div class="card-top"><span class="topic-num">#18</span><span class="topic-icon">🐳</span></div>
+        <div class="topic-title">Docker</div>
+        <div class="topic-bullets">
+          <div class="bullet">Docker Images, Containers & Engine</div>
+          <div class="bullet">Docker CLI, Compose & Hub</div>
+          <div class="bullet">Networking & Volumes</div>
+          <div class="bullet">Multi-stage Dockerfiles</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">docker.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-container" href="jfrog.html">
+        <div class="card-top"><span class="topic-num">#19</span><span class="topic-icon">📦</span></div>
+        <div class="topic-title">JFrog Artifactory</div>
+        <div class="topic-bullets">
+          <div class="bullet">JFrog Installation</div>
+          <div class="bullet">Storing Artifacts into JFrog Repo</div>
+          <div class="bullet">Push and Pull Steps</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">jfrog.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ORCHESTRATION -->
+  <div class="cat-section" data-cat="orchestration">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--orchestration)"></div>
+      <span class="cat-name" style="color:var(--orchestration)">Container Orchestration</span>
+      <span class="cat-count">3 topics · 75 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-orchestration" href="kubernetes.html">
+        <div class="card-top"><span class="topic-num">#20</span><span class="topic-icon">☸️</span></div>
+        <div class="topic-title">Kubernetes</div>
+        <div class="topic-bullets">
+          <div class="bullet">Cluster Architecture & RBAC</div>
+          <div class="bullet">Spinning up K8s on EC2 VMs</div>
+          <div class="bullet">Exploring Cluster & YAML</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">kubernetes.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-orchestration" href="kubernetes-deployments.html">
+        <div class="card-top"><span class="topic-num">#21</span><span class="topic-icon">🚢</span></div>
+        <div class="topic-title">Kubernetes Deployments</div>
+        <div class="topic-bullets">
+          <div class="bullet">Deployments, Services & Dashboard</div>
+          <div class="bullet">HPA, Cluster Autoscaler & Ingress</div>
+          <div class="bullet">Rolling Updates & K8s Probes</div>
+          <div class="bullet">Service Accounts</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">kubernetes-deployments.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-orchestration" href="kubernetes-advanced.html">
+        <div class="card-top"><span class="topic-num">#22</span><span class="topic-icon">🔬</span></div>
+        <div class="topic-title">Kubernetes Advanced</div>
+        <div class="topic-bullets">
+          <div class="bullet">Helm Charts & Schedulers</div>
+          <div class="bullet">Metric Server & K8s Volumes</div>
+          <div class="bullet">EKS/AKS/GKE & EFK Stack</div>
+          <div class="bullet">Helm Install & Deploy</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">kubernetes-advanced.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- GITOPS -->
+  <div class="cat-section" data-cat="gitops">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--gitops)"></div>
+      <span class="cat-name" style="color:var(--gitops)">GitOps</span>
+      <span class="cat-count">1 topic · 25 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-gitops" href="argocd.html">
+        <div class="card-top"><span class="topic-num">#23</span><span class="topic-icon">🐙</span></div>
+        <div class="topic-title">ArgoCD</div>
+        <div class="topic-bullets">
+          <div class="bullet">ArgoCD Installation</div>
+          <div class="bullet">Configurations & CD</div>
+          <div class="bullet">GitOps Workflow</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">argocd.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- MONITORING -->
+  <div class="cat-section" data-cat="monitoring">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--monitoring)"></div>
+      <span class="cat-name" style="color:var(--monitoring)">Monitoring</span>
+      <span class="cat-count">1 topic · 25 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-monitoring" href="grafana.html">
+        <div class="card-top"><span class="topic-num">#24</span><span class="topic-icon">📊</span></div>
+        <div class="topic-title">Grafana & Prometheus</div>
+        <div class="topic-bullets">
+          <div class="bullet">Introduction to Continuous Monitoring</div>
+          <div class="bullet">Installing & Configuring Grafana</div>
+          <div class="bullet">Prometheus + K8s Integration</div>
+          <div class="bullet">Grafana Objects & Dashboards</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">grafana.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- CONFIGURATION MANAGEMENT -->
+  <div class="cat-section" data-cat="config">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--config)"></div>
+      <span class="cat-name" style="color:var(--config)">Configuration Management</span>
+      <span class="cat-count">3 topics · 75 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-config" href="ansible-introduction.html">
+        <div class="card-top"><span class="topic-num">#25</span><span class="topic-icon">🤖</span></div>
+        <div class="topic-title">Ansible Introduction</div>
+        <div class="topic-bullets">
+          <div class="bullet">Ansible Server Configuration</div>
+          <div class="bullet">Infrastructure Management</div>
+          <div class="bullet">SSH Connection in Ansible Master</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">ansible-introduction.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-config" href="ansible-inventory.html">
+        <div class="card-top"><span class="topic-num">#26</span><span class="topic-icon">📋</span></div>
+        <div class="topic-title">Ansible Inventory & Commands</div>
+        <div class="topic-bullets">
+          <div class="bullet">YAML Scripts & Host Inventory</div>
+          <div class="bullet">Host & Group Variables</div>
+          <div class="bullet">Ad-hoc Commands</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">ansible-inventory.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-config" href="ansible-playbooks.html">
+        <div class="card-top"><span class="topic-num">#27</span><span class="topic-icon">📜</span></div>
+        <div class="topic-title">Ansible Playbooks</div>
+        <div class="topic-bullets">
+          <div class="bullet">Playbooks, Variables & Conditionals</div>
+          <div class="bullet">Loops, Blocks & Handlers</div>
+          <div class="bullet">Templates, Modules & Roles</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">ansible-playbooks.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- INFRASTRUCTURE AS CODE -->
+  <div class="cat-section" data-cat="iac">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--iac)"></div>
+      <span class="cat-name" style="color:var(--iac)">Infrastructure as Code</span>
+      <span class="cat-count">6 topics · 150 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-iac" href="terraform-introduction.html">
+        <div class="card-top"><span class="topic-num">#28</span><span class="topic-icon">🏛️</span></div>
+        <div class="topic-title">Terraform Introduction</div>
+        <div class="topic-bullets">
+          <div class="bullet">Infrastructure Automation</div>
+          <div class="bullet">Providers, Resources & Syntax</div>
+          <div class="bullet">Your First Script (main.tf)</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">terraform-introduction.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-iac" href="terraform-basics.html">
+        <div class="card-top"><span class="topic-num">#29</span><span class="topic-icon">🔩</span></div>
+        <div class="topic-title">Terraform Basics</div>
+        <div class="topic-bullets">
+          <div class="bullet">Terraform Registry & Workflow</div>
+          <div class="bullet">Custom Network & EC2 Creation</div>
+          <div class="bullet">Variables, Outputs & User Data</div>
+          <div class="bullet">Breaking Down main.tf</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">terraform-basics.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-iac" href="terraform-modules.html">
+        <div class="card-top"><span class="topic-num">#30</span><span class="topic-icon">📦</span></div>
+        <div class="topic-title">Terraform Modules</div>
+        <div class="topic-bullets">
+          <div class="bullet">Module Repositories</div>
+          <div class="bullet">Terraform & Git Registry Modules</div>
+          <div class="bullet">Root Module Lab Exercises</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">terraform-modules.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-iac" href="terraform-state.html">
+        <div class="card-top"><span class="topic-num">#31</span><span class="topic-icon">💾</span></div>
+        <div class="topic-title">Terraform State & Advanced</div>
+        <div class="topic-bullets">
+          <div class="bullet">Remote State & Data Sources</div>
+          <div class="bullet">Lifecycle Rules & Conditionals</div>
+          <div class="bullet">RDS, Lambda, S3, IAM with TF</div>
+          <div class="bullet">Provisioners & Null Resources</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">terraform-state.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-iac" href="terraform-advanced.html">
+        <div class="card-top"><span class="topic-num">#32</span><span class="topic-icon">🧪</span></div>
+        <div class="topic-title">Terraform Best Practices</div>
+        <div class="topic-bullets">
+          <div class="bullet">Multi-Providers & Locals</div>
+          <div class="bullet">For-loops, Conditionals & Best Practices</div>
+          <div class="bullet">EKS, ECS & Fargate with TF</div>
+          <div class="bullet">New Features of Terraform</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">terraform-advanced.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="topic-card cat-iac" href="opentofu.html">
+        <div class="card-top"><span class="topic-num">#33</span><span class="topic-icon">🔓</span></div>
+        <div class="topic-title">OpenTofu</div>
+        <div class="topic-bullets">
+          <div class="bullet">OpenTofu Overview</div>
+          <div class="bullet">Open-Source Terraform Alternative</div>
+          <div class="bullet">Migration & Compatibility</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">opentofu.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- SCRIPTING -->
+  <div class="cat-section" data-cat="scripting">
+    <div class="cat-header">
+      <div class="cat-dot" style="background:var(--scripting)"></div>
+      <span class="cat-name" style="color:var(--scripting)">Scripting</span>
+      <span class="cat-count">1 topic · 25 questions</span>
+    </div>
+    <div class="cards-grid">
+      <a class="topic-card cat-scripting" href="python-devops.html">
+        <div class="card-top"><span class="topic-num">#34</span><span class="topic-icon">🐍</span></div>
+        <div class="topic-title">Python for DevOps</div>
+        <div class="topic-bullets">
+          <div class="bullet">Lists, Ranges & Tuples</div>
+          <div class="bullet">Input/Output & OOP</div>
+          <div class="bullet">Regular Expressions</div>
+          <div class="bullet">Python Necessity in DevOps</div>
+        </div>
+        <div class="card-bottom">
+          <span class="mcq-badge">25 MCQs</span>
+          <span class="file-badge">python-devops.html</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>DevOps MCQ Hub — 34 Topics · 850 Questions · Full Course Coverage by Veera Sir · NareshIT</footer>
+
+<script>
+function filterTopics(val){
+  const q=val.toLowerCase().trim();
+  document.querySelectorAll('.topic-card').forEach(card=>{
+    const text=card.textContent.toLowerCase();
+    card.classList.toggle('hidden',q&&!text.includes(q));
+  });
+  document.querySelectorAll('.cat-section').forEach(sec=>{
+    const visible=[...sec.querySelectorAll('.topic-card')].some(c=>!c.classList.contains('hidden'));
+    sec.classList.toggle('hidden',q&&!visible);
+  });
+}
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

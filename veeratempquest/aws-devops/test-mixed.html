@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS DevOps Question Paper | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#10b981;--correct:#10b981;--wrong:#ef4444;--neutral:#3b82f6}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(16,185,129,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#e46605,#740a69,#d1d10b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 800px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 900px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--neutral); color: var(--neutral); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:850px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(16, 185, 129, 0.05)}
+.option.disabled{cursor:default}
+
+/* FIXED HIGHLIGHT LOGIC */
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(16, 185, 129, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="overall-test.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">AWS DEVOPS_test by veera sir</div>
+    <h1>AWS DevOps full Assessment</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">80:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/75</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Engineering Audit Complete</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">AWSDevOps scenario logic verified. Assessment state cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_ASSESSMENT</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  // 1-10: CI/CD & General DevOps
+  {q:"In a CI/CD pipeline, a developer pushes faulty code that causes the production deployment to fail. What is the best action to take?",opts:["Roll back to the previous stable version automatically","Manually debug the issue and redeploy when fixed","Ignore the issue and wait for the next deployment","Restart the application and hope it resolves itself"],ans:0,tag:"CI/CD",exp:"<strong>Automatic rollback</strong> to the last known stable version is the best immediate action in a CI/CD pipeline failure. This minimises production downtime while developers investigate and fix the root cause in a safe environment."},
+  {q:"Your application deployment on Kubernetes fails due to missing environment variables. What should you do?",opts:["Hardcode the environment variables in the application code","Use Kubernetes Secrets or ConfigMaps to inject the required values","Restart the pods multiple times until they work","Remove the environment variable dependencies from the application"],ans:1,tag:"Kubernetes",exp:"<strong>Kubernetes Secrets</strong> (for sensitive data like passwords) and <strong>ConfigMaps</strong> (for non-sensitive config) are the correct tools to inject environment variables into pods without hardcoding them in application code."},
+  {q:"A new feature branch is merged into the main branch, causing a performance degradation in production. How should you handle this?",opts:["Immediately revert the merge and investigate the issue","Increase server resources to handle the performance drop","Inform users about the issue and delay fixing it","Ask the developer to manually optimize the code without rolling back"],ans:0,tag:"CI/CD",exp:"<strong>Immediately reverting the merge</strong> restores production performance while the root cause is investigated safely. Adding resources is a temporary workaround that doesn't fix the underlying problem introduced by the merge."},
+  {q:"Your CI/CD pipeline takes over an hour to complete, delaying feature releases. What is the best approach to optimize it?",opts:["Reduce the number of automated tests","Parallelize build and test processes","Manually approve each step before execution","Increase the timeout limit of the pipeline"],ans:1,tag:"CI/CD",exp:"<strong>Parallelizing</strong> build and test stages is the most effective optimization — running independent jobs simultaneously (e.g., unit tests, integration tests, linting) dramatically reduces total pipeline duration without sacrificing quality."},
+  {q:"Your monitoring tool detects a sudden spike in CPU usage for an application running in a cloud-based Kubernetes cluster. What should you do first?",opts:["Scale out by increasing the number of pods automatically","Restart the affected pods and hope it resolves the issue","Disable monitoring to avoid unnecessary alerts","Ignore it if the application is still running"],ans:0,tag:"Monitoring",exp:"<strong>Auto-scaling pods</strong> (via HPA) is the correct first response — it addresses the immediate load spike. After scaling, investigate logs and metrics to identify whether the spike is from a traffic surge, memory leak, or runaway process."},
+  {q:"A team member accidentally deletes a critical production database. How should you recover?",opts:["Restore from the latest backup","Recreate the database manually","Ask the developer to rewrite the lost data","Blame the team member and do nothing"],ans:0,tag:"Disaster Recovery",exp:"<strong>Restore from the latest backup</strong> is the only correct approach. This is why regular automated backups, point-in-time recovery (PITR), and tested restore procedures are critical DevOps practices for production databases."},
+  {q:"You are managing infrastructure as code (IaC) using Terraform. A team member manually modifies cloud resources outside of Terraform. What should you do?",opts:["Run terraform apply to override the manual changes","Manually update Terraform state to reflect the changes","Ignore the manual changes and continue using Terraform","Delete the manually modified resources"],ans:0,tag:"Terraform",exp:"<code>terraform apply</code> will detect configuration drift and restore resources to the desired state defined in code. To prevent this, enforce an IaC-only policy and use <strong>terraform import</strong> to bring untracked manual changes under Terraform management."},
+  {q:"A CI/CD pipeline is frequently failing due to flaky tests. What is the best way to handle this?",opts:["Disable the failing tests","Run tests multiple times and take the best result","Investigate and fix the root cause of the flaky tests","Move the failing tests to a separate pipeline"],ans:2,tag:"CI/CD",exp:"<strong>Fixing the root cause</strong> is the only correct approach. Flaky tests are usually caused by timing issues, external dependencies, shared state, or environment problems. Disabling or retrying masks the problem and erodes team trust in the test suite."},
+  {q:"Your CI/CD pipeline is too slow. What is the best way to optimize it?",opts:["Reduce the number of unit tests","Run tests and builds in parallel","Skip testing in lower environments","Increase pipeline timeout values"],ans:1,tag:"CI/CD",exp:"<strong>Parallel execution</strong> of tests and builds is the most impactful optimization. Use pipeline stages with parallel jobs, cache dependencies between runs, and use faster runners/agents. Never skip testing — it defeats the purpose of CI."},
+  {q:"After a deployment, users report errors. What should you check first?",opts:["Logs and monitoring dashboards","Restart the application","Increase CPU and memory limits","Rollback immediately without investigation"],ans:0,tag:"Monitoring",exp:"<strong>Logs and monitoring dashboards</strong> should always be the first step — they reveal the exact error, affected components, and whether it's a code bug, resource issue, or infrastructure problem. Only after diagnosis should you decide between fix-forward or rollback."},
+  // 11-20
+  {q:"You need to ensure your Terraform infrastructure is always in sync. What should you do?",opts:["Run terraform apply manually after changes","Use a CI/CD pipeline to automate Terraform deployments","Allow manual updates to infrastructure without Terraform","Delete and recreate infrastructure periodically"],ans:1,tag:"Terraform",exp:"Automating Terraform via <strong>CI/CD pipelines</strong> (running <code>terraform plan</code> on PRs and <code>terraform apply</code> after merge) ensures infrastructure changes are reviewed, tracked in version control, and consistently applied — preventing drift."},
+  {q:"Your containerized application crashes on startup due to a missing dependency. How do you fix it?",opts:["Install dependencies at runtime manually","Update the Dockerfile to include missing dependencies","Restart the container repeatedly","Remove dependency checks from the application"],ans:1,tag:"Docker",exp:"The correct fix is updating the <strong>Dockerfile</strong> to install the missing dependency in the image build step. Containers should be self-contained — all dependencies must be baked into the image, not installed at runtime on each start."},
+  {q:"Your team uses GitOps for managing Kubernetes deployments. How do you apply changes?",opts:["Manually update Kubernetes resources","Push changes to a Git repository, triggering an automated deployment","Edit the cluster configuration directly","SSH into nodes and apply changes manually"],ans:1,tag:"GitOps",exp:"<strong>GitOps</strong> uses Git as the single source of truth. Changes are made via pull requests to a Git repo, and a GitOps tool (ArgoCD, Flux) automatically syncs the desired state from Git to the cluster — no manual kubectl commands."},
+  {q:"You need to roll out an application update with zero downtime. What strategy should you use?",opts:["Rolling updates","Blue-green deployment","Canary deployment","Any of the above"],ans:3,tag:"Deployment",exp:"<strong>All three strategies</strong> achieve zero downtime. Rolling updates gradually replace pods. Blue-green keeps two identical environments. Canary routes a small % of traffic to the new version. Choice depends on risk tolerance and infrastructure setup."},
+  {q:"Your infrastructure as code (IaC) state file is corrupted. What should you do?",opts:["Restore from a backup","Recreate the infrastructure manually","Edit the state file manually","Ignore the corruption and continue using it"],ans:0,tag:"Terraform",exp:"<strong>Restore from a backup</strong> is the safest approach. This is why remote backends (S3 with versioning) are recommended for state storage. Editing state manually is error-prone; recreating manually defeats the purpose of IaC."},
+  {q:"A critical Kubernetes service is down. How do you troubleshoot?",opts:["Check pod logs and events","Restart the cluster","Delete the service and recreate it","Increase resource limits"],ans:0,tag:"Kubernetes",exp:"<strong>Check pod logs</strong> (<code>kubectl logs pod-name</code>) and <strong>events</strong> (<code>kubectl describe pod pod-name</code>, <code>kubectl get events</code>) first. These reveal the exact failure reason — image pull errors, OOM kills, probe failures, etc. — before taking any destructive action."},
+  {q:"A developer builds a Maven project, but the build fails due to a missing dependency. What should they do?",opts:["Manually download the dependency and add it to the project","Add the correct dependency in the pom.xml and run mvn clean install","Delete the target folder and rebuild the project","Restart the computer and try again"],ans:1,tag:"Maven",exp:"The correct fix is adding the missing dependency to <code>pom.xml</code> with the correct <code>groupId</code>, <code>artifactId</code>, and <code>version</code>, then running <code>mvn clean install</code>. Maven automatically downloads it from the configured repository (Maven Central or Nexus/JFrog)."},
+  {q:"A Maven build is successful, but the jar file is not generated. What might be the reason?",opts:["The jar plugin is missing from pom.xml","The project type is not set to jar","The mvn package command was not run","Any of the above"],ans:3,tag:"Maven",exp:"<strong>All three reasons</strong> can cause a missing JAR. The Maven JAR plugin must be configured, <code>&lt;packaging&gt;jar&lt;/packaging&gt;</code> must be set (or it defaults to jar), and the <code>mvn package</code> or <code>mvn install</code> lifecycle phase must be executed to generate the artifact."},
+  {q:"Ansible fails with 'UNREACHABLE' errors when trying to manage remote servers. What is the most likely reason?",opts:["The SSH service is not running on the remote host","The Ansible control node is out of memory","The playbook syntax is incorrect","The Ansible version is outdated"],ans:0,tag:"Ansible",exp:"<strong>SSH service not running</strong> on the managed node is the most common cause of UNREACHABLE errors. Also check: firewall blocking port 22, incorrect IP/hostname in inventory, SSH key not copied to the managed node, or wrong <code>ansible_user</code>."},
+  {q:"A playbook should only run if a file exists on the target machine. How can this be done?",opts:["Use the when: condition with ansible.builtin.stat","Use ignore_errors: true","Use ansible.builtin.command to check manually","Restart the playbook after adding the file"],ans:0,tag:"Ansible",exp:"Use <code>ansible.builtin.stat</code> to check if the file exists, register the result, then use <code>when: stat_result.stat.exists</code> on the task. Example: <code>- stat: path=/etc/myfile</code> → <code>register: myfile</code> → <code>when: myfile.stat.exists</code>"},
+  // 21-30
+  {q:"How can you securely store sensitive credentials like passwords in Ansible?",opts:["Use ansible-vault to encrypt the credentials","Store them in plaintext in the inventory file","Hardcode them in the playbook","Use environment variables without encryption"],ans:0,tag:"Ansible",exp:"<strong>ansible-vault</strong> encrypts sensitive data (passwords, API keys, certificates) using AES256 encryption. Encrypt files with <code>ansible-vault encrypt vars.yml</code> and run playbooks with <code>--ask-vault-pass</code> or <code>--vault-password-file</code>."},
+  {q:"How can you execute only one specific task from a playbook?",opts:["Use --tags or --step options when running the playbook","Manually delete all other tasks","Rename the playbook to only include the required task","Use ansible single-task mode"],ans:0,tag:"Ansible",exp:"<code>ansible-playbook playbook.yml --tags \"install\"</code> runs only tasks tagged with 'install'. <code>--step</code> prompts you before each task. Tags must be defined on tasks with <code>tags: [install]</code>. This is the standard way to selectively run tasks."},
+  {q:"A user wants to create a new dashboard in Grafana. What is the first step?",opts:["Add a new Data Source","Install Grafana plugins","Write SQL queries","Restart Grafana"],ans:0,tag:"Monitoring",exp:"A <strong>Data Source</strong> must be configured first — it tells Grafana where to fetch metrics from (Prometheus, InfluxDB, CloudWatch, etc.). Without a data source, panels cannot query any data. After adding the data source, you create dashboards and panels."},
+  {q:"What if the number of executors of the master node is set to '0'?",opts:["Job can build and run","We can't build and run","Job can't create","Job can build but can't run"],ans:1,tag:"Jenkins",exp:"Setting executors to <strong>0</strong> on the Jenkins master means the master node will not execute any build jobs itself — it acts purely as a controller. All builds must run on agent/slave nodes. If no agents are available, builds will queue indefinitely and cannot run."},
+  {q:"What would happen if the version parameter is removed from the module block and terraform init is run again?",opts:["Terraform would return an error, as the version parameter is required","Terraform would download the latest version of the module","Terraform would use the existing module already downloaded.","Terraform would skip the module"],ans:2,tag:"Terraform",exp:"Terraform caches downloaded modules in <code>.terraform/modules/</code>. If no <code>version</code> is specified and the module is already downloaded, <code>terraform init</code> uses the cached version. However, running <code>terraform init -upgrade</code> would download the latest version. Always pin versions in production."},
+  {q:"Your friend is unable to merge changes and is getting conflict issues. What causes conflicts in Git?",opts:["A conflict arises when the commit to be merged has changes in the same file/lines as the current branch","A conflict arises when the commit has a change in one place","A conflict arises without pull","A conflict arises if two developers work on different branches"],ans:0,tag:"Git",exp:"Git <strong>conflicts</strong> occur when two branches modify the <strong>same lines</strong> in the same file differently, and Git cannot automatically determine which change to keep. Git marks conflicted sections with <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> markers."},
+  {q:"After initializing a Kubernetes cluster with kubeadm and joining worker nodes, the workers are in NotReady state. What is the most likely reason?",opts:["The nodes are missing the CNI (Container Network Interface) plugin","The control plane node has insufficient resources","The worker nodes do not have enough CPU allocated","The kubelet service is stopped on the worker nodes"],ans:0,tag:"Kubernetes",exp:"Missing <strong>CNI plugin</strong> is the most common cause of NotReady nodes after kubeadm setup. kubeadm does not install a CNI automatically — you must install one (Calico, Flannel, Weave) with <code>kubectl apply -f calico.yaml</code> before nodes transition to Ready."},
+  {q:"You deployed a pod using a YAML manifest, but it remains in Pending state for a long time. What is the possible reason?",opts:["The pod is using a non-existent image","No worker nodes have enough resources to schedule the pod","The pod has crashed due to an application error","The pod is not exposed via a Service"],ans:1,tag:"Kubernetes",exp:"<strong>Insufficient resources</strong> (CPU, memory) on all nodes is the most common cause of Pending pods. The scheduler cannot find a suitable node. Check with <code>kubectl describe pod pod-name</code> — look for 'Insufficient cpu' or 'Insufficient memory' in Events."},
+  {q:"Your application is experiencing high CPU usage, and you want Kubernetes to automatically scale pods based on CPU utilization. Which feature should you use?",opts:["Node Autoscaler","Horizontal Pod Autoscaler (HPA)","Vertical Pod Autoscaler (VPA)","Cluster Autoscaler"],ans:1,tag:"Kubernetes",exp:"<strong>Horizontal Pod Autoscaler (HPA)</strong> scales the number of pod replicas based on CPU/memory utilization or custom metrics. Configure with <code>kubectl autoscale deployment myapp --cpu-percent=70 --min=2 --max=10</code>. It requires the Metrics Server to be installed."},
+  {q:"A developer is unable to create a new deployment in the test-namespace even though they have cluster access. What could be the reason?",opts:["The developer does not have a RoleBinding in the test-namespace","The kube-apiserver is down","The developer is using the wrong kubectl command","The cluster does not support RBAC"],ans:0,tag:"Kubernetes",exp:"In Kubernetes RBAC, cluster-level access doesn't grant namespace-level permissions. The developer needs a <strong>RoleBinding</strong> in <code>test-namespace</code> binding their user to a Role that includes <code>create deployments</code> permission. Check with <code>kubectl auth can-i create deployments -n test-namespace</code>."},
+  // 31-40
+  {q:"A pod in your Kubernetes cluster is stuck in CrashLoopBackOff state. What should be your first step?",opts:["Restart the pod manually using kubectl delete pod","Check the logs using kubectl logs pod-name","Scale up the deployment to create more pods","Delete and recreate the pod"],ans:1,tag:"Kubernetes",exp:"<code>kubectl logs pod-name</code> (or <code>kubectl logs pod-name --previous</code> for the last crashed container) reveals the application error causing the crash. CrashLoopBackOff means the container starts, crashes, and Kubernetes keeps restarting it with increasing back-off delays."},
+  {q:"Your application is exposed using an Ingress resource, but users cannot access it from the internet. What could be the reason?",opts:["The Ingress controller is not deployed in the cluster","The application pods are running but have high CPU usage","The application service type is ClusterIP","The Ingress resource has an incorrect YAML format"],ans:0,tag:"Kubernetes",exp:"An <strong>Ingress controller</strong> (nginx-ingress, AWS ALB Ingress Controller, Traefik) must be deployed in the cluster to process Ingress resources. Creating an Ingress object without a controller has no effect — the controller watches Ingress resources and configures the actual load balancer."},
+  {q:"Your team wants to deploy a Kubernetes application using Helm and customize values. Which command overrides default values during installation?",opts:["helm install my-release my-chart","helm install my-release my-chart --set key=value","helm apply my-release my-chart --set key=value","helm deploy my-release my-chart"],ans:1,tag:"Kubernetes",exp:"<code>helm install my-release my-chart --set key=value</code> overrides specific values. For multiple overrides use <code>--set a=1,b=2</code>. For file-based overrides use <code>-f custom-values.yaml</code>. There is no <code>helm apply</code> or <code>helm deploy</code> command."},
+  {q:"A teammate accidentally deleted the Terraform state file (terraform.tfstate) from local storage. What should you do?",opts:["Recreate the resources manually","Run terraform apply to regenerate the state","Restore the state file from a remote backend (if configured)","Delete all resources and start from scratch"],ans:2,tag:"Terraform",exp:"<strong>Restore from the remote backend</strong> (e.g., S3 with versioning enabled). This is why remote state storage is a best practice. If no remote backend was configured, you must use <code>terraform import</code> for each resource to rebuild the state file."},
+  {q:"Your team wants to reuse Terraform configurations across multiple environments (dev, staging, prod). What is the best way?",opts:["Copy and paste Terraform configuration files for each environment","Use Terraform workspaces","Create a separate Terraform module and reuse it in different environments","Manually apply Terraform for each environment"],ans:2,tag:"Terraform",exp:"<strong>Reusable modules</strong> are the best practice — create a module once and call it from environment-specific configurations passing different variable values. Workspaces work but share the same code/backend. Copy-paste leads to drift and maintenance nightmares."},
+  {q:"Your Terraform project needs to manage multiple environments using the same configuration but with different values. Which feature should you use?",opts:["Modules","Workspaces","Variables","Providers"],ans:2,tag:"Terraform",exp:"<strong>Variables</strong> (with environment-specific <code>.tfvars</code> files like <code>dev.tfvars</code>, <code>prod.tfvars</code>) allow the same configuration to deploy different environments. Run <code>terraform apply -var-file=prod.tfvars</code> for each environment. Combine with modules for best results."},
+  {q:"You need to run a shell script inside an EC2 instance after Terraform provisions it. Which provisioner should you use?",opts:["local-exec","remote-exec","file","null_resource"],ans:1,tag:"Terraform",exp:"<strong>remote-exec</strong> connects to the EC2 instance via SSH after creation and executes commands/scripts directly on it. Requires a <code>connection</code> block with SSH credentials. <code>local-exec</code> runs on the Terraform control machine, not the remote EC2 instance."},
+  {q:"You have a Terraform config that provisions a security group and an EC2 instance. The instance must be created only after the security group. How do you ensure this?",opts:["Terraform automatically understands dependencies","Use the depends_on attribute in the EC2 resource","Manually apply the security group first, then the EC2 instance","Use a module to manage dependencies"],ans:0,tag:"Terraform",exp:"<strong>Terraform automatically detects implicit dependencies</strong> when you reference a resource attribute: <code>vpc_security_group_ids = [aws_security_group.sg.id]</code>. Terraform builds a dependency graph and creates the security group first. Use <code>depends_on</code> only for non-attribute dependencies."},
+  {q:"You need to delete only a specific resource from your Terraform-managed infrastructure without affecting others. Which command should you use?",opts:["terraform destroy","terraform apply -destroy","terraform destroy -target resource_name","terraform remove resource_name"],ans:2,tag:"Terraform",exp:"<code>terraform destroy -target aws_instance.web</code> destroys only the targeted resource. Use <code>-target</code> carefully — it can leave infrastructure in inconsistent state. The correct flag syntax is <code>-target=resource_type.resource_name</code>. There is no <code>terraform remove</code> command."},
+  {q:"After terraform apply, you receive an error that a resource already exists in AWS but is not tracked in Terraform state. How can you import it?",opts:["terraform import aws_instance.my_instance i-1234567890abcdef","terraform state add aws_instance.my_instance i-1234567890abcdef","terraform track aws_instance.my_instance","terraform refresh"],ans:0,tag:"Terraform",exp:"<code>terraform import aws_instance.my_instance i-1234567890abcdef</code> brings an existing resource into Terraform state management. After import, run <code>terraform plan</code> to verify the configuration matches the actual resource. There is no <code>terraform state add</code> or <code>terraform track</code> command."},
+  // 41-50
+  {q:"Your team needs to update a feature branch with the latest changes from main while keeping a clean commit history. Which command should you use?",opts:["git merge main","git pull origin main","git rebase main","git cherry-pick main"],ans:2,tag:"Git",exp:"<code>git rebase main</code> replays your feature branch commits on top of the latest main, creating a <strong>linear commit history</strong>. This is cleaner than merge commits. Run from your feature branch: <code>git checkout feature-x</code> → <code>git rebase main</code>."},
+  {q:"You committed a change locally but haven't pushed yet. You want to undo the commit but keep the changes. Which command should you use?",opts:["git reset --hard HEAD~1","git revert HEAD","git reset --soft HEAD~1","git stash pop"],ans:2,tag:"Git",exp:"<code>git reset --soft HEAD~1</code> undoes the last commit but keeps your changes staged (in the index). <code>--hard</code> discards changes entirely. <code>git revert</code> creates a new undo-commit (used for pushed commits). <code>--soft</code> is the correct choice to uncommit but keep changes."},
+  {q:"When you try to push, you get 'error: failed to push some refs to origin/main'. What is the likely cause?",opts:["You are on a detached HEAD","The remote branch has new changes that are not in your local branch","You have uncommitted changes in your working directory","The repository does not have a main branch"],ans:1,tag:"Git",exp:"<strong>Remote has new commits</strong> that your local branch doesn't have. Git requires your branch to be up-to-date before pushing. Fix with <code>git pull origin main</code> (merge) or <code>git pull --rebase origin main</code> (cleaner), resolve any conflicts, then push."},
+  {q:"You pulled the latest changes from main into your feature branch and encountered merge conflicts. What should you do?",opts:["Manually edit the conflicted files and commit the changes","Run git reset --hard to discard all changes","Delete the conflicted files and re-clone the repo","Use git stash to remove conflicts"],ans:0,tag:"Git",exp:"<strong>Manually edit</strong> conflicted files, removing conflict markers (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>) and keeping the correct code. Then <code>git add</code> resolved files and <code>git commit</code>. Use <code>git mergetool</code> for a visual diff tool. Never use <code>--hard</code> — it discards your work."},
+  {q:"You need to apply a single commit from feature-x branch to main without merging the entire branch. Which command should you use?",opts:["git merge feature-x","git rebase feature-x","git cherry-pick <commit-hash>","git checkout feature-x"],ans:2,tag:"Git",exp:"<code>git cherry-pick &lt;commit-hash&gt;</code> applies a specific commit from any branch onto your current branch. Get the hash from <code>git log feature-x</code>. Useful for hotfixing or selectively backporting features without merging entire branches."},
+  {q:"In GitLab CI/CD, how can security scans be integrated into the pipeline?",opts:["By adding security scan jobs in the .gitlab-ci.yml file","By manually running security tools after deployment","By scheduling periodic security assessments outside the CI/CD pipeline","By relying solely on third-party security audits"],ans:0,tag:"CI/CD",exp:"GitLab's <strong>Auto DevSecOps</strong> and SAST/DAST templates are added directly to <code>.gitlab-ci.yml</code>. Include built-in templates like <code>include: template: Security/SAST.gitlab-ci.yml</code> or add custom scan jobs (Trivy, Snyk, OWASP ZAP) as pipeline stages for shift-left security."},
+  {q:"Which JFrog tool is specifically designed for deep recursive scanning of artifacts to identify security vulnerabilities and license compliance issues?",opts:["JFrog Artifactory","JFrog Xray","JFrog Pipelines","JFrog Distribution"],ans:1,tag:"Security",exp:"<strong>JFrog Xray</strong> is the dedicated security and compliance scanning tool that recursively scans all components and dependencies of artifacts stored in Artifactory. It identifies CVEs, license violations, and operational risks with impact analysis across your entire artifact graph."},
+  {q:"What is the command to scan a container image using Trivy?",opts:["trivy image <image-name>","trivy scan <image-name>","trivy inspect <image-name>","trivy security <image-name>"],ans:0,tag:"Security",exp:"<code>trivy image &lt;image-name&gt;</code> scans a container image for OS package vulnerabilities, language-specific vulnerabilities, and misconfigurations. Example: <code>trivy image nginx:latest</code>. Trivy also scans filesystems (<code>trivy fs .</code>), Git repos, and Kubernetes clusters."},
+  {q:"A Jenkins pipeline integrates with SonarQube for security scanning. What should happen if critical vulnerabilities are detected?",opts:["The pipeline should automatically fail the build","The pipeline should continue without reporting vulnerabilities","Developers should manually check scan results","The pipeline should ignore vulnerabilities for faster builds"],ans:0,tag:"CI/CD",exp:"<strong>Failing the build automatically</strong> on critical vulnerabilities enforces quality gates and prevents insecure code from reaching production. Configure SonarQube Quality Gates to fail pipelines on critical/blocker issues. This is the core principle of shift-left security in DevSecOps."},
+  {q:"Which is the correct lifecycle sequence of a Kubernetes Pod?",opts:["Pending → Running → Succeeded/Failed","Running → Pending → Terminated","Pending → Succeeded → Running","Failed → Pending → Running"],ans:0,tag:"Kubernetes",exp:"The correct pod lifecycle is: <strong>Pending</strong> (scheduled but not running) → <strong>Running</strong> (at least one container running) → <strong>Succeeded</strong> (all containers completed successfully) or <strong>Failed</strong> (all containers terminated with at least one failure). CrashLoopBackOff is a condition within Running/Failed."},
+  // 51-60: AWS
+  {q:"You are managing a CloudFront distribution for a global e-commerce site with both static and dynamic content. Which strategy best optimizes delivery?",opts:["Use CloudFront regional edge caches to cache static content and reduce latency for dynamic content","Use Lambda@Edge to modify requests and cache dynamic content globally","Use CloudFront with a low TTL for all content and rely on the origin server for updates","Cache static content with high TTL and dynamic content with low TTL, using cache behaviors with path patterns to separate them"],ans:3,tag:"AWS CloudFront",exp:"<strong>Path-based cache behaviors</strong> with separate TTLs is optimal: static assets (images, CSS/JS) get high TTL (days/weeks) while dynamic content (cart, product data) gets low TTL or no caching. CloudFront serves static from edge cache and forwards dynamic requests to origin efficiently."},
+  {q:"Your Lambda function performs queries on RDS and has high response times for complex SQL queries. How would you optimize?",opts:["Use Lambda's increased memory allocation to speed up database queries","Refactor the SQL queries to use more efficient indexing and avoid complex joins","Set up Lambda in an event-driven model to query RDS asynchronously","Use Amazon DynamoDB instead of RDS for better query performance"],ans:1,tag:"AWS Lambda",exp:"<strong>Query optimization</strong> (adding indexes, rewriting inefficient JOINs, using EXPLAIN ANALYZE) directly addresses slow SQL performance. Lambda memory only affects Lambda execution, not database query speed. DynamoDB is a different data model and not a drop-in fix for complex relational queries."},
+  {q:"Your Lambda function invokes multiple concurrent executions that overwhelm the RDS database with connection limit errors. How would you prevent this?",opts:["Increase Lambda's execution timeout to give more time for database queries","Use AWS Lambda concurrency controls to limit the number of parallel executions","Deploy RDS in Multi-AZ to handle more concurrent connections","Use Amazon Aurora Serverless, which scales automatically for Lambda functions"],ans:1,tag:"AWS Lambda",exp:"<strong>Lambda concurrency limits</strong> (<code>ReservedConcurrentExecutions</code>) cap parallel invocations, preventing connection exhaustion. Also consider <strong>RDS Proxy</strong> which pools connections between Lambda and RDS — the ideal solution as it handles thousands of Lambda connections via a managed connection pool."},
+  {q:"Which metrics should you include in your CloudWatch dashboard to monitor both Lambda and RDS performance?",opts:["Lambda Duration, Lambda Errors, Lambda Invocations, and RDS CPU Utilization, RDS Freeable Memory","Lambda Throttles, Lambda Duration, RDS ReadIOPS, and RDS WriteIOPS","Lambda Memory, Lambda ConcurrentExecutions, RDS Latency, and RDS DiskQueueDepth","Lambda SuccessCount, Lambda Latency, RDS DatabaseConnections, and RDS QueryPerformance"],ans:0,tag:"AWS Monitoring",exp:"<strong>Lambda Duration, Errors, Invocations</strong> cover performance, failures, and usage. <strong>RDS CPU Utilization and Freeable Memory</strong> are the primary RDS health indicators. Together they give a comprehensive performance view. Also add Lambda Throttles and RDS DatabaseConnections for completeness."},
+  {q:"Your Lambda function connects to RDS multiple times per invocation and has connection overhead delays. How can you mitigate this?",opts:["Implement connection pooling to reuse database connections between Lambda invocations","Increase the Lambda memory size to allocate more resources for database connections","Set up RDS Auto Scaling to adjust capacity based on Lambda invocations","Use Amazon Aurora Serverless, which scales connections automatically for Lambda"],ans:0,tag:"AWS Lambda",exp:"<strong>RDS Proxy</strong> is the AWS-native connection pooling solution for Lambda-to-RDS connections. It maintains a pool of connections to RDS, so Lambda invocations reuse existing connections rather than creating new ones each time, dramatically reducing connection overhead and latency."},
+  {q:"You need to run a custom script before terminating an EC2 instance in an Auto Scaling group. What should you use?",opts:["Instance Refresh","Lifecycle Hooks","Step Scaling","CloudWatch Alarms"],ans:1,tag:"AWS EC2",exp:"<strong>Lifecycle Hooks</strong> pause Auto Scaling actions (launch or terminate) to allow custom scripts to run — for example, draining connections, deregistering from service discovery, or running cleanup scripts before termination. The instance stays in a wait state until your script completes and sends a completion signal."},
+  {q:"You must ensure RDS data is encrypted at rest with a customer-managed KMS key and in transit with SSL. What steps do you take?",opts:["Encrypt all backups using KMS and configure SSL for encryption in transit","Enable encryption with the default AWS-managed KMS key and use IAM roles for secure communication","Use S3 for storing sensitive data and only encrypt that, but leave the database unencrypted","Enable encryption using a customer-managed KMS key during RDS instance creation and configure SSL/TLS for data in transit"],ans:3,tag:"AWS RDS",exp:"<strong>Encryption at rest</strong> must be enabled at RDS instance creation using a <strong>customer-managed KMS CMK</strong> (cannot be enabled on existing unencrypted instances). <strong>SSL/TLS in transit</strong> is configured by downloading the RDS certificate and enforcing SSL in the database parameter group with <code>require_ssl=1</code>."},
+  {q:"You need to apply patches to an RDS instance without causing downtime during peak hours. Which strategy minimises impact?",opts:["Enable Auto Minor Version Upgrades and configure the maintenance window to occur during off-peak hours","Apply the patch immediately and use manual failover to mitigate downtime","Disable automated patching and manually schedule patching during the night","Migrate to Amazon Aurora to eliminate the need for patching"],ans:0,tag:"AWS RDS",exp:"<strong>Configuring the maintenance window</strong> to off-peak hours (e.g., 2-4 AM Sunday) with Auto Minor Version Upgrades enabled ensures patches apply automatically during low-traffic periods. For Multi-AZ RDS, failover during patching limits downtime to 60-120 seconds while the standby is promoted."},
+  {q:"What AWS service can help manage connection pooling to reduce the load on MySQL RDS?",opts:["Autoscaling","Load balancer","RDS Proxy","Performance Insights"],ans:2,tag:"AWS RDS",exp:"<strong>Amazon RDS Proxy</strong> is a fully managed database proxy that maintains a pool of established connections to RDS, allowing applications (especially Lambda functions) to share connections efficiently. It reduces the overhead of opening and closing connections, improving performance and database stability."},
+  {q:"You want to launch new EC2 instances quickly with your application already set up. Which approach should you use?",opts:["Use an AMI (Amazon Machine Image) to create a custom image with your application setup","Install the application manually each time you launch a new EC2 instance","Use an EBS snapshot to create a custom AMI for faster provisioning","Use an EBS volume as the root volume and manually mount it on startup"],ans:0,tag:"AWS EC2",exp:"Creating a <strong>custom AMI</strong> with your application pre-installed (web server, dependencies, configuration) allows you to launch identical, pre-configured instances in minutes. This is the standard golden image pattern for fast, consistent, and repeatable EC2 provisioning."},
+  // 61-75
+  {q:"You've set up Auto Scaling for EC2 instances behind an ALB. One instance fails unexpectedly. What is the expected behavior?",opts:["Auto Scaling will launch a new EC2 instance to replace the failed one to maintain the desired count","Auto Scaling will restart the failed instance without launching a new one","The ALB will route traffic to healthy instances, and Auto Scaling will not be triggered","The failed instance will be replaced by an Elastic Load Balancer"],ans:0,tag:"AWS EC2",exp:"Auto Scaling continuously monitors instance health. When a failure is detected (via EC2 health checks or ALB health checks), it <strong>terminates the unhealthy instance and launches a replacement</strong> to maintain the desired capacity. The ALB stops routing traffic to the failed instance simultaneously."},
+  {q:"You need to create a backup of your EC2 instance's EBS volume for disaster recovery. Which service should you use?",opts:["Use AWS Backup to create backups and store them in S3","Create an AMI of the instance to back up the entire system","Create an EBS snapshot of the volume to back up the data","Manually copy the EBS volume data to an S3 bucket"],ans:2,tag:"AWS EC2",exp:"<strong>EBS Snapshots</strong> are the direct, incremental backup mechanism for EBS volumes. They're stored in S3 (managed by AWS), support cross-region copy, and can be used to restore volumes or create AMIs. Use <strong>Amazon Data Lifecycle Manager (DLM)</strong> to automate snapshot scheduling."},
+  {q:"You want to restrict access to your S3 bucket so only a specific IAM user can upload and download objects. What is the most appropriate method?",opts:["Use an S3 bucket policy that grants permission only to the specific IAM user","Use an IAM policy attached to the IAM user that grants access to the S3 bucket","Configure S3 ACLs to give the IAM user full permissions","Use AWS Lambda to manage access based on specific conditions"],ans:0,tag:"AWS S3",exp:"An <strong>S3 bucket policy</strong> with a <code>Principal</code> specifying the IAM user's ARN and an explicit <code>Allow</code> is the most direct approach for bucket-level access control. Combined with an IAM policy on the user side, this provides least-privilege access. S3 ACLs are legacy and not recommended for IAM user access."},
+  {q:"You have an S3 bucket where data becomes infrequently accessed after 30 days. You want to move to Glacier automatically. How?",opts:["Enable S3 Transfer Acceleration to move data to Glacier","Create an S3 Lifecycle policy that transitions objects to S3 Glacier after 30 days","Use CloudWatch to monitor access frequency and move manually","Set a Delete lifecycle policy to delete objects after 30 days"],ans:1,tag:"AWS S3",exp:"<strong>S3 Lifecycle policies</strong> automate storage class transitions based on object age. Configure a rule to transition objects to <code>GLACIER</code> after 30 days, <code>GLACIER_IR</code> for faster retrieval, or <code>DEEP_ARCHIVE</code> for lowest cost. This runs automatically without manual intervention."},
+  {q:"You want Route 53 to route traffic to a backup site if your primary EC2 instance becomes unhealthy. What should you do?",opts:["Set up health checks for your primary EC2 instance and configure Route 53 to route traffic to a secondary record if the primary fails","Manually switch traffic to the backup site by updating DNS records","Use CloudWatch Alarms to automatically replace the DNS record","Use Geolocation Routing to switch traffic based on geography"],ans:0,tag:"AWS Route 53",exp:"<strong>Route 53 Failover Routing</strong> with Health Checks is the exact feature for this. Set up a Health Check on the primary EC2, create a Primary failover record pointing to it, and a Secondary record pointing to the backup. Route 53 automatically routes to the secondary when the primary health check fails."},
+  {q:"You've established VPC Peering between VPC A and VPC B. Instances in VPC A need to access a service in VPC B (SG-A and SG-B). What must you configure?",opts:["Modify security group SG-A to allow inbound traffic from SG-B","Modify security group SG-B to allow inbound traffic from SG-A","Modify the Network ACLs in both VPCs to allow traffic","Both A and B"],ans:1,tag:"AWS VPC",exp:"For VPC A instances to access a service in VPC B, <strong>SG-B must allow inbound traffic from SG-A</strong> (or from VPC A's CIDR range). The initiating side (SG-A) handles outbound traffic (allowed by default). Also ensure route tables in both VPCs have routes via the peering connection."},
+  {q:"VPC C needs to access VPC A via VPC B, but VPC A doesn't directly peer with VPC C. What should you do?",opts:["Establish a transitive VPC Peering between VPC C and VPC A","Set up a Transit Gateway and attach VPC A, B, and C","Use a shared VPC model","Update route tables in VPC A and B to route traffic from C"],ans:1,tag:"AWS VPC",exp:"<strong>VPC Peering does not support transitive routing</strong>. Traffic cannot pass through VPC B to reach VPC A from VPC C. The solution is <strong>AWS Transit Gateway</strong> — a hub-and-spoke service that allows multiple VPCs to route traffic to each other through a central gateway."},
+  {q:"You designed a multi-VPC mesh (A, B, C) and need A to communicate with C via B. What configuration will NOT work?",opts:["Update route table in VPC-A to include 10.2.0.0/16 pointing to peering with VPC-B","Update route table in VPC-B to include 10.2.0.0/16 pointing to peering with VPC-C","Update route table in VPC-C to include 10.1.0.0/16 pointing to peering with VPC-B","Since VPC Peering does not support transitive routing, VPC-A cannot communicate with VPC-C via VPC-B"],ans:3,tag:"AWS VPC",exp:"<strong>VPC Peering is non-transitive</strong> — even with routes configured, traffic cannot traverse from VPC-A through VPC-B to VPC-C via peering connections. The question asks what will NOT work — this is the correct answer. Use Transit Gateway for hub-and-spoke or full-mesh connectivity between 3+ VPCs."},
+  {q:"You set up a VPC Interface Endpoint for a third-party PrivateLink service but instances cannot connect. Security groups and routes are correct. What is the next step?",opts:["Ensure that private DNS resolution is enabled for the Interface Endpoint","Verify the third-party service accepts connections from your VPC's IP range","Modify VPC Peering settings to allow traffic","Ensure your VPC has an Internet Gateway, as the Interface Endpoint requires one"],ans:0,tag:"AWS VPC",exp:"<strong>Private DNS resolution</strong> must be enabled for the VPC Interface Endpoint to resolve the service's hostname to the endpoint's private IP. If disabled, DNS resolves to the public IP, bypassing the endpoint. Check: VPC DNS resolution and DNS hostnames must also be enabled in VPC settings."},
+  {q:"You configured a Gateway Endpoint for DynamoDB, but traffic is still routed over the internet. What is the most likely explanation?",opts:["The VPC Endpoint policy does not allow the correct actions","The NAT Gateway is still routing traffic to DynamoDB over the internet","The Route Table needs to be updated to route DynamoDB traffic through the VPC endpoint","Gateway Endpoints for DynamoDB are not supported in this region"],ans:2,tag:"AWS VPC",exp:"<strong>Route table update is required</strong> for Gateway Endpoints (unlike Interface Endpoints). The route table associated with your subnet must have a route for the DynamoDB prefix list (<code>pl-xxxxxxxx</code>) pointing to the Gateway Endpoint. If the NAT Gateway route is more specific or the endpoint route is missing, traffic still goes through NAT."},
+  {q:"Your Lambda function fails with an AccessDenied error when trying to read an S3 bucket. What should you do?",opts:["Create a VPC endpoint for S3","Attach an IAM Role with the correct S3 permissions","Increase Lambda memory allocation","Enable Provisioned Concurrency"],ans:1,tag:"AWS Lambda",exp:"<strong>Lambda functions require an IAM Execution Role</strong> with the appropriate permissions. Attach a role with <code>s3:GetObject</code> (and other required actions) on the specific bucket ARN. AccessDenied means the execution role lacks the necessary S3 permissions — IAM is always the answer for permission errors."},
+  {q:"Your application experiences unpredictable traffic spikes. Which Auto Scaling policy best handles sudden load increases?",opts:["Scheduled Scaling","Step Scaling","Target Tracking Scaling","Predictive Scaling"],ans:2,tag:"AWS EC2",exp:"<strong>Target Tracking Scaling</strong> continuously adjusts capacity to keep a metric (e.g., CPU utilization) at a target value (e.g., 70%). It reacts automatically to any load pattern including unpredictable spikes. Step Scaling requires predefined thresholds; Scheduled requires known patterns. Target Tracking is self-adjusting."},
+  {q:"Your AWS account has been compromised and you need to identify who made unauthorized changes. What should you do?",opts:["Check CloudTrail event logs","Enable AWS WAF","Create a new IAM user","Change all security group rules"],ans:0,tag:"AWS Security",exp:"<strong>AWS CloudTrail</strong> records all API calls made in your account — who made the call, from which IP, what actions were taken, and when. It's the forensic tool for investigating unauthorized changes. Check CloudTrail logs in the S3 bucket or CloudWatch Logs to identify the source of unauthorized actions."},
+  {q:"Which of the following actions is NOT appropriate for hardening a Linux web server?",opts:["Disable root login via SSH and use key-based authentication","Configure a firewall using iptables or firewalld to block unnecessary ports","Enable SELinux or AppArmor for additional security layers","Install and enable Telnet for remote administration as a fallback option"],ans:3,tag:"Linux Security",exp:"<strong>Telnet transmits all data in plaintext</strong>, including passwords — it must never be used for remote administration. Use SSH with key-based authentication only. All other options (disabling root SSH login, firewall configuration, SELinux/AppArmor) are correct hardening practices."},
+  {q:"You need to create user 'john' with home directory /home/john and default shell /bin/bash. Which command is correct?",opts:["useradd john","useradd -m john","useradd -m -s /bin/bash john","adduser john"],ans:2,tag:"Linux",exp:"<code>useradd -m -s /bin/bash john</code> is correct: <code>-m</code> creates the home directory <code>/home/john</code>, and <code>-s /bin/bash</code> sets the default shell. Without <code>-m</code>, no home directory is created. <code>adduser</code> is an interactive wrapper (Debian/Ubuntu only) that prompts for information."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 4800;
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('devopsScenarioMasteryCache_v2');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            // Cache breaker for 80 min update
+            timeLeft = (data.timeLeft === 3600 || data.timeLeft === 6000) ? 4800 : data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp,
+            tag: q.tag || "LOGIC_NODE"
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 4800;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('devopsScenarioMasteryCache_v2', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 300) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/75`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 74) ? "FINISH AUDIT ✓" : "NEXT NODE →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 74) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('devopsScenarioMasteryCache_v2');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 75`;
+}
+
+function retryQuiz() { localStorage.removeItem('devopsScenarioMasteryCache_v2'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

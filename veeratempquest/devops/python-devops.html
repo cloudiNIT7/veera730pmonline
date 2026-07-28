@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Boto3 | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#3776ab;--python-yellow:#ffd43b;--correct:#10b981;--wrong:#ef4444;--neutral:#3b82f6}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(55,118,171,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(55,118,171,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(55,118,171,.08);border:1px solid rgba(55,118,171,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,var(--accent),var(--python-yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 600px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--python-yellow);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:780px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(55, 118, 171, 0.05)}
+.option.disabled{cursor:default}
+
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(55, 118, 171, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--python-yellow);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="devops.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">AWS_SDK_PYTHON_BOTO3</div>
+    <h1>Python Boto3 Mastery</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">80:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Automation Result</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">Boto3 script execution verified. AWS SDK state cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_EXAM</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is Boto3?",opts:["A JavaScript library for AWS","The official AWS SDK for Python","A CLI tool for Terraform","A Java testing framework"],ans:1,exp:"Boto3 is the official Amazon Web Services (AWS) Software Development Kit (SDK) for Python, allowing developers to write software that uses services like S3 and EC2."},
+  {q:"Which command installs Boto3 via pip?",opts:["pip install aws-sdk","pip install boto3","pip install python-aws","python get boto3"],ans:1,exp:"Boto3 is distributed as a Python package. Use 'pip install boto3' to add it to your environment."},
+  {q:"What is the difference between a Boto3 'Resource' and a 'Client'?",opts:["No difference","Client is low-level/service-oriented; Resource is high-level/object-oriented","Resource is faster","Client is only for S3"],ans:1,exp:"Clients provide a 1-to-1 mapping with the AWS service API (low-level). Resources provide a more Pythonic, object-oriented way to interact with AWS (high-level)."},
+  {q:"How do you initialize a Boto3 client for EC2?",opts:["ec2 = boto3.resource('ec2')","ec2 = boto3.client('ec2')","import ec2","ec2 = boto3.connect('ec2')"],ans:1,exp:"The 'boto3.client()' method creates a service client by name."},
+  {q:"Where does Boto3 look for credentials by default?",opts:["Only in the script","Shared credential file (~/.aws/credentials), environment variables, or IAM roles","C:/aws/keys.txt","MySQL database"],ans:1,exp:"Boto3 follows a specific 'Credential Provider Chain', checking env vars first, then local config files, then instance metadata (IAM roles)."},
+  {q:"Which Boto3 client method is used to list all S3 buckets?",opts:["list_buckets()","show_all_buckets()","get_buckets()","buckets.all()"],ans:0,exp:"For a client, 'list_buckets()' returns a dictionary containing the list of all buckets owned by the sender."},
+  {q:"How do you start an EC2 instance using its ID?",opts:["ec2.launch(id)","ec2.start_instances(InstanceIds=['id'])","ec2.run_instances()","ec2.power_on()"],ans:1,exp:"'start_instances' is a client method that requires a list of InstanceIds as an argument."},
+  {q:"What does the Waiter object in Boto3 do?",opts:["Pauses script for 10 seconds","Polls AWS until a resource reaches a specific state (e.g. instance_running)","Stops the script if an error occurs","Handles user input"],ans:1,exp:"Waiters are a way to block script execution until a specific condition is met in the AWS environment."},
+  {q:"Which instruction allows you to upload a file to S3 using a Client?",opts:["s3.send_file()","s3.upload_file('file', 'bucket', 'key')","s3.push()","s3.put_object_only()"],ans:1,exp:"The 'upload_file' method is a high-level helper that handles multi-part uploads automatically if needed."},
+  {q:"What is the purpose of 'boto3.Session()'?",opts:["To log into a website","To maintain configuration state and create service clients/resources with specific credentials/regions","To end a connection","To clear the cache"],ans:1,exp:"A Session stores configuration and allows you to create multiple clients/resources using the same session-level settings (like a specific profile)."},
+  {q:"Which Boto3 method creates a new S3 bucket?",opts:["create_bucket()","new_bucket()","make_bucket()","s3.generate()"],ans:0,exp:"'create_bucket()' is the standard call, often requiring a 'Bucket' name and 'CreateBucketConfiguration' for regions outside us-east-1."},
+  {q:"How can you handle AWS API errors in Boto3?",opts:["Using if-else","Importing botocore.exceptions.ClientError and using try-except","AWS doesn't return errors to Python","Using sys.exit()"],ans:1,exp:"ClientError is the primary exception class for Boto3/Botocore. It contains the error code and message from AWS."},
+  {q:"How do you terminate an EC2 instance in Boto3?",opts:["ec2.delete()","ec2.terminate_instances(InstanceIds=['id'])","ec2.stop()","ec2.remove()"],ans:1,exp:"'terminate_instances' permanently deletes the virtual machine, unlike 'stop' which just shuts it down."},
+  {q:"In Boto3, what does 'Paginators' help with?",opts:["Web UI layout","Automatically handling large API responses that return data in multiple 'pages'","Printing logs","Setting permissions"],ans:1,exp:"Many AWS operations return truncated results. Paginators provide a simple interface to iterate through the entire result set."},
+  {q:"Which Boto3 method is used to launch a new EC2 instance?",opts:["ec2.start()","ec2.run_instances()","ec2.create_vm()","ec2.add_node()"],ans:1,exp:"'run_instances' is the command used to provision new EC2 resources, specifying AMI, InstanceType, and counts."},
+  {q:"How do you get a specific item from a DynamoDB table in Boto3?",opts:["table.find()","table.get_item(Key={'id': 'val'})","table.read()","table.select()"],ans:1,exp:"'get_item' retrieves a single item from the table based on its primary key."},
+  {q:"Which Boto3 method allows you to list files (objects) in an S3 bucket?",opts:["s3.list_objects_v2(Bucket='name')","s3.show_files()","s3.get_all_keys()","s3.ls()"],ans:0,exp:"'list_objects_v2' is the preferred modern method for retrieving metadata about objects within a bucket."},
+  {q:"What is the default region Boto3 uses if none is specified?",opts:["us-east-1","The region configured in ~/.aws/config","eu-west-1","None (it fails)"],ans:1,exp:"Boto3 will look at your environment variables or local AWS config file to determine the default region."},
+  {q:"How do you delete an object from an S3 bucket?",opts:["s3.remove_key()","s3.delete_object(Bucket='name', Key='key')","s3.wipe()","s3.clear_bucket()"],ans:1,exp:"'delete_object' removes a specific file identified by its key from the specified bucket."},
+  {q:"What does 'boto3.setup_default_session()' do?",opts:["Installs Boto3","Sets up the global default session used when clients/resources are created without a session","Deletes all credentials","Resets the Python interpreter"],ans:1,exp:"It configures the library to use a specific set of credentials/region globally so you don't have to pass them to every client."},
+  {q:"Which library does Boto3 sit on top of for low-level functionality?",opts:["Requests","Botocore","Terraform","Pandas"],ans:1,exp:"Botocore is the foundation for Boto3 and the AWS CLI, providing the core logic for service descriptions and API requests."},
+  {q:"How do you tag an EC2 resource in Boto3?",opts:["ec2.tag()","ec2.create_tags(Resources=['id'], Tags=[{'Key':'k', 'Value':'v'}])","ec2.label()","ec2.add_metadata()"],ans:1,exp:"'create_tags' is the specific method to attach or overwrite tags on AWS resources."},
+  {q:"Can Boto3 be used with AWS Lambda?",opts:["No, only on EC2","Yes, it is pre-installed in the Lambda Python runtime","Yes, but you must upload it as a layer","Only with Python 2.7"],ans:1,exp:"Boto3 and Botocore are included by default in the AWS Lambda Python runtimes, making it easy to automate AWS tasks serverlessly."},
+  {q:"How do you download a file from S3 to local disk?",opts:["s3.pull()","s3.download_file('bucket', 'key', 'filename')","s3.get_file()","s3.read_stream()"],ans:1,exp:"'download_file' handles the retrieval and writing of the object to your local filesystem."},
+  {q:"How do you list all IAM users in Boto3?",opts:["iam.list_users()","iam.get_users()","iam.show_users()","iam.users.list()"],ans:0,exp:"The IAM client provides 'list_users()' to iterate through all identities in the account."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 4800; // 80 Mins
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('pythonBoto3MasteryCache_v1');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp,
+            tag: "BOTO3_SDK"
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 4800;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('pythonBoto3MasteryCache_v1', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 300) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH EXAM ✓" : "NEXT NODE →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('pythonBoto3MasteryCache_v1');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 25`;
+}
+
+function retryQuiz() { localStorage.removeItem('pythonBoto3MasteryCache_v1'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

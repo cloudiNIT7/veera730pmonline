@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jenkins Integrations | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#f472b6;--correct:#10b981;--wrong:#ef4444;--neutral:#3b82f6}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(244,114,182,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(244,114,182,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#f472b6,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 600px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:780px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(244, 114, 182, 0.05)}
+.option.disabled{cursor:default}
+
+/* HIGH VISIBILITY HIGHLIGHTING */
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(244, 114, 182, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="devops.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">JENKINS_INTEGRATION_15</div>
+    <h1>Jenkins Integrations</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Integration Success Result</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">Jenkins plugin architecture verified. Ecosystem connections cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_EXAM</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is Jenkins EC2 Plugin used for?",opts:["Storing artifacts","Managing and deploying to AWS EC2 instances dynamically as agents","Monitoring traffic","Backup management"],ans:1,exp:"The EC2 plugin allows Jenkins to spin up virtual machine instances in the AWS cloud to handle high build loads and shut them down when idle."},
+  {q:"How does Jenkins integrate with AWS Lambda?",opts:["Not possible","Invoke functions as post-build actions or steps","Manual only","SSH only"],ans:1,exp:"Using the AWS Lambda plugin, Jenkins can trigger serverless functions to perform tasks like clearing caches or sending notifications after a build."},
+  {q:"What does Jenkins S3 Plugin enable?",opts:["Database queries","Uploading/downloading build artifacts to/from AWS S3 buckets","VM management","Email alerts"],ans:1,exp:"It turns Amazon S3 into a reliable, durable storage backend for your build binaries and logs."},
+  {q:"How does Jenkins integrate with GitHub?",opts:["Manual only","Webhook triggers and code pulling via GitHub Plugin","No integration","SSH only"],ans:1,exp:"The GitHub plugin enables automated CI by detecting code changes and reporting build status directly to Pull Requests."},
+  {q:"Benefit of GitHub Webhooks with Jenkins?",opts:["Faster deployment","Instant build triggering on code push instead of slow polling","Auto code review","Manual trigger"],ans:1,exp:"Webhooks eliminate the delay of polling by having GitHub 'poke' Jenkins the moment a developer merges code."},
+  {q:"How does Jenkins integrate with Docker?",opts:["No integration","Building images, running containers, and pushing to registries","Manual commands","No plugin"],ans:1,exp:"The Docker plugin allows your Jenkins pipeline to interact with the Docker daemon to containerize applications."},
+  {q:"JFrog Artifactory integration with Jenkins?",opts:["Compilation","Artifact storage, versioning, and deployment management","Maintenance","Server management"],ans:1,exp:"Artifactory acts as a universal repository for all your build binaries, managing dependencies and release versions."},
+  {q:"Jenkins SonarQube integration?",opts:["DB access","Code quality scanning and quality gate reporting","Manual scan only","No integration"],ans:1,exp:"SonarQube analysis ensures code standards are met, and Jenkins can stop the pipeline if the code is 'too messy'."},
+  {q:"Kubernetes integration with Jenkins purpose?",opts:["CI/CD only","Running Jenkins agents as scalable, containerized Pods","VM management","Backup storage"],ans:1,exp:"The K8s plugin allows Jenkins to scale elastically by running build tasks inside isolated pods in a cluster."},
+  {q:"What does Trivy integration with Jenkins do?",opts:["Compilation","Container image vulnerability scanning within the pipeline","DB management","VM creation"],ans:1,exp:"Trivy scans your Docker images for security holes and fails the build if critical vulnerabilities are detected."},
+  {q:"Jenkins ArgoCD integration?",opts:["No integration","Jenkins triggers ArgoCD to sync the GitOps state to K8s","Manual only","DB integration"],ans:1,exp:"ArgoCD handles the 'Deployment' part of the pipeline, ensuring the K8s cluster matches the Git repo state."},
+  {q:"Jenkins EC2 Fleet Plugin purpose?",opts:["SSH management","Managing multiple EC2 instances as a dynamic agent fleet","Direct login","Backups"],ans:1,exp:"It optimizes costs by using Spot instances and managing multiple EC2 types to handle build queues efficiently."},
+  {q:"Deploying to AWS Lambda from Jenkins?",opts:["CLI only","Configure function name, payload, and role in Lambda Plugin","Manual only","No automated method"],ans:1,exp:"The plugin provides a high-level UI or DSL step to update Lambda code or trigger execution."},
+  {q:"Jenkins CloudFormation integration purpose?",opts:["Compilation","Infrastructure automation (IaC) directly from pipelines","VM management","Auth"],ans:1,exp:"This allows you to create or update your entire AWS environment as part of the application deployment process."},
+  {q:"Jenkins Slack integration?",opts:["Not possible","Sends build status and alerts to Slack channels","Manual only","Email only"],ans:1,exp:"It keeps the team informed by posting success or failure messages directly to a chat room."},
+  {q:"GitHub Enterprise Plugin provision?",opts:["Local repo only","Enables integration with on-premises/self-hosted GitHub","Cloud only","No integration"],ans:1,exp:"It provides the same automated features for companies that host their own GitHub servers behind a firewall."},
+  {q:"Jenkins GitLab integration?",opts:["No integration","Webhook triggers, branch events, and commit status updates","Manual only","SSH only"],ans:1,exp:"Just like GitHub, the GitLab plugin automates the CI process for GitLab-hosted repositories."},
+  {q:"Ansible Plugin for Jenkins purpose?",opts:["Backups","Executing playbooks for automated server configuration","Compilation","VM creation"],ans:1,exp:"It allows Jenkins to use Ansible to provision and configure the servers your application is deploying to."},
+  {q:"HashiCorp Vault integration?",opts:["No integration","Secure credential retrieval during job execution","Local storage","Hardcoding"],ans:1,exp:"Instead of storing passwords in Jenkins, this plugin pulls them from a secure Vault at runtime."},
+  {q:"TestNG integration provision?",opts:["Compilation","Test result parsing and dashboard reporting","Manual reporting","No integration"],ans:1,exp:"It visualizes your test pass/fail rates and keeps track of flaky tests over time."},
+  {q:"Jenkins Jira integration?",opts:["Manual only","Issue tracking updates and comment automation based on builds","No integration","Email only"],ans:1,exp:"It can automatically transition tickets to 'Done' when the code is successfully built and deployed."},
+  {q:"Bitbucket integration purpose?",opts:["Local only","Webhook triggers and PR status updates","Manual access","No integration"],ans:1,exp:"Provides the standard CI glue for repositories hosted on Atlassian's Bitbucket platform."},
+  {q:"Prometheus monitoring integration?",opts:["No integration","Exposes Jenkins metrics (build times, queues) for observability","Manual only","Local logs"],ans:1,exp:"The Prometheus plugin allows you to see how your CI system is performing via a Grafana dashboard."},
+  {q:"Maven Repository Manager provision?",opts:["Compilation","Uploading build artifacts to Nexus or Maven Central","Manual deploy","Local storage"],ans:1,exp:"Essential for Java projects to share shared libraries and versioned components across the organization."},
+  {q:"What is the plugin used for container security scanning?",opts:["Git Plugin","Trivy or Snyk plugins","Credentials Plugin","EC2 Plugin"],ans:1,exp:"Security plugins like Trivy scan the 'layers' of your container to ensure no malicious code is being shipped."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('jenkinsIntegrationsMasteryCache_v1');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp,
+            tag: "INTEGRATION"
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('jenkinsIntegrationsMasteryCache_v1', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH EXAM ✓" : "NEXT STEP →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('jenkinsIntegrationsMasteryCache_v1');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 25`;
+}
+
+function retryQuiz() { localStorage.removeItem('jenkinsIntegrationsMasteryCache_v1'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

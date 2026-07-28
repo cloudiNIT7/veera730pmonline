@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>413 — Payload Too Large</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    font-family:'Fredoka', sans-serif;
+    background:linear-gradient(160deg,#fff3e0,#ffe0c2);
+    color:#5a3d20; height:100vh; overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background:linear-gradient(160deg,#2a1c0e,#1a1108); color:#ffd9a8; }
+  }
+  .scene { position:relative; width:220px; height:180px; margin-bottom:20px; }
+  .box {
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:130px; height:96px; background:linear-gradient(180deg,#ff9f45,#f47b2f);
+    border-radius:12px; box-shadow:0 14px 34px rgba(244,123,47,.4);
+  }
+  .box::before { content:''; position:absolute; top:0; left:0; right:0; height:22px;
+    background:rgba(255,255,255,.25); border-radius:12px 12px 0 0; }
+  .crate {
+    position:absolute; width:34px; height:34px; border-radius:7px;
+    background:linear-gradient(180deg,#ffcf8a,#ffb14e); box-shadow:0 4px 10px rgba(0,0,0,.15);
+    animation:spill 2.6s ease-in-out infinite;
+  }
+  .crate:nth-child(1){ left:20px;  bottom:120px; animation-delay:0s; }
+  .crate:nth-child(2){ left:80px;  bottom:150px; animation-delay:.3s; }
+  .crate:nth-child(3){ left:140px; bottom:118px; animation-delay:.6s; }
+  .crate:nth-child(4){ left:56px;  bottom:170px; animation-delay:.9s; }
+  .crate:nth-child(5){ left:120px; bottom:158px; animation-delay:1.2s; }
+  @keyframes spill {
+    0%   { transform:translateY(0) rotate(0); opacity:1; }
+    60%  { transform:translateY(-14px) rotate(18deg); opacity:1; }
+    100% { transform:translateY(6px) rotate(-10deg); opacity:.85; }
+  }
+  h1 { font-size:clamp(70px,15vw,140px); font-weight:700; letter-spacing:-3px; color:#f47b2f; line-height:1; }
+  p.big { font-size:22px; font-weight:600; margin:4px 0 8px; }
+  p.small { max-width:440px; margin:0 22px 26px; line-height:1.6; font-size:14px; opacity:.8; }
+  a.btn { text-decoration:none; color:#fff; background:#f47b2f; padding:13px 28px; border-radius:99px;
+          font-weight:600; font-size:14px; box-shadow:0 10px 30px rgba(244,123,47,.45); transition:transform .25s; }
+  a.btn:hover { transform:translateY(-3px); }
+</style>
+</head>
+<body>
+<div class="scene">
+  <div class="crate"></div><div class="crate"></div><div class="crate"></div>
+  <div class="crate"></div><div class="crate"></div>
+  <div class="box"></div>
+</div>
+<h1>413</h1>
+<p class="big">Payload Too Large</p>
+<p class="small">Whatever you tried to send was way too big for the server to carry — it overflowed. Try something lighter from the dashboard.</p>
+<a class="btn" href="../dashboard.html">← Back to Dashboard</a>
+</body>
+</html>

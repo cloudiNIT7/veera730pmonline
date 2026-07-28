@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grafana & Prometheus | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#fb923c;--correct:#10b981;--wrong:#ef4444;--neutral:#3b82f6}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(251,146,60,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(251,146,60,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#fb923c,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 600px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:780px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(251, 146, 60, 0.05)}
+.option.disabled{cursor:default}
+
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(251, 146, 60, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="devops.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">MONITORING_PROTOCOL_24</div>
+    <h1>Grafana & Prometheus mastery</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Telemetry Analysis Result</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">Monitoring protocols verified. Observability state cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_EXAM</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q: "What is Continuous Monitoring in DevOps?", opts: ["CI Testing","Automated observation of infrastructure and apps in real-time","Manual log review","Backup strategy"], ans: 1, exp: "It provides real-time visibility into the health and performance of the entire tech stack."},
+  {q: "What is Prometheus?", opts: ["Log tool","Systems monitoring toolkit collecting metrics via pull model","Visualization tool","Runtime"], ans: 1, exp: "Prometheus scrapes HTTP endpoints, stores time-series data, and handles alerting."},
+  {q: "What data model does Prometheus use?", opts: ["Relational","Time-series with metric name and key-value labels","Document-based","Graph"], ans: 1, exp: "Every data point is part of a stream identified by labels like {env='prod', service='api'}."},
+  {q: "How does Prometheus collect metrics?", opts: ["Push model","Pull model (scraping HTTP endpoints)","Via Kafka","Via syslog"], ans: 1, exp: "The Prometheus server 'pulls' data from targets at configured scrape intervals."},
+  {q: "What is a Prometheus Exporter?", opts: ["Grafana plugin","Component exposing metrics from 3rd party systems in Prometheus format","Backup tool","Dashboard"], ans: 1, exp: "Exporters act as agents that translate legacy or custom system metrics into a format Prometheus understands."},
+  {q: "Which exporter exposes node metrics like CPU and Disk?", opts: ["kube-state-metrics","Blackbox","Node Exporter","cAdvisor"], ans: 2, exp: "Node Exporter is the standard agent for monitoring the underlying Linux host or virtual machine."},
+  {q: "What query language does Prometheus use?", opts: ["SQL","PromQL","GraphQL","MetricQL"], ans: 1, exp: "PromQL allows for complex mathematical aggregations and data selection over time ranges."},
+  {q: "What is Grafana?", opts: ["Collection tool","Analytics and visualization platform for creating dashboards","Log storage","Registry"], ans: 1, exp: "Grafana is the 'window' into your metrics, capable of pulling from many different databases."},
+  {q: "What is the default port for Grafana?", opts: ["9090","3000","8080","443"], ans: 1, exp: "Grafana defaults to port 3000, while Prometheus defaults to 9090."},
+  {q: "What is a Grafana Data Source?", opts: ["Grafana DB","Connection to a backend system like Prometheus or MySQL","Template","User role"], ans: 1, exp: "You must configure a Data Source so Grafana knows where to fetch the metrics from."},
+  {q: "What is Alertmanager?", opts: ["Log system","Component that handles deduplication and routing of alerts","Metrics exporter","Dashboard tool"], ans: 1, exp: "Alertmanager receives raw alerts from Prometheus and sends them to Slack, Email, or PagerDuty."},
+  {q: "What is kube-state-metrics?", opts: ["API server","Service exposing Kubernetes object states (Deployment, Pods)","Node monitor","Helm plugin"], ans: 1, exp: "It tracks the 'count' and 'status' of K8s objects rather than individual CPU/RAM metrics."},
+  {q: "Which Helm chart bundles the monitoring stack?", opts: ["helm/monitoring","prometheus/stack","kube-prometheus-stack","observability-suite"], ans: 2, exp: "The stack includes everything needed for full K8s observability in one command."},
+  {q: "How is Prometheus typically managed in K8s?", opts: ["Standalone VM","Via Prometheus Operator using CRDs","Master node direct","Sidecar"], ans: 1, exp: "Operators simplify life by allowing you to define 'ServiceMonitors' as standard YAML objects."},
+  {q: "What is a ServiceMonitor?", opts: ["K8s service type","CRD defining how Prometheus should scrape a Service","Dashboard type","Helm value"], ans: 1, exp: "It tells the Operator to automatically update Prometheus config when a new service matches labels."},
+  {q: "What does 'scrape_interval' define?", opts: ["Data retention","How frequently Prometheus pulls metrics from targets","Alert interval","Refresh rate"], ans: 1, exp: "A shorter interval provides higher resolution data but increases server load and storage usage."},
+  {q: "Which Grafana feature alerts on metric thresholds?", opts: ["Annotations","Variables","Alerting Rules","Transformations"], ans: 2, exp: "Alerting rules can be attached to panels to notify the team when latency or error rates spike."},
+  {q: "What is Grafana Loki?", opts: ["Metrics DB","Log aggregation system designed to work with Grafana","Tracing backend","K8s plugin"], ans: 1, exp: "Loki is like 'Prometheus for logs', indexing only labels to keep things efficient and fast."},
+  {q: "Which function calculates per-second counter rates?", opts: ["sum()","avg()","rate()","increase()"], ans: 2, exp: "Rate is essential for counters (which only go up) to show current throughput per second."},
+  {q: "What are Grafana Variables?", opts: ["Secrets","Tool for creating dynamic dashboards with dropdown filters","Thresholds","Credentials"], ans: 1, exp: "Variables allow one dashboard to work for many namespaces or clusters via a simple selector."},
+  {q: "What is the default port for the Prometheus UI?", opts: ["3000","8080","9090","5601"], ans: 2, exp: "Prometheus uses 9090. If running both on one machine, ensure ports don't conflict."},
+  {q: "Prometheus retention setting purpose?", opts: ["Alert history","Duration metrics are stored before deletion","Refresh rate","Log level"], ans: 1, exp: "By default, Prometheus keeps data for 15 days. You can adjust this based on disk availability."},
+  {q: "Which Dashboard ID is for K8s monitoring?", opts: ["1234","315","3119","6417"], ans: 3, exp: "Dashboard 6417 is the community standard for a 'single pane of glass' cluster view."},
+  {q: "What is the health status 'Degraded' in Grafana?", opts: ["Git error","Resource is running but not performing correctly","Network down","Storage full"], ans: 1, exp: "It usually means pods are crash-looping or resource limits are being throttled."},
+  {q: "What is the 'pull' model advantage?", opts: ["Faster","Less overhead on targets; Prometheus controls the load","More secure","Easier scaling"], ans: 1, exp: "In a pull model, targets don't need to know where the monitoring server is; they just expose an endpoint."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('grafanaPromMasteryCache_v1');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp,
+            tag: "METRICS_LOGIC"
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('grafanaPromMasteryCache_v1', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH EXAM ✓" : "NEXT STEP →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('grafanaPromMasteryCache_v1');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 25`;
+}
+
+function retryQuiz() { localStorage.removeItem('grafanaPromMasteryCache_v1'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELB Mastery | AWS Study Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#3b82f6;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(59, 130, 246, 0.05)}
+  .option.disabled{cursor:default}
+  .option.correct-ans{border-color:var(--correct)!important;background:rgba(16,185,129,.15)!important}
+  .option.wrong-ans{border-color:var(--wrong)!important;background:rgba(239,68,68,.15)!important}
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct);color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+  /* Compact Explanation Style */
+  .explanation{margin-top:20px;padding:15px;background:rgba(59, 130, 246, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  .explanation strong{color:var(--accent)}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="aws.html">← EXIT_NODE</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">NETWORK_BALANCER_PROTOCOL_06</div>
+      <h1>ELB Traffic Orchestration</h1>
+      <p class="desc">Master ALB, NLB, path-based routing, and high availability targets.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Final Accuracy</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">Load Balancing Session Complete. Cache updated.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_BALANCER</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is the primary purpose of an Elastic Load Balancer (ELB)?",o:["To store static assets","To distribute incoming application traffic across multiple targets","To monitor EC2 instances","To manage IAM permissions"],a:1,e:"ELB improves availability by distributing traffic across multiple targets like EC2 instances or containers."},
+  {q:"Which ELB type operates at Layer 7 (Application Layer) of the OSI model?",o:["Classic Load Balancer","Network Load Balancer (NLB)","Application Load Balancer (ALB)","Gateway Load Balancer (GWLB)"],a:2,e:"ALB operates at Layer 7 (HTTP/HTTPS), allowing advanced content-based routing rules."},
+  {q:"Which ELB type operates at Layer 4 (Transport Layer) and supports TCP/UDP protocols?",o:["Application Load Balancer","Network Load Balancer","Classic Load Balancer","Gateway Load Balancer"],a:1,e:"NLB is designed for Layer 4 traffic, providing ultra-low latency and handling millions of requests."},
+  {q:"What is a Target Group in AWS Load Balancing?",o:["A group of IAM users","A logical grouping of targets that receive forwarded traffic from a load balancer","A billing group","A CloudWatch alarm group"],a:1,e:"Target Groups define where the traffic is sent. They manage health checks and member registration."},
+  {q:"Which feature of ALB allows routing different URL paths to different target groups?",o:["Host-based routing","IP-based routing","Path-based routing","Header-based routing"],a:2,e:"Path-based routing sends traffic based on the URL string (e.g., /api vs /images)."},
+  {q:"What is Host-based routing in ALB?",o:["Routing based on URL path","Routing based on the HTTP Host header (domain name)","Routing based on source IP","Routing based on HTTP method"],a:1,e:"Host-based routing directs traffic based on the domain name used in the request (e.g., example.com)."},
+  {q:"Which load balancer type supports static IP addresses and Elastic IPs per Availability Zone?",o:["Application Load Balancer (ALB)","Classic Load Balancer","Network Load Balancer (NLB)","Gateway Load Balancer"],a:2,e:"NLB provides a fixed IP address per AZ, which is essential for whitelisting requirements."},
+  {q:"What is the health check feature of a Load Balancer?",o:["A billing audit","Periodically testing targets to determine if they should receive traffic","A security scan","A performance benchmark"],a:1,e:"Health checks ensure traffic is only sent to instances that are responding correctly."},
+  {q:"What protocol and port do you typically configure for ALB health checks for a web application?",o:["UDP port 53","TCP port 22","HTTP port 80 or HTTPS port 443","ICMP"],a:2,e:"Web app health checks usually use HTTP/80 or HTTPS/443 to verify the web server is up."},
+  {q:"What is Cross-Zone Load Balancing?",o:["Distributing traffic across multiple AWS accounts","Distributing traffic evenly across all enabled AZs","Connecting load balancers in different regions","Balancing load between VPCs"],a:1,e:"Cross-Zone balancing ensures an even distribution of traffic across all registered instances in all active AZs."},
+  {q:"What is an ALB Listener?",o:["A monitoring alarm","A process that checks for connection requests using a protocol and port","An IAM role","A subnet configuration"],a:1,e:"Listeners evaluate incoming requests against rules to determine how to route traffic."},
+  {q:"Which ELB type is best suited for microservices and container-based architectures?",o:["Classic Load Balancer","Network Load Balancer","Application Load Balancer","None — use API Gateway instead"],a:2,e:"ALB supports features like path-based routing and dynamic port mapping for containers."},
+  {q:"What happens to ALB access logs?",o:["They are stored only in CloudWatch","They can be stored in S3 buckets for analysis","They are deleted after 24 hours","They are only viewable in the console"],a:1,e:"Access logs capture detailed metadata about every request and can be saved to S3 for auditing."},
+  {q:"Can an ALB target group contain Lambda functions as targets?",o:["No, only EC2 instances","Yes, Lambda functions can be registered as ALB targets","Yes, but only with HTTPS","Only with Classic Load Balancer"],a:1,e:"ALB can trigger Lambda functions to process HTTP requests, enabling serverless backends."},
+  {q:"What is Sticky Sessions (Session Affinity) in Load Balancing?",o:["A DDoS protection feature","A feature that routes all requests from a specific user to the same target","A caching mechanism","An encryption feature"],a:1,e:"Sticky sessions use cookies to ensure a user stays connected to the same backend instance for session state."},
+  {q:"Which load balancer should you use for handling millions of TCP connections per second?",o:["Application Load Balancer (ALB)","Classic Load Balancer","Network Load Balancer (NLB)","Gateway Load Balancer"],a:2,e:"NLB is built for massive scale at Layer 4, handling extreme traffic spikes with ease."},
+  {q:"What is the difference between ALB and NLB in terms of connection handling?",o:["ALB handles TCP; NLB handles HTTP","ALB terminates connections and re-initiates; NLB passes through TCP connections","They handle connections identically","ALB is faster than NLB"],a:1,e:"ALB is a proxy that terminates and re-creates connections; NLB acts more like a pass-through router."},
+  {q:"What does 'Deregistration Delay' (Connection Draining) do in ELB?",o:["Delays new registrations","Allows in-flight requests to complete before removal","Delays health checks","Pauses load balancer scaling"],a:1,e:"This setting allows active requests to finish before the load balancer stops sending traffic to an instance."},
+  {q:"How does ALB handle HTTPS/SSL termination?",o:["HTTPS is passed through to EC2","ALB terminates SSL using an ACM certificate, then forwards as HTTP","ALB cannot handle HTTPS","Only NLB handles SSL"],a:1,e:"ALB offloads the SSL decryption work from your backend servers, improving their performance."},
+  {q:"What is a Weighted Target Group in ALB?",o:["A target group with health checks","A feature to assign different traffic weights to multiple target groups","A target group with multiple protocols","A target group for Spot Instances only"],a:1,e:"Weights let you send a percentage of traffic to one version and the rest to another (e.g., Canary tests)."},
+  {q:"Which type of load balancer is required for AWS PrivateLink service endpoints?",o:["Application Load Balancer","Classic Load Balancer","Network Load Balancer","Gateway Load Balancer"],a:2,e:"PrivateLink requires the Layer 4 architecture of an NLB to function as an endpoint service."},
+  {q:"What protocol does NLB use for health checks by default?",o:["HTTP","HTTPS","TCP","ICMP"],a:2,e:"NLB defaults to a simple TCP 'handshake' check to see if the port is listening."},
+  {q:"Can you attach multiple target groups to one ALB listener?",o:["No, one listener, one target group","Yes, through listener rules that route based on conditions","Only with HTTPS listeners","Only up to 2 target groups"],a:1,e:"One listener can have many rules, each pointing to a different target group based on request logic."},
+  {q:"What is the Gateway Load Balancer (GWLB) used for?",o:["Replacing ALB for web traffic","Deploying and scaling third-party virtual appliances like firewalls","Serving static websites","Managing Lambda functions"],a:1,e:"GWLB makes it easy to scale inline security appliances like firewalls and IDS/IPS systems."},
+  {q:"What is the default load balancing algorithm used by ALB?",o:["Weighted Round Robin","Least Outstanding Requests","Round Robin","Random"],a:2,e:"ALB uses Round Robin by default to spread requests evenly across available healthy targets."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsElbCache_v7');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsElbCache_v7', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+    document.getElementById('progressFill').style.width = ((current+1)/25 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num">Q:${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH_BALANCING ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsElbCache_v7');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/25)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsElbCache_v7'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Setup | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#06b6d4;--correct:#10b981;--wrong:#ef4444;--neutral:#a78bfa}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(6,182,212,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(6,182,212,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#06b6d4,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 600px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:780px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(6, 182, 212, 0.05)}
+.option.disabled{cursor:default}
+
+/* HIGH VISIBILITY HIGHLIGHTING */
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(6, 182, 212, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="devops.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">GIT_SETUP_PROTOCOL_06</div>
+    <h1>Git Setup & Config</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Final Configuration Result</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">Git setup protocol verified. Environment variables cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_EXAM</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"Which command installs Git on Ubuntu/Debian Linux?",opts:["yum install git","apt install git -y","pip install git","rpm -i git"],ans:1,exp:"Debian-based systems use the Advanced Package Tool (apt). The -y flag automates the confirmation process."},
+  {q:"Which command installs Git on RHEL/CentOS Linux?",opts:["apt-get install","brew install","yum install git -y","dnf add git"],ans:2,exp:"YUM is the primary package manager for RHEL-based distributions. Newer versions also use dnf."},
+  {q:"How do you verify Git is installed and check its version?",opts:["git --info","git status","git --version","git check"],ans:2,exp:"Standard GNU-style version check is used to verify the binary is in your PATH and functional."},
+  {q:"What is the purpose of 'git config' command?",opts:["Create repo","Get and set Git configuration variables","Configure network","Configure SSH keys"],ans:1,exp:"Git config allows you to customize how Git works, from your identity to the text editor used for commits."},
+  {q:"What are the three levels of Git configuration?",opts:["Local, Regional, Global","System, Global, Local","User, Project, System","Private, Public, Shared"],ans:1,exp:"Settings move from broad (System) to specific (Local), with each level overriding the one before it."},
+  {q:"Which command sets your global Git username?",opts:["git config user.name","git config --global user.name 'Your Name'","git set name","git identity"],ans:1,exp:"This identity is baked into every commit you make, establishing the 'Author' field in history."},
+  {q:"Which command sets your global Git email address?",opts:["git config email","git set --email","git config --global user.email 'you@test.com'","git identity"],ans:2,exp:"Git uses this email to associate your local commits with your account on platforms like GitHub."},
+  {q:"Which command displays all Git configuration settings?",opts:["git config show","git config --list","git settings","git config --all"],ans:1,exp:"The --list flag aggregates variables from all three configuration files into one view."},
+  {q:"How do you set VS Code as the default Git editor?",opts:["git config --global core.editor vim","git config --global core.editor 'code --wait'","git editor set vscode","git config editor=vscode"],ans:1,exp:"The '--wait' flag is crucial as it stops Git from completing the command until you save and close the VS Code window."},
+  {q:"What file stores global Git configuration?",opts:["/etc/gitconfig","~/.gitconfig"," .git/config","~/.bashrc"],ans:1,exp:"Global settings live in your home directory, typically in a hidden file named .gitconfig."},
+  {q:"How do you open the global Git config file in the default editor?",opts:["git config open","git config --global --edit","git edit config","git config -e --global"],ans:3,exp:"The -e (edit) flag is the fastest way to manually adjust configuration blocks directly."},
+  {q:"Which command initialises a new Git repository locally?",opts:["git start","git new .","git init","git create repo"],ans:2,exp:"'git init' turns any folder into a repository by generating the hidden .git metadata database."},
+  {q:"What does 'git init my-project' do?",opts:["Clones a repo","Creates a new directory and initialises a repo inside it","Renames current repo","Creates remote"],ans:1,exp:"This combines 'mkdir' and 'git init' into a single, efficient operation."},
+  {q:"What is the second way to get a Git repository (besides init)?",opts:["git copy","git clone","git duplicate","git mirror"],ans:1,exp:"Cloning is the standard way to participate in an existing project by copying the remote server history."},
+  {q:"What does 'git config --global init.defaultBranch main' do?",opts:["Renames branches","Sets 'main' as default for new repos","Deletes master","Creates main branch"],ans:1,exp:"Modern Git defaults to 'main' for the initial branch to follow current industry standards."},
+  {q:"Which command sets a Git alias for 'git st'?",opts:["git alias st=status","git config --global alias.st status","git shortcut","git set alias"],ans:1,exp:"Aliases save time by allowing you to define short handles for frequently used commands."},
+  {q:"What SSH key files are generated by 'ssh-keygen -t rsa'?",opts:["id_dsa","id_rsa and id_rsa.pub","gitkey","private/public.key"],ans:1,exp:"The .pub file is the one you upload to servers, while the private file (no extension) stays on your machine."},
+  {q:"Which command checks SSH connection to GitHub?",opts:["git connect","ssh -T git@github.com","git ssh test","git auth check"],ans:1,exp:"The -T flag tests the connection without attempting to open an interactive shell session."},
+  {q:"What does the '--global' flag mean in config?",opts:["Apply to all repos for user","Remote only","All users on system","Current project only"],ans:0,exp:"Global settings affect all projects on your machine, preventing you from having to set your name every time."},
+  {q:"How do you check a specific git config value?",opts:["git config show","git config user.name","git get config","git info"],ans:1,exp:"Simply calling the key name after 'git config' will return the value assigned to that setting."},
+  {q:"What does 'git config --global core.autocrlf input' do?",opts:["Converts to Windows CRLF","Converts CRLF to LF on commit (Linux/Mac)","Disables conversion","Converts LF to CRLF"],ans:1,exp:"This ensures that Windows users don't accidentally introduce incompatible line endings into your repository."},
+  {q:"How can you get help for any Git command?",opts:["git help <command>","git info","git docs","git manual"],ans:0,exp:"Git includes a comprehensive manual built-in that opens locally in your browser or terminal."},
+  {q:"What configuration is required before making your first commit?",opts:["SSH key","user.name and user.email","Remote repo","Gitignore"],ans:1,exp:"Git will block your first commit and provide an error message if it doesn't know who is making the change."},
+  {q:"What is 'git config --global credential.helper store' for?",opts:["Encrypt commits","Saves passwords to a file so you don't re-enter them","Creates SSH","Sets 2FA"],ans:1,exp:"This helper caches your credentials so you don't have to type your password for every push/pull."},
+  {q:"On Windows, where is Git typically installed from?",opts:["App Store","git-scm.com","Linux Subsystem","Chocolatey only"],ans:1,exp:"Git-SCM provides the 'Git for Windows' package, which includes the vital Git Bash emulator."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('gitSetupMasteryCache_v1');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('gitSetupMasteryCache_v1', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH EXAM ✓" : "NEXT STEP →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('gitSetupMasteryCache_v1');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 25`;
+}
+
+function retryQuiz() { localStorage.removeItem('gitSetupMasteryCache_v1'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

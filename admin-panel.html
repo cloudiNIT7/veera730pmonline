@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>403 — Access Denied | Cloud Init</title>
+<style>
+  :root{
+    --bg-0:#0a0a14;
+    --bg-1:#12121f;
+    --glass:rgba(20,20,36,0.55);
+    --line:rgba(255,255,255,0.09);
+    --text-0:#f1f0f9;
+    --text-1:#9a97b8;
+    --text-2:#615e82;
+    --violet:#8b7bff;
+    --violet-soft:rgba(139,123,255,.14);
+    --cyan:#5ee6d0;
+    --danger:#ff6b6b;
+    --danger-soft:rgba(255,107,107,.12);
+    --mono:'JetBrains Mono','Fira Code', ui-monospace, Menlo, Consolas, monospace;
+    --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(139,123,255,.16), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(94,230,208,.08), transparent 60%),
+      var(--bg-0);
+    color:var(--text-0);
+    font-family:var(--sans);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:3rem 1.25rem;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .stars{position:fixed; inset:0; pointer-events:none; opacity:.5;}
+  .stars span{
+    position:absolute;
+    width:2px; height:2px;
+    background:var(--text-1);
+    border-radius:50%;
+    opacity:.4;
+  }
+
+  .stage{
+    width:100%;
+    max-width:460px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+    z-index:1;
+  }
+  .radar-wrap, .badge, h1, .sub, .glass, .actions, .foot{
+    opacity:0;
+    transform:translateY(12px);
+    animation:stage-in .6s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  @keyframes stage-in{
+    to{opacity:1; transform:translateY(0);}
+  }
+  .radar-wrap{animation-delay:.05s;}
+  .badge{animation-delay:.2s;}
+  h1{animation-delay:.28s;}
+  .sub{animation-delay:.36s;}
+  .glass{animation-delay:.44s;}
+  .actions{animation-delay:.52s;}
+  .foot{animation-delay:.6s;
+  }
+
+  /* ---- radar ---- */
+  .radar-wrap{
+    width:200px;height:200px;
+    position:relative;
+    margin-bottom:8px;
+  }
+  .radar-ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    border:1px solid var(--line);
+  }
+  .radar-ring.r2{inset:20px; border-color:rgba(255,255,255,.07);}
+  .radar-ring.r3{inset:40px; border-color:rgba(255,255,255,.06);}
+  .radar-ring.r4{inset:60px; border-color:rgba(255,255,255,.05);}
+
+  .radar-sweep{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    background:conic-gradient(from 0deg, rgba(139,123,255,.55), transparent 26%);
+    animation:spin 3.2s linear infinite;
+    -webkit-mask-image:radial-gradient(circle, black 60%, transparent 100%);
+    mask-image:radial-gradient(circle, black 60%, transparent 100%);
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .radar-core{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .radar-core .logo-tile{
+    width:66px;height:66px;
+    border-radius:18px;
+    background:var(--bg-1);
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 0 1px rgba(139,123,255,.15), 0 0 40px -8px rgba(139,123,255,.5);
+    position:relative;
+    z-index:2;
+  }
+  .radar-core img{width:38px;height:38px;object-fit:contain;}
+
+  .blip{
+    position:absolute;
+    width:8px; height:8px;
+    border-radius:50%;
+    background:var(--danger);
+    box-shadow:0 0 0 5px var(--danger-soft);
+    top:28px; right:34px;
+    animation:blip-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes blip-pulse{
+    0%,100%{transform:scale(1); opacity:1;}
+    50%{transform:scale(1.5); opacity:.5;}
+  }
+
+  /* ---- badge + heading ---- */
+  .badge{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:var(--mono);
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--danger);
+    background:var(--danger-soft);
+    border:1px solid rgba(255,107,107,.3);
+    border-radius:100px;
+    padding:5px 14px;
+    margin:18px 0 16px;
+  }
+
+  h1{
+    font-size:25px;
+    font-weight:650;
+    letter-spacing:-.015em;
+    text-align:center;
+    margin:0 0 10px;
+  }
+  .sub{
+    font-size:14.5px;
+    line-height:1.65;
+    color:var(--text-1);
+    text-align:center;
+    max-width:360px;
+    margin:0 0 30px;
+  }
+  .sub b{color:var(--text-0); font-weight:600;}
+
+  /* ---- glass detail card ---- */
+  .glass{
+    width:100%;
+    background:var(--glass);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:6px;
+    margin-bottom:22px;
+  }
+  .glass-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 16px;
+    font-size:13px;
+  }
+  .glass-row + .glass-row{border-top:1px solid var(--line);}
+  .glass-row .k{color:var(--text-2); font-family:var(--mono); font-size:11.5px; letter-spacing:.04em;}
+  .glass-row .v{color:var(--text-0); font-family:var(--mono); font-size:12.5px;}
+  .glass-row .v.deny{color:var(--danger); font-weight:600;}
+  .glass-row .v.ok{color:var(--cyan);}
+
+  /* ---- actions ---- */
+  .actions{
+    display:flex;
+    gap:10px;
+    width:100%;
+  }
+  .btn{
+    flex:1;
+    font-family:var(--sans);
+    font-size:13.5px;
+    font-weight:600;
+    padding:13px 18px;
+    border-radius:11px;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:transform .15s ease, filter .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn:focus-visible{outline:2px solid var(--violet); outline-offset:2px;}
+  .btn-primary{
+    background:linear-gradient(135deg, var(--violet), #6d5bff);
+    color:#fff;
+  }
+  .btn-primary:hover{filter:brightness(1.1);}
+  .btn-ghost{
+    background:transparent;
+    color:var(--text-1);
+    border-color:var(--line);
+  }
+  .btn-ghost:hover{color:var(--text-0); border-color:var(--text-1);}
+
+  .foot{
+    text-align:center;
+    margin-top:26px;
+    font-size:11.5px;
+    color:var(--text-2);
+  }
+  .foot strong{color:var(--text-1); font-weight:600;}
+  .foot .sep{margin:0 8px; opacity:.5;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="stage">
+
+  <div class="radar-wrap">
+    <div class="radar-ring"></div>
+    <div class="radar-ring r2"></div>
+    <div class="radar-ring r3"></div>
+    <div class="radar-ring r4"></div>
+    <div class="radar-sweep"></div>
+    <div class="blip"></div>
+    <div class="radar-core">
+      <div class="logo-tile">
+        <img src="https://i.ibb.co/C5XqXXx5/d2a09cd4-f07d-4034-99ad-51292342123d.png" alt="Cloud Init logo">
+      </div>
+    </div>
+  </div>
+
+  <div class="badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+    403 · Access Denied
+  </div>
+
+  <h1>Restricted zone detected</h1>
+  <p class="sub">This page belongs to the <b>admin</b> layer of Cloud Init. Your account doesn't carry that clearance yet.</p>
+
+  <div class="glass">
+    <div class="glass-row">
+      <span class="k">ROLE</span>
+      <span class="v">viewer</span>
+    </div>
+    <div class="glass-row">
+      <span class="k">REQUIRED</span>
+      <span class="v deny">admin</span>
+    </div>
+    <div class="glass-row">
+      <span class="k">CLIENT IP</span>
+      <span class="v" id="ip-val">resolving…</span>
+    </div>
+    <div class="glass-row">
+      <span class="k">STATUS</span>
+      <span class="v deny">BLOCKED</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="goBack()">← Go back</button>
+    <button class="btn btn-ghost" onclick="requestAccess(event)">Request access</button>
+  </div>
+
+  <div class="foot">
+    developed by <strong>Abinash Kumar</strong><span class="sep">·</span>Cloud Init Platform
+  </div>
+
+</div>
+
+<script>
+  // scatter faint background stars
+  const starField = document.getElementById('stars');
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement('span');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.opacity = (Math.random() * 0.5 + 0.15).toFixed(2);
+    starField.appendChild(s);
+  }
+
+  // real IP lookup
+  fetch('https://api.ipify.org?format=json')
+    .then(r => r.json())
+    .then(d => { document.getElementById('ip-val').textContent = d.ip; })
+    .catch(() => { document.getElementById('ip-val').textContent = 'unresolved'; });
+
+  function goBack(){
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = 'main.html';
+    }
+  }
+
+  function requestAccess(e){
+    const btn = e.target;
+    const original = btn.textContent;
+    btn.textContent = 'Request sent ✓';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2400);
+  }
+</script>
+
+</body>
+</html>

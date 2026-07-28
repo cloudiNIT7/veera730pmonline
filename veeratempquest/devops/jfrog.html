@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JFrog Artifactory | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#f59e0b;--correct:#10b981;--wrong:#ef4444;--neutral:#3b82f6}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(245,158,11,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,158,11,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* TOPBAR NAVIGATION */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#f59e0b,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 600px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:780px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(245, 158, 11, 0.05)}
+.option.disabled{cursor:default}
+
+/* FIXED HIGHLIGHT LOGIC */
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(245, 158, 11, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="devops.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">JFROG_ARTIFACTORY_19</div>
+    <h1>JFrog Artifactory Mastery</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Artifact Integrity Result</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">Repository protocol verified. Binary state cached.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_EXAM</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is JFrog Artifactory?",opts:["Version control system","Universal artifact repository manager for binaries and libraries","CI/CD engine","Monitoring platform"],ans:1,exp:"It acts as a central hub for DevOps, storing build results like JARs, Docker images, and npm packages."},
+  {q:"Primary purpose of JFrog Artifactory?",opts:["Editing code","Artifact storage, retrieval, versioning, and distribution","Executing unit tests","Deploying VMs"],ans:1,exp:"It ensures that once a binary is built, it is stored securely and can be promoted through various stages (Dev, QA, Prod)."},
+  {q:"Which artifact types are supported?",opts:["JAR files only","Docker, npm, Python, Maven, NuGet, and more","Source code only","Config files only"],ans:1,exp:"Artifactory is 'Universal' because it supports over 30 different package formats and technologies."},
+  {q:"What is a Repository in Artifactory?",opts:["A Git folder","A logical container for storing artifacts of specific types","A SQL database","A cloud bucket"],ans:1,exp:"Repositories allow you to organize artifacts based on their type, maturity, and access permissions."},
+  {q:"Main types of repositories?",opts:["Local only","Local, Remote, and Virtual","Backup and Archive","Public and Private only"],ans:1,exp:"Local stores your work; Remote proxies external repos; Virtual aggregates multiple repos into one URL."},
+  {q:"What is a Local Repository?",opts:["Machine backup","Repo where your organization's own artifacts are stored","External proxy","Temporary cache"],ans:1,exp:"Local repositories are used to host the binaries you build internally so other teams can use them."},
+  {q:"What is a Remote Repository?",opts:["Backup server","A proxy/cache to external repos like Maven Central or Docker Hub","Storage for logs","Network monitor"],ans:1,exp:"It saves bandwidth and time by caching external dependencies so they don't have to be re-downloaded from the internet every time."},
+  {q:"What is a Virtual Repository?",opts:["Ghost repo","A unified view aggregating multiple local and remote repositories","Cloud storage link","System database"],ans:1,exp:"Developers use one Virtual repo URL, and Artifactory handles finding the artifact across all underlying repos."},
+  {q:"What are Artifact Properties?",opts:["File size","Metadata (key-value pairs) for organization and tracking","Job configs","Deployment tags"],ans:1,exp:"Properties allow you to add custom info like 'BuildID' or 'Status=Approved' to any binary file."},
+  {q:"What is Artifact Promotion?",opts:["Version upgrade","Moving artifacts between repos (e.g. dev to prod) based on quality gates","Deleting old files","Creating backups"],ans:1,exp:"Promotion ensures that only binaries that pass testing move into the production-ready repository."},
+  {q:"How do you authenticate with JFrog?",opts:["No login needed","Username/password or secure API tokens","SSH keys only","OAuth only"],ans:1,exp:"Secure access is maintained through credentials, with API tokens being preferred for automation."},
+  {q:"What is an API Token in JFrog?",opts:["Temp file","A secure credential for programmatic access without revealing passwords","Build ID","Repo name"],ans:1,exp:"API tokens are essential for CI/CD pipelines to securely upload and download artifacts."},
+  {q:"Command to push via curl?",opts:["curl -GET","curl -X PUT -u user:token -T file.jar <URL>","curl -POST","curl sync"],ans:1,exp:"The PUT method is used to upload (deploy) files to Artifactory repositories."},
+  {q:"'maven-releases' repo contains?",opts:["Snapshot builds","Final, stable release versions of Java artifacts","Temporary files","Source code"],ans:1,exp:"Release repositories are for immutable, finished versions of software components."},
+  {q:"How does Maven download from JFrog?",opts:["Manual download","Maven reads the repo URL configured in pom.xml or settings.xml","FTP login","SSH script"],ans:1,exp:"Maven uses Artifactory as a proxy to fetch all project dependencies automatically during build time."},
+  {q:"What is AQL?",opts:["SQL variant","Artifactory Query Language for advanced artifact searching","API protocol","Repo type"],ans:1,exp:"AQL gives you deep power to search for artifacts based on specific metadata, time, or size criteria."},
+  {q:"Retention policies in Artifactory?",opts:["Manual only","Automated rules to delete old artifacts based on age or count","Store everything forever","Disable downloads"],ans:1,exp:"Automated cleanup is vital to prevent storage from filling up with old development builds."},
+  {q:"What is Artifact Metadata?",opts:["File extension","Info like checksums, created date, and download count","Server IP","Maven version"],ans:1,exp:"Artifactory automatically calculates MD5 and SHA-1 checksums to ensure file integrity."},
+  {q:"Jenkins integration step?",opts:["Manual code copy","Install JFrog Plugin and configure server/credentials","Shell script only","Email link"],ans:1,exp:"The dedicated plugin provides native steps for pipelines to publish build info and artifacts."},
+  {q:"'Deployer' role permits?",opts:["Read-only","Permission to push artifacts to repositories","System admin","Delete only"],ans:1,exp:"The Deployer role is specifically for users or CI systems that need to write data to repos."},
+  {q:"What is Repository Layout?",opts:["UI theme","Logic defining folder structure and naming conventions","Storage path","Cache logic"],ans:1,exp:"Layouts ensure that Artifactory understands how to parse versions from strings like Maven's GroupID/ArtifactID."},
+  {q:"Command to pull via curl?",opts:["curl -X PUT","curl -X GET -u user:token -O <URL>","curl push","curl check"],ans:1,exp:"The GET method is used to download files from Artifactory via its REST API."},
+  {q:"Artifact Cleanup purpose?",opts:["Log rotation","Deleting unused or expired artifacts to manage storage","Compressing files","Archiving code"],ans:1,exp:"Artifactory can identify 'abandoned' artifacts that haven't been downloaded for months to clear space."},
+  {q:"Virtual Repository aggregation?",opts:["One repo limit","Combining multiple repos into a single access point for developers","Manual copying","Splitting files"],ans:1,exp:"This simplifies the developer setup by providing a single URL for all resolution needs."},
+  {q:"'Snapshot' in Maven context?",opts:["Full backup","A development version with a timestamp for rapid iterative builds","Production code","Legacy version"],ans:1,exp:"Snapshots allow developers to share work-in-progress code that changes frequently during a sprint."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('jfrogArtifactoryMasteryCache_v1');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp,
+            tag: "ARTIFACT_LOGIC"
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('jfrogArtifactoryMasteryCache_v1', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH EXAM ✓" : "NEXT STEP →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('jfrogArtifactoryMasteryCache_v1');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 25`;
+}
+
+function retryQuiz() { localStorage.removeItem('jfrogArtifactoryMasteryCache_v1'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

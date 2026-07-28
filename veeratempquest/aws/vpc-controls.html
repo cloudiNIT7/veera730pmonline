@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPC Controls | AWS MCQ Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#0a0e1a;--card:#111827;--border:#1e2d45;--accent:#10b981;--text:#e2e8f0;--muted:#64748b;--correct:#10b981;--wrong:#ef4444}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh; overflow-x: hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none;z-index:0}
+  
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;transition:all .2s}
+  
+  .progress-bar{width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);transition:width .4s}
+  
+  .hero{position:relative;z-index:1;padding:40px 40px 20px;text-align:center}
+  .topic-tag{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  
+  /* Gradient H1 Header */
+  h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:8px; background: linear-gradient(to right, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  .desc{color:var(--muted);font-size:.85rem;max-width:600px;margin:0 auto}
+
+  .header-stats{display:flex;justify-content:center;gap:15px;margin:20px 0}
+  .hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+  .hs-val{display:block;font-family:'Space Mono',monospace;font-weight:800;color:var(--accent);font-size:1.2rem}
+  .hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+  .timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+  .nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+  .nav-item.active {border-color: var(--accent); color: var(--accent); font-weight: bold}
+  .nav-item.correct {background: var(--correct); color: #000 !important; border-color: var(--correct)}
+  .nav-item.wrong {background: var(--wrong); color: #fff !important; border-color: var(--wrong)}
+
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1}
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  .q-text{font-size:1.05rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+  .option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px; position: relative;}
+  .option:hover:not(.disabled){border-color:var(--accent);background:rgba(16, 185, 129, 0.05)}
+  .option.disabled{cursor:default}
+  
+  /* Highlight Logic */
+  .option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+  .option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+  
+  .option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700}
+  .option.correct-ans .option-letter{background:var(--correct); color:#000}
+  .option.wrong-ans .option-letter{background:var(--wrong); color:#fff}
+
+  .explanation{margin-top:20px;padding:15px;background:rgba(16, 185, 129, 0.08);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;font-size:.82rem;color:var(--text);line-height:1.6;display:none}
+  .explanation.show{display:block; animation: fadeIn 0.3s ease;}
+  .explanation strong{color:var(--accent)}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+  .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+  .nav-btn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+  .nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+  .scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+  .score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'Space Mono'}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="aws.html">← EXIT_NODE</a>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div id="mainQuiz">
+    <div class="hero">
+      <div class="topic-tag">NETWORK_PROTOCOL_TOPIC_11</div>
+      <h1>VPC Orchestration</h1>
+      <p class="desc">Mastering NACLs, Transit Gateway, and private endpoint security.</p>
+      <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+      </div>
+    </div>
+
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+      <div id="questionContainer"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_BLOCK</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_BLOCK →</button>
+      </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="q-card">
+    <div class="hs-lbl">Final Result</div>
+    <div class="score-num-big" id="finalScore">0</div>
+    <p style="color:var(--muted); margin-bottom:20px">Connectivity Analysis Complete. Protocol stored in cache.</p>
+    <button class="nav-btn primary" onclick="retryQuiz()">REINITIALIZE_PROTOCOL</button>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"What is a Network ACL (NACL)?",o:["Security group for EC2","Stateless firewall layer for subnets using numbered rules","IAM policy for networking","Routing protocol"],a:1,e:"NACLs are stateless, subnet-level firewalls that process rules in order. You must explicitly allow response traffic."},
+  {q:"What is the key difference between a Security Group and a Network ACL?",o:["SGs are subnet-level","SGs are stateful (instance-level); NACLs are stateless (subnet-level)","SGs support DENY","NACLs are faster"],a:1,e:"Security Groups track connection state; NACLs do not and operate on the subnet boundary rather than the ENI."},
+  {q:"What does STATELESS mean for Network ACLs?",o:["Rules have no state","If you allow inbound, you MUST explicitly allow the outbound response","Rules are always active","Deny by default"],a:1,e:"Statelessness requires that you manage rules for both directions of a single conversation, including ephemeral return ports."},
+  {q:"What is the default NACL for a VPC?",o:["Denies all","Allows all inbound and outbound traffic by default","Allows HTTP only","VPC internal only"],a:1,e:"The default NACL is permissive to ensure new subnets have connectivity immediately. Custom NACLs deny all by default."},
+  {q:"How are NACL rules evaluated?",o:["Alphabetically","In ascending order by rule number; first match stops evaluation","Most restrictive wins","By traffic type"],a:1,e:"AWS checks NACL rules from lowest to highest number. The very first match (allow or deny) is the final decision."},
+  {q:"What are ephemeral ports in the context of NACLs?",o:["SSH ports","Temporary ports (1024-65535) used for return traffic","NAT ports","Admin ports"],a:1,e:"NACLs must permit outbound traffic to these high-numbered ports so clients can receive the server's response."},
+  {q:"What is VPC Peering?",o:["On-prem connection","Networking connection between two VPCs using private IP addresses","VPN connection","Subnet connection"],a:1,e:"Peering allows VPCs to talk as if they were on the same network without traffic traversing the public internet."},
+  {q:"Can VPC Peering work across different AWS accounts?",o:["No","Yes, within same region, cross-region, and cross-account","Same region only","Direct Connect only"],a:1,e:"VPC peering is flexible enough to bridge accounts and regions as long as the peer request is accepted."},
+  {q:"What is a VPC Peering limitation regarding transitive routing?",o:["Supports transitive","Does NOT support transitive routing (A-B-C doesn't mean A can talk to C)","Needs license","Cross-region only"],a:1,e:"Peering is non-transitive. For complex 'any-to-any' connectivity, Transit Gateway is the modern solution."},
+  {q:"What is an AWS Transit Gateway?",o:["Physical router","A hub that connects multiple VPCs and networks, supporting transitive routing","VPN type","VPC load balancer"],a:1,e:"Transit Gateway acts as a regional router, simplifying complex multi-VPC networks into a hub-and-spoke model."},
+  {q:"What is the main advantage of Transit Gateway over VPC Peering?",o:["Cheaper","Supports transitive routing and simplifies many-to-many connectivity","Faster","No data charges"],a:1,e:"TGW replaces the need for a 'full mesh' of peering connections, making management much simpler as you scale."},
+  {q:"What is a VPC Endpoint?",o:["VPN endpoint","Enables private connectivity to AWS services without internet or NAT gateways","API endpoint","Load balancer endpoint"],a:1,e:"Endpoints keep your traffic within the AWS network, improving security and often reducing data costs."},
+  {q:"What are the two types of VPC Endpoints?",o:["Public/Private","Gateway (S3/Dynamo) and Interface (most others via PrivateLink)","Regional/Zonal","HTTP/HTTPS"],a:1,e:"Gateway endpoints use route table entries, while Interface endpoints place a private ENI inside your subnet."},
+  {q:"Which AWS services can use Gateway VPC Endpoints?",o:["EC2/RDS","S3 and DynamoDB only","All services","Lambda/SQS"],a:1,e:"Only S3 and DynamoDB support the free Gateway-style endpoints that use prefix lists in route tables."},
+  {q:"How does a Gateway VPC Endpoint work technically?",o:["ENI creation","Adds a route table entry directing traffic to the endpoint prefix list","VPN creation","DNS redirect"],a:1,e:"By modifying the route table, traffic destined for S3 or DynamoDB is rerouted to the endpoint instead of the internet."},
+  {q:"What is AWS PrivateLink?",o:["Fiber connection","Technology enabling Interface Endpoints with private IPs for secure service access","VPN service","Direct Connect alt"],a:1,e:"PrivateLink provides the underlying tech for Interface Endpoints, allowing you to access services like they are inside your VPC."},
+  {q:"What is VPC Peering vs Transit Gateway in terms of cost?",o:["Same","Peering has no hourly charge; TGW has hourly and data processing fees","TGW cheaper","Peering expensive"],a:1,e:"Peering is essentially free but hard to manage at scale. TGW costs money per attachment but provides central orchestration."},
+  {q:"What is a VPN connection to a VPC?",o:["Fiber","Encrypted IPsec tunnel between on-premises and your VPC via Virtual Private Gateway","Transit hub","Direct Connect"],a:1,e:"Site-to-Site VPN is a quick and secure way to extend your physical office network into your AWS environment."},
+  {q:"What is the purpose of Route Tables in VPC controls?",o:["DNS storage","Define how packets are routed within and between subnets and external networks","Manage SGs","NAT translation"],a:1,e:"Route tables are the traffic controllers of your VPC, determining exactly where every packet should go based on destination IP."},
+  {q:"Can you associate multiple subnets with a single route table?",o:["No","Yes, multiple subnets can share a single route table","Same AZ only","Public only"],a:1,e:"Sharing route tables is a common practice to enforce consistent routing policies across multiple subnets."},
+  {q:"What is the purpose of a VPC Endpoint for a private EC2?",o:["Public IP","Allow private instances to access AWS services (like S3) without NAT/Internet","Connect EC2s","Encrypt traffic"],a:1,e:"Endpoints allow isolated instances to stay private while still interacting with AWS platform services."},
+  {q:"What is the difference between same-region and cross-region VPC Peering?",o:["None","Same-region is lower latency and free; cross-region has higher latency and transfer costs","Cross-region faster","Same-region account only"],a:1,e:"Cross-region peering relies on the AWS global backbone, but you do pay for the data moving between those regions."},
+  {q:"What are Security Groups vs NACLs in terms of scope?",o:["Instance level only","SGs are instance/ENI level; NACLs are subnet level","Reverse","VPC level"],a:1,e:"SGs protect the individual resource, while NACLs act as the perimeter guard for the entire subnet."},
+  {q:"How does AWS Transit Gateway support inter-region connectivity?",o:["Cannot connect","Supports Inter-Region Peering between TGWs using the AWS backbone","VPN only","AZ only"],a:1,e:"Transit Gateway Peering allows you to link hubs in different regions to create a global private network."},
+  {q:"What is a NACL DENY rule used for that Security Groups cannot do?",o:["Block specific IPs/ranges explicitly","NACLs cannot deny","SGs can deny","IPv6 only"],a:0,e:"NACLs are the only layer where you can explicitly blacklist a specific malicious IP address."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function prepareQuestions(arr) {
+    return arr.map(item => {
+        let options = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        return {
+            q: item.q,
+            o: options.map(o => o.text),
+            a: options.findIndex(o => o.isCorrect),
+            e: item.e
+        };
+    });
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('awsVpcControlsCache_v2');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = prepareQuestions([...rawQuestions]);
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('awsVpcControlsCache_v2', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render(){
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+    document.getElementById('progressFill').style.width = ((current+1)/25 * 100)+'%';
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].a) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.o.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.a) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-num"> Q${current+1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.e}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "SUBMIT_DATA ✓" : "NEXT_BLOCK →";
+}
+
+function selectAnswer(i){
+    if(answered[current] !== null) return;
+    answered[current] = i;
+    if(i === questions[current].a) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ(){ if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ(){ if(current > 0){ current--; render(); saveProgress(); } }
+
+function showScore(){
+    clearInterval(timerId);
+    localStorage.removeItem('awsVpcControlsCache_v2');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = Math.round((score/25)*100) + "%";
+}
+
+function retryQuiz(){ localStorage.removeItem('awsVpcControlsCache_v2'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>

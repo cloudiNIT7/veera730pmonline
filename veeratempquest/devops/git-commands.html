@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Commands | Veera Sir Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--surface:#0d1117;--card:#0f1623;--border:#1a2332;--border2:#243044;--text:#dce8f5;--muted:#4a6080;--accent:#10b981;--correct:#10b981;--wrong:#ef4444;--neutral:#3b82f6}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(16,185,129,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* UPDATED TOPBAR - POINTS TO DEVOPS.HTML */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between}
+.back-btn-top{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.back-btn-top:hover{gap:12px;opacity:0.8}
+
+header{position:relative;z-index:1;padding:40px 32px 36px;text-align:center;border-bottom:1px solid var(--border)}
+.topic-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+
+.header-stats{display:flex;justify-content:center;gap:15px;margin:20px auto; max-width: 600px;}
+.hs-box{background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:10px;text-align:center; min-width: 100px;}
+.hs-val{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:1.2rem}
+.hs-lbl{font-size:0.6rem;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+
+.timer-warn { color: var(--wrong) !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.nav-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 8px; max-width: 780px; margin: 0 auto 24px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; z-index: 1;}
+.nav-item {height: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; color: var(--muted)}
+.nav-item.active {border-color: var(--neutral); color: var(--neutral); font-weight: bold}
+.nav-item.correct {background: var(--correct); color: #000; border-color: var(--correct)}
+.nav-item.wrong {background: var(--wrong); color: #fff; border-color: var(--wrong)}
+
+.quiz-wrap{max-width:780px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+.q-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px}
+
+.option{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.option:hover:not(.disabled){border-color:var(--accent);background:rgba(16, 185, 129, 0.05)}
+.option.disabled{cursor:default}
+
+.option.correct-ans{border-color:var(--correct)!important; background:rgba(16, 185, 129, 0.2)!important; color: #fff !important;}
+.option.wrong-ans{border-color:var(--wrong)!important; background:rgba(239, 68, 68, 0.2)!important; color: #fff !important;}
+
+.option-letter{width:28px;height:28px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.option.correct-ans .option-letter{background:var(--correct);color:#000}
+.option.wrong-ans .option-letter{background:var(--wrong);color:#fff}
+
+.explanation{margin-top:20px;padding:15px;background:rgba(16, 185, 129, 0.08);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text);line-height:1.6;display:none}
+.explanation.show{display:block; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:12px 24px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+
+.scoreboard{display:none;max-width:600px;margin:40px auto;text-align:center;position:relative;z-index:1}
+.score-num-big{font-size:5rem;font-weight:800;color:var(--accent);font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a class="back-btn-top" href="devops.html">← Back to DevOps</a>
+</div>
+
+<header>
+    <div class="topic-badge">GIT_COMMAND_PROTOCOL_07</div>
+    <h1>Git Core Commands</h1>
+    <div class="header-stats">
+        <div class="hs-box"><span class="hs-val" id="scoreDisplay">0</span><span class="hs-lbl">Score</span></div>
+        <div class="hs-box"><span class="hs-val" id="timerDisplay">15:00</span><span class="hs-lbl">Remaining</span></div>
+        <div class="hs-box"><span class="hs-val" id="progressDisplay">1/25</span><span class="hs-lbl">Active</span></div>
+    </div>
+</header>
+
+<div id="mainQuiz">
+    <div class="nav-grid" id="navGrid"></div>
+    <div class="quiz-wrap">
+        <div id="questionContainer"></div>
+        <div class="q-nav">
+            <button class="nav-btn" id="prevBtn" onclick="prevQ()">← PREV_NODE</button>
+            <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">NEXT_NODE →</button>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+    <div class="q-card">
+        <div class="hs-lbl">Final Audit Status</div>
+        <div class="score-num-big" id="finalScore">0</div>
+        <p style="color:var(--muted); margin-bottom:20px">Git workflow protocol verified.</p>
+        <button class="nav-btn primary" onclick="retryQuiz()">INITIALIZE_NEW_SESSION</button>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+  {q:"Which command stages a specific file for the next commit?",opts:["git commit file.txt","git add file.txt","git push file.txt","git track file.txt"],ans:1,exp:"'git add' moves changes into the staging area, which acts as a buffer before the final commit snapshot."},
+  {q:"What does 'git add .' do?",opts:["Adds only new files","Stages ALL changes (new, mod, del) in current directory","Commits all changes","Pushes to remote"],ans:1,exp:"This recursively stages every change in your current directory for the next commit."},
+  {q:"Which command creates a new commit from staged changes?",opts:["git save","git commit -m 'message'","git push","git record"],ans:1,exp:"Commits create a permanent snapshot of the staged changes in your local repository history."},
+  {q:"What does 'git commit -am \"message\"' do?",opts:["Only new files","Stages tracked modified files and commits in one step","Commits without msg","Amends last commit"],ans:1,exp:"This shortcut skips the 'git add' step but only for files Git already knows about (tracked files)."},
+  {q:"Which command shows the full commit history?",opts:["git history","git log","git show --all","git commits"],ans:1,exp:"'git log' is the primary command to view the list of commit hashes, authors, and dates."},
+  {q:"What does 'git log --oneline' display?",opts:["Full diffs","Abbreviated hash + first line of message (compact)","Only authors","Only file names"],ans:1,exp:"Provides a high-level summary of your project history, perfect for scanning through many commits."},
+  {q:"Which command shows differences between working directory and staging?",opts:["git status","git diff","git log -p","git show"],ans:1,exp:"'git diff' shows exactly which lines were added or removed in your files since the last stage/commit."},
+  {q:"What does 'git show' display?",opts:["All branches","Diff and metadata of the most recent commit","All staged files","Remote info"],ans:1,exp:"It provides a detailed look at the latest changes made to the repository."},
+  {q:"What does 'git log --author=\"name\"' do?",opts:["Creates commits","Filters history to show only commits by that author","Deletes commits","Renames author"],ans:1,exp:"Essential for auditing contributions in a shared team repository."},
+  {q:"Which command modifies the most recent commit?",opts:["git edit","git commit --amend","git reset HEAD","git update"],ans:1,exp:"'--amend' allows you to fix a typo in the message or add a forgotten file to the very last commit."},
+  {q:"What does 'git restore --staged filename' do?",opts:["Deletes file","Unstages a file (moves back to modified state)","Commits file","Pushes file"],ans:1,exp:"This 'undoes' a 'git add' command without losing your actual work in the file."},
+  {q:"What is the difference between 'git reset' and 'git revert'?",opts:["Identical","Reset rewrites history; Revert creates a NEW commit that undoes changes","Reset is safer","Revert deletes history"],ans:1,exp:"Revert is the professional choice for public branches because it doesn't break history for other developers."},
+  {q:"What does 'git reset --soft HEAD~1' do?",opts:["Deletes changes","Undoes last commit but keeps changes staged","Removes unstaged","Resets to start"],ans:1,exp:"Moves your history back but leaves your work ready to be committed again immediately."},
+  {q:"What does 'git reset --hard HEAD~1' do?",opts:["Unstages only","Moves HEAD back and permanently discards all changes","Keeps workdir","New branch"],ans:1,exp:"The most dangerous command: it wipes out your work entirely to match the previous commit state."},
+  {q:"What does 'git restore filename' do?",opts:["Deletes","Discards local changes to match last commit","Stages","New file"],ans:1,exp:"Use this when you've messed up a file locally and want to start over from the last saved state."},
+  {q:"What does 'git stash' do?",opts:["Commits changes","Saves uncommitted changes to a stack and cleans working directory","Pushes to branch","Deletes changes"],ans:1,exp:"Perfect for when you need to switch branches quickly but aren't ready to commit your current work."},
+  {q:"Which command restores the most recent stash and removes it?",opts:["git stash restore","git stash pop","git unstash","git apply"],ans:1,exp:"'pop' applies the changes and cleans up the stack, while 'apply' keeps the backup on the stack."},
+  {q:"What does 'git rm filename' do?",opts:["Deletes only","Deletes from disk AND stages the deletion","Unstages","Deletes from Git only"],ans:1,exp:"This informs Git that the file is gone and should not be part of any future snapshots."},
+  {q:"What does 'git log -p' show?",opts:["Only messages","Commit history with full diff of each commit","Only names","Stats"],ans:1,exp:"Patch mode (-p) allows you to read exactly what code was changed in every single commit."},
+  {q:"What does 'git log --graph --oneline --all' show?",opts:["Main only","Visual ASCII branch graph showing merges","Remote only","Tag history"],ans:1,exp:"The standard way to visualize complex branch branching and merging history."},
+  {q:"What is Git Forking?",opts:["Branching","Creating a personal copy of another user's repo on your account","Deleting remote","Merging repos"],ans:1,exp:"Forking is a server-side feature (GitHub) used for contributing to open-source projects."},
+  {q:"Typical open-source workflow?",opts:["Push to original","Fork → Clone → Branch → Commit → Push → Pull Request","Fork → Merge","Clone → Push upstream"],ans:1,exp:"This 'Forking Workflow' ensures the main project remains stable while outsiders contribute code."},
+  {q:"What does 'git tag v1.0' create?",opts:["New branch","Lightweight tag pointing to HEAD","Backup","Remote release"],ans:1,exp:"Tags act as bookmarks in your history, usually used to mark specific version releases."},
+  {q:"What does 'git clean -fd' do?",opts:["Removes commits","Removes untracked files and directories","Clears stash","Removes remotes"],ans:1,exp:"Cleans up your workspace by deleting files that Git isn't tracking."},
+  {q:"Which command shows working directory status?",opts:["git info","git status","git log --status","git check"],ans:1,exp:"The most used command: it tells you where you are and what Git is seeing in your files."}
+];
+
+let questions = [];
+let current = 0, score = 0, answered = [], timeLeft = 900;
+let timerId;
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    const cache = localStorage.getItem('gitCommandMasteryCache_v2');
+    if (cache) {
+        try {
+            const data = JSON.parse(cache);
+            questions = data.questions;
+            current = data.current;
+            score = data.score;
+            answered = data.answered;
+            timeLeft = data.timeLeft;
+        } catch(e) { startNew(); }
+    } else { startNew(); }
+    startTimer();
+    render();
+}
+
+function startNew() {
+    questions = rawQuestions.map(q => {
+        let opts = [...q.opts];
+        let correctText = opts[q.ans];
+        shuffleArray(opts);
+        return {
+            q: q.q,
+            opts: opts,
+            ans: opts.indexOf(correctText),
+            exp: q.exp
+        };
+    });
+    shuffleArray(questions);
+    answered = new Array(questions.length).fill(null);
+    current = 0; score = 0; timeLeft = 900;
+}
+
+function saveProgress() {
+    const data = { questions, current, score, answered, timeLeft };
+    localStorage.setItem('gitCommandMasteryCache_v2', JSON.stringify(data));
+}
+
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timerDisplay').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft < 60) document.getElementById('timerDisplay').classList.add('timer-warn');
+        saveProgress();
+        if (timeLeft <= 0) { clearInterval(timerId); showScore(); }
+    }, 1000);
+}
+
+function render() {
+    const q = questions[current];
+    const ua = answered[current];
+    
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressDisplay').textContent = `${current+1}/25`;
+
+    document.getElementById('navGrid').innerHTML = questions.map((_, i) => {
+        let cls = 'nav-item';
+        if (i === current) cls += ' active';
+        if (answered[i] !== null) cls += (answered[i] === questions[i].ans) ? ' correct' : ' wrong';
+        return `<div class="${cls}" onclick="jumpTo(${i})">${i + 1}</div>`;
+    }).join('');
+
+    const letters = ['A','B','C','D'];
+    let optsHtml = q.opts.map((optText, i) => {
+        let cls = '';
+        if (ua !== null) {
+            if (i === q.ans) cls = 'correct-ans';
+            else if (i === ua) cls = 'wrong-ans';
+            cls += ' disabled';
+        }
+        return `<div class="option ${cls}" onclick="selectAnswer(${i})">
+            <div class="option-letter">${letters[i]}</div>
+            <div class="option-text">${optText}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q}</div>
+            <div class="options">${optsHtml}</div>
+            <div class="explanation ${ua !== null ? 'show' : ''}">
+                <strong>EXP:</strong> ${q.exp}
+            </div>
+        </div>`;
+        
+    document.getElementById('prevBtn').disabled = (current === 0);
+    document.getElementById('nextBtn').textContent = (current === 24) ? "FINISH EXAM ✓" : "NEXT STEP →";
+}
+
+function selectAnswer(i) {
+    if (answered[current] !== null) return;
+    answered[current] = i;
+    if (i === questions[current].ans) score++;
+    saveProgress();
+    render();
+}
+
+function jumpTo(idx) { current = idx; render(); saveProgress(); }
+function nextQ() { if(current === 24) showScore(); else { current++; render(); saveProgress(); } }
+function prevQ() { if(current > 0) { current--; render(); saveProgress(); } }
+
+function showScore() {
+    clearInterval(timerId);
+    localStorage.removeItem('gitCommandMasteryCache_v2');
+    document.getElementById('mainQuiz').style.display = 'none';
+    document.getElementById('scoreboard').style.display = 'block';
+    document.getElementById('finalScore').textContent = `${score} / 25`;
+}
+
+function retryQuiz() { localStorage.removeItem('gitCommandMasteryCache_v2'); location.reload(); }
+
+initQuiz();
+</script>
+<script src="../../ai-agent-widget.js"></script>
+</body>
+</html>
