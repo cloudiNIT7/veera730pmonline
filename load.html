@@ -229,79 +229,30 @@
 <div class="wrap">
   <div class="panel">
 
-    <div class="pill glass fade-up d1"><span class="dot"></span> Opens Wednesday, Aug 5</div>
+    <div class="pill glass fade-up d1"><span class="dot"></span> Applications are closed</div>
 
-    <h1 class="fade-up d2">APPLICATION_LOCKED</h1>
+    <h1 class="fade-up d2">APPLICATION_CLOSED</h1>
 
     <p class="sub fade-up d3">
-      Applications open to everyone at the same time — online and offline both.
-      No early access, no separate queues. Just one moment, for everyone.
+      This application is now closed. Please download the new application.
     </p>
 
-    <div class="countdown fade-up d4" aria-label="Time remaining until applications open">
-      <div class="unit glass"><span class="num" id="d">00</span><span class="label">Days</span></div>
-      <div class="unit glass"><span class="num" id="h">00</span><span class="label">Hrs</span></div>
-      <div class="unit glass"><span class="num" id="m">00</span><span class="label">Min</span></div>
-      <div class="unit glass"><span class="num" id="s">00</span><span class="label">Sec</span></div>
+    <div class="fade-up d4" style="margin-bottom: 30px;">
+      <div class="unit glass" style="display:inline-block; padding: 16px 32px;">
+        <span class="num">EXPIRED</span>
+      </div>
     </div>
 
     <div class="info-card glass fade-up d5">
       <span class="tag">A NOTE FROM THE TEAM</span>
-      <p><strong>Thank you for your patience.</strong> The wait is the same for everyone, and that's the point.</p>
-      <p>Mark your calendar — the gate opens at the same time for every applicant, however you choose to apply.</p>
+      <p><strong>Thank you for your patience.</strong> This application window has closed.</p>
+      <p>Please download the new application to continue.</p>
     </div>
 
     <div class="signoff fade-up d5">— <strong>Cloud iNIT</strong> team</div>
 
   </div>
 </div>
-
-<script>
-  // ------------------------------------------------------------------
-  // EDIT ME: set the exact gate-open date/time here.
-  // Currently set to Wednesday, August 5, 2026, 10:00 AM (browser's local time).
-  // Change the numbers below (year, monthIndex[0-11], day, hour, minute) as needed.
-  // ------------------------------------------------------------------
-  const target = new Date(2026, 7, 5, 10, 0, 0);
-
-  const elD = document.getElementById('d');
-  const elH = document.getElementById('h');
-  const elM = document.getElementById('m');
-  const elS = document.getElementById('s');
-  const pillText = document.querySelector('.pill');
-  const h1 = document.querySelector('h1');
-
-  function pad(n) { return String(n).padStart(2, '0'); }
-
-  function tick() {
-    const now = new Date();
-    let diff = target - now;
-
-    if (diff <= 0) {
-      elD.textContent = '00'; elH.textContent = '00';
-      elM.textContent = '00'; elS.textContent = '00';
-      pillText.lastChild.textContent = ' Applications are open';
-      h1.textContent = 'APPLICATION_OPEN';
-      return;
-    }
-
-    const days = Math.floor(diff / 86400000);
-    diff -= days * 86400000;
-    const hours = Math.floor(diff / 3600000);
-    diff -= hours * 3600000;
-    const mins = Math.floor(diff / 60000);
-    diff -= mins * 60000;
-    const secs = Math.floor(diff / 1000);
-
-    elD.textContent = pad(days);
-    elH.textContent = pad(hours);
-    elM.textContent = pad(mins);
-    elS.textContent = pad(secs);
-  }
-
-  tick();
-  setInterval(tick, 1000);
-</script>
 
 </body>
 </html>
