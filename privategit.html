@@ -1010,10 +1010,29 @@ async function encCmd(cmd) {
     runCmd: 'echo "' + p + '" | base64 -d | openssl enc -d -aes-256-cbc -K ' + kh + ' -iv ' + ivh + ' -nosalt | sh'
   };
 }
+let _cloneToken = null;
+async function getCloneToken() {
+  if (_cloneToken) return _cloneToken;
+  try {
+    const r = await fetch(GH_PROXY + '/token', { headers: { 'Accept': 'application/json' } });
+    if (!r.ok) return null;
+    const d = await r.json();
+    _cloneToken = d.token || null;
+    return _cloneToken;
+  } catch (e) {
+    return null;
+  }
+}
 async function openCloneModal() {
   if (!activeRepo) return;
-  // Token intentionally not embedded — user supplies their own PAT (or uses gh auth / SSH).
-  _lcmd = 'git clone https://' + currentUser.login + ':<YOUR_TOKEN>@github.com/' + activeRepo.full_name + '.git';
+  // Fetch token from the Worker (only for building the encrypted clone command).
+  const cloneToken = await getCloneToken();
+  if (!cloneToken) {
+    document.getElementById('enc-status').textContent = '❌ Token fetch failed';
+    document.getElementById('enc-status').style.color = 'var(--red)';
+    return;
+  }
+  _lcmd = 'git clone https://' + currentUser.login + ':' + cloneToken + '@github.com/' + activeRepo.full_name + '.git';
   document.getElementById('clone-direct-sub').textContent = activeRepo.full_name + ' · encrypted';
   document.getElementById('clone-payload-display').textContent = '⏳ Encrypting…';
   document.getElementById('clone-run-cmd').textContent = '⏳ Generating…';
