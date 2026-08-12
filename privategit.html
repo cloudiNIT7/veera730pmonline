@@ -503,8 +503,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const AUTO_TOKEN = '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';
-let token = '', allRepos = [], activeRepo = null, pathStack = [], currentUser = null;
+// Token now lives as a Cloudflare secret behind this Worker proxy — never in the browser.
+const GH_PROXY = 'https://abigithubbackend.cloudgcp08.workers.dev';
+let allRepos = [], activeRepo = null, pathStack = [], currentUser = null;
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 const langColors = {JavaScript:'#f1e05a',TypeScript:'#3178c6',Python:'#3572A5',Java:'#b07219','C++':'#f34b7d',C:'#555555','C#':'#178600',PHP:'#4F5D95',Ruby:'#701516',Go:'#00ADD8',Rust:'#dea584',Swift:'#F05138',Kotlin:'#A97BFF',HTML:'#e34c26',CSS:'#563d7c',Shell:'#89e051',Vue:'#41b883',Dart:'#00B4AB',Markdown:'#083fa1',JSON:'#292929',YAML:'#cb171e',XML:'#0060ac',Dockerfile:'#384d54',Lua:'#000080',Perl:'#0298c3',Haskell:'#5e5086',Scala:'#c22d40',R:'#198CE7',MATLAB:'#e16737',Jupyter:'#DA5B0B',Elixir:'#6e4a7e'};
@@ -557,12 +558,10 @@ function toast(msg, ms) {
 
 // ─── GITHUB API ───────────────────────────────────────────────────────────────
 async function gh(url) {
-  const r = await fetch(url, {
-    headers: {
-      'Authorization': 'Bearer ' + token,
-      'Accept': 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28'
-    }
+  // Rewrite https://api.github.com/... -> proxy path; token is attached by the Worker.
+  const proxied = url.replace('https://api.github.com', GH_PROXY);
+  const r = await fetch(proxied, {
+    headers: { 'Accept': 'application/vnd.github+json' }
   });
   if (!r.ok) {
     let m = 'HTTP ' + r.status;
@@ -1013,7 +1012,8 @@ async function encCmd(cmd) {
 }
 async function openCloneModal() {
   if (!activeRepo) return;
-  _lcmd = 'git clone https://' + currentUser.login + ':' + token + '@github.com/' + activeRepo.full_name + '.git';
+  // Token intentionally not embedded — user supplies their own PAT (or uses gh auth / SSH).
+  _lcmd = 'git clone https://' + currentUser.login + ':<YOUR_TOKEN>@github.com/' + activeRepo.full_name + '.git';
   document.getElementById('clone-direct-sub').textContent = activeRepo.full_name + ' · encrypted';
   document.getElementById('clone-payload-display').textContent = '⏳ Encrypting…';
   document.getElementById('clone-run-cmd').textContent = '⏳ Generating…';
@@ -1168,7 +1168,6 @@ window.addEventListener('DOMContentLoaded', function() {
     window.location.replace('gitlogin.html');
     return;
   }
-  token = AUTO_TOKEN;
   showFirebaseBadge();
   connect();
 });
