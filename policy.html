@@ -4,99 +4,300 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AWS Enterprise Sandbox | Admin: Abinash Kumar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
-            --aws-navy: #232f3e;
-            --aws-squid-ink: #16191f;
+            --aws-navy: #1a2332;
+            --aws-squid-ink: #0a0e17;
             --aws-orange: #ff9900;
-            --aws-blue: #0073bb;
+            --aws-orange-glow: rgba(255,153,0,0.35);
+            --aws-blue: #29b6ff;
             --success: #2ed573;
-            --danger: #ff4757;
-            --text-main: #16191f;
-            --text-muted: #545b64;
-            --bg-light: #f1f3f4;
-            --white: #ffffff;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --danger: #ff5c72;
+            --text-main: #eef2f8;
+            --text-muted: #8b96ab;
+            --text-faint: #5c6785;
+            --glass-bg: rgba(255,255,255,0.045);
+            --glass-bg-strong: rgba(255,255,255,0.07);
+            --glass-border: rgba(255,255,255,0.09);
+            --glass-border-hi: rgba(255,255,255,0.18);
+            --mono: 'JetBrains Mono', monospace;
         }
 
         * { box-sizing: border-box; scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg-light); color: var(--text-main); display: flex; }
+
+        body {
+            font-family: 'Inter', sans-serif; margin: 0; color: var(--text-main); display: flex;
+            background: #0a0e17;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* --- Ambient backdrop: fixed, non-scrolling aurora + grid (kept off backdrop-filter elements) --- */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 1000px 700px at 10% -10%, rgba(255,153,0,0.22), transparent 60%),
+                radial-gradient(ellipse 900px 800px at 105% 10%, rgba(41,182,255,0.20), transparent 55%),
+                radial-gradient(ellipse 1100px 900px at 45% 115%, rgba(140,90,255,0.16), transparent 60%),
+                radial-gradient(ellipse 700px 500px at 70% 55%, rgba(255,153,0,0.08), transparent 65%),
+                linear-gradient(180deg, #080b12 0%, #0d1220 45%, #0a0e17 100%);
+            animation: auroraDrift 22s ease-in-out infinite alternate;
+        }
+        body::after {
+            content: '';
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.55;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 75%);
+        }
+        @keyframes auroraDrift {
+            0%   { filter: hue-rotate(0deg) brightness(1); }
+            50%  { filter: hue-rotate(6deg) brightness(1.06); }
+            100% { filter: hue-rotate(-4deg) brightness(1); }
+        }
+
+        /* Floating glass orbs — pure atmosphere, sit behind content */
+        .orb { position: fixed; z-index: 0; border-radius: 50%; pointer-events: none; filter: blur(1px); }
+        .orb-1 {
+            width: 420px; height: 420px; top: -120px; right: 8%;
+            background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.10), rgba(255,153,0,0.05) 40%, transparent 72%);
+            animation: orbFloat 16s ease-in-out infinite;
+        }
+        .orb-2 {
+            width: 320px; height: 320px; bottom: 6%; left: 22%;
+            background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.08), rgba(41,182,255,0.05) 40%, transparent 70%);
+            animation: orbFloat 20s ease-in-out infinite reverse;
+        }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-22px, 26px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            body::before { animation: none; }
+            .orb { animation: none; }
+        }
+
+        ::selection { background: var(--aws-orange-glow); color: #fff; }
 
         /* --- Sidebar Navigation --- */
         .sidebar {
-            width: 320px; background: var(--white); height: 100vh; position: fixed;
-            border-right: 1px solid #e1e4e8; padding: 2rem; overflow-y: auto; z-index: 1000;
+            width: 300px; height: 100vh; position: fixed; z-index: 1000;
+            padding: 1.75rem 1.5rem; overflow-y: auto;
+            background: linear-gradient(165deg, rgba(24,30,46,0.78), rgba(11,15,24,0.72));
+            backdrop-filter: blur(32px) saturate(150%);
+            -webkit-backdrop-filter: blur(32px) saturate(150%);
+            border-right: 1px solid var(--glass-border);
+            box-shadow: inset -1px 0 0 rgba(255,255,255,0.04), 8px 0 40px rgba(0,0,0,0.35);
         }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
 
-        .logo { font-weight: 800; font-size: 1.4rem; color: var(--aws-navy); margin-bottom: 2rem; display: flex; align-items: center; gap: 12px; }
-        .logo img { width: 34px; height: 34px; object-fit: contain; border-radius: 8px; }
+        .logo { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.3px; color: var(--text-main); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 12px; }
+        .logo img { width: 32px; height: 32px; object-fit: contain; border-radius: 8px; box-shadow: 0 0 0 1px var(--glass-border), 0 4px 14px rgba(0,0,0,0.4); }
 
+        /* Keycard-style admin badge */
         .admin-pill {
-            background: var(--aws-navy); color: white; padding: 1.2rem; border-radius: 12px; margin-bottom: 2rem;
-            position: relative; overflow: hidden;
+            position: relative; overflow: hidden; margin-bottom: 1.75rem; padding: 1.15rem 1.25rem;
+            border-radius: 16px;
+            background: linear-gradient(155deg, rgba(255,153,0,0.16), rgba(255,255,255,0.04) 50%, rgba(41,182,255,0.10));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border-hi);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 0 24px rgba(255,153,0,0.04),
+                0 12px 30px rgba(0,0,0,0.4);
         }
-        .admin-pill::after { content: ''; position: absolute; top: -50%; right: -20%; width: 100px; height: 100px; background: rgba(255,153,0,0.1); border-radius: 50%; }
-        .admin-pill h4 { margin: 0; font-size: 0.7rem; text-transform: uppercase; color: var(--aws-orange); letter-spacing: 1px; }
-        .admin-pill .name { font-size: 1.1rem; font-weight: 700; margin: 5px 0; }
-        .admin-pill .email { font-size: 0.8rem; opacity: 0.8; text-decoration: none; color: white; display: block; }
+        .admin-pill::before {
+            content: ''; position: absolute; top: -60%; right: -30%; width: 160px; height: 160px;
+            background: radial-gradient(circle, var(--aws-orange-glow), transparent 70%); pointer-events: none;
+        }
+        .admin-pill::after {
+            content: 'ACCESS · GRANTED'; position: absolute; bottom: 8px; right: 12px;
+            font-family: var(--mono); font-size: 0.55rem; letter-spacing: 1.5px; color: rgba(46,213,115,0.65); font-weight: 600;
+        }
+        .admin-pill h4 { margin: 0; font-size: 0.65rem; text-transform: uppercase; color: var(--aws-orange); letter-spacing: 1.6px; font-weight: 700; font-family: var(--mono); }
+        .admin-pill .name { font-size: 1.05rem; font-weight: 700; margin: 6px 0 10px; color: #fff; }
+        .admin-pill .email { font-size: 0.78rem; opacity: 0.7; text-decoration: none; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+        .admin-pill .email:hover { opacity: 1; color: var(--aws-blue); }
 
-        .nav-menu { list-style: none; padding: 0; }
-        .nav-item { margin-bottom: 0.5rem; }
-        .nav-link { 
-            display: flex; align-items: center; gap: 10px; padding: 10px; 
-            text-decoration: none; color: var(--text-muted); font-weight: 500; border-radius: 8px; transition: 0.2s;
+        .nav-eyebrow { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 1.5px; color: var(--text-faint); text-transform: uppercase; margin: 0 0 0.75rem 0.5rem; }
+        .nav-menu { list-style: none; padding: 0; margin: 0; }
+        .nav-item { margin-bottom: 0.3rem; }
+        .nav-link {
+            display: flex; align-items: center; gap: 11px; padding: 10px 12px;
+            text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.92rem;
+            border-radius: 9px; transition: 0.2s ease; position: relative; border: 1px solid transparent;
         }
-        .nav-link:hover { background: var(--bg-light); color: var(--aws-blue); }
+        .nav-link i { width: 16px; text-align: center; color: var(--text-faint); transition: 0.2s ease; }
+        .nav-link:hover { background: var(--glass-bg-strong); color: var(--text-main); border-color: var(--glass-border); transform: translateX(2px); }
+        .nav-link:hover i { color: var(--aws-orange); }
 
         /* --- Main Content --- */
-        .main-content { margin-left: 320px; padding: 3rem 4rem; width: 100%; max-width: 1200px; }
+        .main-content { margin-left: 300px; padding: 3rem 3.5rem 5rem; width: 100%; max-width: 1180px; position: relative; z-index: 1; }
 
-        header { margin-bottom: 3rem; }
-        .status-indicator { display: inline-flex; align-items: center; gap: 8px; background: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-        .dot { width: 8px; height: 8px; background: #2e7d32; border-radius: 50%; animation: pulse 2s infinite; }
+        header { margin-bottom: 2.75rem; }
+        .status-indicator {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(46,213,115,0.09); color: #4ee18a; border: 1px solid rgba(46,213,115,0.25);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+            font-family: var(--mono); letter-spacing: 0.4px;
+        }
+        .dot { width: 7px; height: 7px; background: #4ee18a; border-radius: 50%; box-shadow: 0 0 8px #4ee18a; animation: pulse 2s infinite; }
 
-        .card { background: var(--white); border-radius: 16px; padding: 2.5rem; box-shadow: var(--shadow); margin-bottom: 2.5rem; border: 1px solid rgba(0,0,0,0.05); }
-        h1 { font-size: 2.8rem; font-weight: 800; margin: 0.5rem 0; letter-spacing: -1px; }
-        h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--aws-navy); display: flex; align-items: center; gap: 10px; }
+        h1 {
+            font-size: 3rem; font-weight: 800; margin: 0.65rem 0 0.5rem; letter-spacing: -1.5px; line-height: 1.05;
+            background: linear-gradient(135deg, #ffffff 30%, #b9c3d6 100%);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        header > p { color: var(--text-muted); font-size: 1.05rem; max-width: 640px; }
+
+        /* --- Glass card --- */
+        .card {
+            position: relative;
+            background: linear-gradient(155deg, rgba(255,255,255,0.065), rgba(255,255,255,0.02) 45%, rgba(255,255,255,0.035) 100%);
+            backdrop-filter: blur(28px) saturate(160%);
+            -webkit-backdrop-filter: blur(28px) saturate(160%);
+            border-radius: 22px; padding: 2.5rem; margin-bottom: 2rem;
+            border: 1px solid var(--glass-border);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.09),
+                inset 0 0 40px rgba(255,255,255,0.015),
+                0 24px 60px -24px rgba(0,0,0,0.65),
+                0 2px 8px rgba(0,0,0,0.3);
+            scroll-margin-top: 2rem;
+            transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+            overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute; inset: 0; border-radius: 22px; padding: 1px;
+            background: linear-gradient(160deg, rgba(255,255,255,0.28), rgba(255,255,255,0.02) 30%, rgba(255,255,255,0) 55%, rgba(255,153,0,0.08) 100%);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+        }
+        /* Specular sheen sweeping the top of the panel — the "advanced glass" cue */
+        .card::after {
+            content: ''; position: absolute; top: 0; left: -20%; width: 55%; height: 100%;
+            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.05) 45%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.05) 55%, transparent);
+            transform: skewX(-18deg); pointer-events: none; opacity: 0.9;
+        }
+        .card:hover {
+            border-color: var(--glass-border-hi);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 0 50px rgba(255,255,255,0.02),
+                0 28px 70px -22px rgba(0,0,0,0.7),
+                0 0 0 1px rgba(255,255,255,0.04);
+        }
+
+        h2 { font-size: 1.35rem; font-weight: 700; margin: 0 0 1.5rem; color: var(--text-main); display: flex; align-items: center; gap: 11px; letter-spacing: -0.2px; }
+        h2 i { font-size: 1.05rem; width: 20px; text-align: center; }
 
         /* --- Grid Metrics --- */
-        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 2rem; }
-        .metric-item { background: #f8f9fa; padding: 1.5rem; border-radius: 12px; border: 1px solid #eee; }
-        .metric-item strong { display: block; font-size: 0.9rem; color: var(--text-muted); }
-        .metric-item span { font-size: 1.2rem; font-weight: 700; color: var(--aws-navy); }
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 1.75rem; }
+        .metric-item {
+            background: linear-gradient(150deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+            padding: 1.35rem 1.5rem; border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 20px -10px rgba(0,0,0,0.5);
+            transition: 0.3s ease; position: relative; overflow: hidden;
+        }
+        .metric-item:hover {
+            border-color: var(--glass-border-hi);
+            background: linear-gradient(150deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            transform: translateY(-3px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 14px 28px -10px rgba(0,0,0,0.55);
+        }
+        .metric-item strong { display: block; font-size: 0.72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1px; font-family: var(--mono); font-weight: 600; margin-bottom: 8px; }
+        .metric-item span { font-size: 1.25rem; font-weight: 700; color: var(--text-main); font-family: var(--mono); letter-spacing: -0.3px; }
+
+        .restriction-note {
+            font-size: 0.9rem; color: var(--text-muted); line-height: 1.65; margin: 0;
+            padding: 1rem 1.2rem; border-radius: 12px; background: rgba(255,153,0,0.05); border: 1px solid rgba(255,153,0,0.14);
+        }
+        .restriction-note strong { color: var(--aws-orange); font-weight: 600; }
 
         /* --- Table Styling --- */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th { text-align: left; padding: 1.2rem; background: #f8f9fa; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
-        td { padding: 1.2rem; border-bottom: 1px solid #f1f3f4; vertical-align: top; }
-        
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-        .b-supported { background: #e3f2fd; color: #1565c0; }
-        .b-conditional { background: #fff3e0; color: #ef6c00; }
-        .b-not { background: #ffebee; color: #c62828; }
+        .table-container {
+            overflow-x: auto; border-radius: 16px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.015);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left; padding: 1rem 1.3rem; background: rgba(255,255,255,0.04);
+            color: var(--text-faint); font-weight: 600; font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 1px; font-family: var(--mono); border-bottom: 1px solid var(--glass-border);
+        }
+        td { padding: 1.1rem 1.3rem; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; font-size: 0.92rem; color: var(--text-main); }
+        tbody tr { transition: background 0.2s ease; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: rgba(255,255,255,0.03); }
+        td strong { color: var(--text-main); font-weight: 600; }
+
+        .badge {
+            padding: 4px 11px; border-radius: 20px; font-size: 0.68rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.6px; font-family: var(--mono);
+            display: inline-flex; align-items: center; gap: 5px; border: 1px solid transparent;
+        }
+        .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+        .b-supported { background: rgba(41,182,255,0.1); color: #5cc9ff; border-color: rgba(41,182,255,0.25); }
+        .b-conditional { background: rgba(255,153,0,0.1); color: #ffb547; border-color: rgba(255,153,0,0.25); }
+        .b-not { background: rgba(255,92,114,0.1); color: #ff8798; border-color: rgba(255,92,114,0.25); }
 
         /* --- Contact Form --- */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
-        .form-control { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-family: inherit; transition: 0.3s; }
-        .form-control:focus { border-color: var(--aws-orange); outline: none; }
-        
-        .submit-btn {
-            background: var(--aws-navy); color: white; border: none; padding: 15px 30px; 
-            border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; font-size: 1rem;
+        .form-group { margin-bottom: 1.4rem; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.82rem; color: var(--text-muted); letter-spacing: 0.2px; }
+        .form-control {
+            width: 100%; padding: 13px 15px; border: 1px solid var(--glass-border); border-radius: 12px;
+            font-family: inherit; font-size: 0.92rem; transition: 0.25s ease;
+            background: linear-gradient(150deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+            color: var(--text-main);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
         }
-        .submit-btn:hover { background: var(--aws-orange); transform: translateY(-2px); }
+        .form-control::placeholder { color: var(--text-faint); }
+        .form-control:focus {
+            border-color: var(--aws-orange); outline: none;
+            background: linear-gradient(150deg, rgba(255,153,0,0.06), rgba(255,255,255,0.02));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 0 0 4px rgba(255,153,0,0.12);
+        }
+        textarea.form-control { resize: vertical; min-height: 100px; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        @media (max-width: 1024px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 2rem; } .form-grid { grid-template-columns: 1fr; } .metrics-grid { grid-template-columns: 1fr; } }
+        .submit-btn {
+            background: linear-gradient(135deg, var(--aws-orange), #e8790a); color: #1a0f00; border: none; padding: 15px 30px;
+            border-radius: 11px; font-weight: 700; cursor: pointer; transition: 0.25s ease; width: 100%; font-size: 0.95rem;
+            display: flex; align-items: center; justify-content: center; gap: 9px; letter-spacing: 0.2px;
+            box-shadow: 0 8px 24px -8px rgba(255,153,0,0.5);
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -8px rgba(255,153,0,0.65); }
+        .submit-btn:active { transform: translateY(0); }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        footer { color: var(--text-faint); font-size: 0.8rem; text-align: center; margin-top: 3.5rem; font-family: var(--mono); letter-spacing: 0.3px; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.35; } 100% { opacity: 1; } }
+
+        @media (max-width: 1024px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 2rem 1.4rem 4rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 2.2rem; }
+            .card { padding: 1.75rem; border-radius: 16px; }
+        }
     </style>
 </head>
 <body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
 
     <aside class="sidebar">
         <div class="logo">
@@ -107,9 +308,10 @@
         <div class="admin-pill">
             <h4>Environment Admin</h4>
             <div class="name">Abinash Kumar</div>
-            <a href="mailto:abinashkumar5593@gmail.com" class="email">abinashkumar</a>
+            <a href="mailto:abinashkumar5593@gmail.com" class="email"><i class="fa-solid fa-envelope" style="font-size:0.7rem;"></i> abinashkumar</a>
         </div>
 
+        <p class="nav-eyebrow">Navigate</p>
         <nav>
             <ul class="nav-menu">
                 <li class="nav-item"><a href="#overview" class="nav-link"><i class="fa-solid fa-gauge"></i> Dashboard Overview</a></li>
@@ -120,11 +322,11 @@
         </nav>
     </aside>
 
-    <main class="main-content">
+    <main class="main-content" id="overview">
         <header>
             <div class="status-indicator"><div class="dot"></div> Sandbox System Online</div>
             <h1>CloudInit AWS Sandbox</h1>
-            <p style="color: var(--text-muted); font-size: 1.1rem;">A live production-grade environment for hands-on technical learning.</p>
+            <p>A live production-grade environment for hands-on technical learning.</p>
         </header>
 
         <section id="restrictions" class="card">
@@ -143,7 +345,7 @@
                     <span>9 Instances</span>
                 </div>
             </div>
-            <p style="font-size: 0.9rem; color: var(--text-muted);">Users cannot access purchasing or billing permissions, including access to cost data or budgets. All actions are logged and monitored by <strong>Abinash Kumar</strong>.</p>
+            <p class="restriction-note">Users cannot access purchasing or billing permissions, including access to cost data or budgets. All actions are logged and monitored by <strong>Abinash Kumar</strong>.</p>
         </section>
 
         <section id="services" class="card">
@@ -201,7 +403,7 @@
         </section>
 
         <section id="request" class="card">
-            <h2><i class="fa-solid fa-envelope-open-text" style="color:var(--aws-navy)"></i> Request Custom Resources</h2>
+            <h2><i class="fa-solid fa-envelope-open-text" style="color:var(--aws-blue)"></i> Request Custom Resources</h2>
             <p>If your project requires a service not listed above, please submit this formal request to the administrator.</p>
             
             <form id="tgForm">
