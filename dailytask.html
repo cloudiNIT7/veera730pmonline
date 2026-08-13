@@ -286,14 +286,350 @@ canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:999}
 .em-input-row input{flex:1;background:none;border:none;outline:none;font:16px var(--font);color:var(--t1)}
 .em-input-row input::placeholder{color:var(--t3)}
 .dash-connect-link{background:none;border:none;color:var(--blue);font:600 12px var(--font);cursor:pointer;padding:4px 0;margin-top:2px;text-decoration:underline;text-underline-offset:3px}
+
 .balloon-wrap{position:fixed;inset:0;z-index:998;pointer-events:none;overflow:hidden}
 .balloon{position:absolute;bottom:-140px;width:46px;height:56px;border-radius:50% 50% 50% 50% / 58% 58% 42% 42%;opacity:0;animation:balloonRise 5.5s ease-in forwards;}
 .balloon::before{content:'';position:absolute;top:100%;left:50%;width:2px;height:34px;background:rgba(255,255,255,0.25);transform:translateX(-50%);}
 .balloon::after{content:'';position:absolute;top:16%;left:28%;width:12px;height:16px;border-radius:50%;background:rgba(255,255,255,0.35);filter:blur(1px);}
 @keyframes balloonRise{0%{opacity:0;transform:translateY(0) translateX(0) rotate(0deg)}8%{opacity:1}50%{transform:translateY(-58vh) translateX(var(--sway,18px)) rotate(var(--rot,4deg))}85%{opacity:1}100%{opacity:0;transform:translateY(-105vh) translateX(calc(var(--sway,18px) * -1)) rotate(calc(var(--rot,4deg) * -1))}}
+
+/* ════════════════ SUBMISSION HISTORY ════════════════ */
+.hist{margin:0 16px 14px;position:relative;z-index:1}
+.hist-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:0 4px 12px;flex-wrap:wrap}
+.hist-title{font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--t1)}
+.hist-title small{display:block;font-size:11.5px;font-weight:500;color:var(--t3);margin-top:2px;letter-spacing:0}
+
+/* the summary strip */
+.hist-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--glass-border);
+  border:1px solid var(--glass-border);border-radius:var(--r2);overflow:hidden;margin-bottom:14px;
+  backdrop-filter:blur(24px);box-shadow:var(--shadow-glass)}
+.hist-stat{background:var(--bg2);padding:14px 10px;text-align:center}
+.hist-stat b{display:block;font-size:20px;font-weight:800;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;color:var(--t1)}
+.hist-stat span{display:block;font-size:9.5px;font-weight:600;letter-spacing:.7px;
+  text-transform:uppercase;color:var(--t3);margin-top:4px}
+.hist-stat.hl b{color:var(--blue)}
+.hist-stat.gd b{color:var(--amber)}
+
+/* search + filters */
+.hist-tools{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.hist-search{position:relative;flex:1 1 200px}
+.hist-search input{width:100%;padding:11px 14px 11px 36px;font-family:var(--font);font-size:13.5px;
+  color:var(--t1);background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r);
+  outline:none;backdrop-filter:blur(20px);transition:border-color .2s,background .2s}
+.hist-search input::placeholder{color:var(--t3)}
+.hist-search input:focus{border-color:rgba(10,132,255,.55);background:rgba(10,132,255,.07)}
+.hist-search .hs-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  color:var(--t3);font-size:13px;pointer-events:none}
+.hist-chip{padding:10px 14px;font-size:12.5px;font-weight:600;color:var(--t2);cursor:pointer;
+  background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r);
+  backdrop-filter:blur(20px);transition:all .18s;white-space:nowrap}
+.hist-chip:hover{background:var(--glass-hover);color:var(--t1)}
+.hist-chip.on{background:rgba(10,132,255,.16);border-color:rgba(10,132,255,.45);color:#6BB6FF}
+
+/* month grouping */
+.hist-month{margin-bottom:18px}
+.hist-month-lbl{display:flex;align-items:center;gap:10px;padding:6px 4px 10px;
+  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3)}
+.hist-month-lbl::after{content:'';flex:1;height:1px;background:var(--sep)}
+.hist-month-lbl b{color:var(--t2);font-weight:700}
+
+/* one submission */
+.hist-card{display:flex;gap:13px;padding:14px;margin-bottom:9px;border-radius:var(--r2);
+  background:var(--card);border:1px solid var(--card-b);backdrop-filter:blur(20px);
+  box-shadow:var(--shadow-glass);cursor:pointer;
+  transition:background .2s,border-color .2s,transform .2s}
+.hist-card:hover{background:var(--glass-hover);border-color:var(--glass-border-strong);transform:translateX(3px)}
+.hist-card.open{border-color:rgba(10,132,255,.4)}
+.hist-date{flex:0 0 auto;width:50px;text-align:center;padding:8px 0;border-radius:12px;
+  background:rgba(255,255,255,.05);border:1px solid var(--glass-border)}
+.hist-date b{display:block;font-size:19px;font-weight:800;letter-spacing:-.03em;
+  color:var(--t1);line-height:1;font-variant-numeric:tabular-nums}
+.hist-date span{display:block;font-size:9.5px;font-weight:700;letter-spacing:.6px;
+  text-transform:uppercase;color:var(--t3);margin-top:3px}
+.hist-body{flex:1;min-width:0}
+.hist-task{font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--t1);
+  line-height:1.35;word-break:break-word}
+.hist-meta{display:flex;align-items:center;gap:7px;margin-top:6px;flex-wrap:wrap}
+.hist-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;
+  padding:3px 8px;border-radius:100px;background:rgba(255,255,255,.06);
+  border:1px solid var(--glass-border);color:var(--t2)}
+.hist-tag.pt{background:rgba(255,214,88,.13);border-color:rgba(255,214,88,.3);color:#FFD658}
+.hist-tag.fi{background:rgba(10,132,255,.12);border-color:rgba(10,132,255,.3);color:#6BB6FF}
+.hist-caret{flex:0 0 auto;align-self:center;color:var(--t3);font-size:12px;transition:transform .25s}
+.hist-card.open .hist-caret{transform:rotate(90deg);color:var(--blue)}
+
+/* expanded file strip */
+.hist-files{display:none;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px;
+  margin:0 0 9px;padding:12px 14px;border-radius:var(--r2);
+  background:rgba(255,255,255,.03);border:1px solid var(--sep)}
+.hist-files.show{display:grid;animation:fadeUp .3s cubic-bezier(.34,1.2,.64,1) both}
+.hist-file{aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--bg3);
+  border:1px solid var(--sep);display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;transition:transform .18s,border-color .18s}
+.hist-file:hover{transform:scale(1.05);border-color:var(--glass-border-strong)}
+.hist-file img{width:100%;height:100%;object-fit:cover;display:block}
+.hist-empty{padding:26px 18px;text-align:center;font-size:13px;color:var(--t3);
+  background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2)}
+
+/* ════════════════ DESKTOP ════════════════ */
+@media(min-width:1000px){
+  .form-wrap{max-width:1080px;padding:0 24px 72px}
+  .steps{max-width:640px;margin-left:auto;margin-right:auto}
+  .steps .step-lbl{display:inline!important;font-size:12px!important}
+  .hero-h1{font-size:38px}
+  .hero-sub{font-size:16px}
+  .stu-grid{grid-template-columns:repeat(5,1fr)!important}
+  .files-gallery{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  #c4 .review-card{display:grid;grid-template-columns:1fr 1fr}
+  #c4 .rv-row:nth-last-child(-n+2){border-bottom:none}
+  #subBtn{max-width:340px;margin-left:auto;margin-right:auto;display:block}
+
+  /* success page becomes two columns */
+  .suc-wrap{max-width:1080px;padding:0 24px 72px;
+    display:grid;grid-template-columns:1.05fr .95fr;gap:0 22px;align-items:start}
+  .suc-wrap > .nav{grid-column:1/-1}
+  .suc-hero{grid-column:1/-1}
+  .pts-card,.files-section{grid-column:1;margin-left:0;margin-right:0}
+  .timeline,.hist{grid-column:2;margin-left:0;margin-right:0}
+  .suc-wrap > .btn-secondary{grid-column:1/-1;max-width:340px;margin:8px auto 0}
+  .hist-card:hover{transform:translateY(-2px)}
+
+  .dash-wrap{max-width:1180px}
+}
+@media(min-width:1360px){
+  .form-wrap,.suc-wrap{max-width:1240px}
+  .hist-stats{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:520px){
+  .hist-stats{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ════════════════ ACCOUNT CARD ════════════════ */
+.acct-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r2);
+  margin:0 16px 14px;overflow:hidden;backdrop-filter:blur(24px) saturate(180%);
+  box-shadow:var(--shadow-glass);position:relative;z-index:1}
+.acct-head{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:14px 18px;border-bottom:0.5px solid var(--sep)}
+/* inside the panel the close button sits at the end of this row, so keep it clear */
+.acct-sheet .acct-head{padding-right:58px}
+.acct-label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--t3)}
+.acct-badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;
+  padding:4px 10px;border-radius:100px;background:rgba(48,209,88,.13);
+  border:1px solid rgba(48,209,88,.32);color:var(--green)}
+.acct-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px rgba(48,209,88,.9)}
+.acct-badge.warn{background:rgba(255,159,10,.13);border-color:rgba(255,159,10,.32);color:var(--amber)}
+.acct-badge.warn::before{background:var(--amber);box-shadow:0 0 8px rgba(255,159,10,.9)}
+
+.acct-id{display:flex;align-items:center;gap:13px;padding:18px}
+.acct-avatar{width:52px;height:52px;flex:0 0 auto;border-radius:50%;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;
+  letter-spacing:-.02em;color:#fff;background:linear-gradient(135deg,var(--blue),#5E5CE6);
+  box-shadow:0 4px 18px rgba(10,132,255,.45),0 0 0 2px rgba(255,255,255,.14)}
+.acct-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.acct-meta{min-width:0;flex:1}
+.acct-name{font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--t1);
+  line-height:1.25;word-break:break-word}
+.acct-mail{font-size:12.5px;color:var(--t2);margin-top:3px;word-break:break-all}
+.acct-mail.none{color:var(--t3);font-style:italic}
+
+.acct-rows{border-top:0.5px solid var(--sep)}
+.acct-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 18px;border-bottom:0.5px solid var(--sep);min-height:46px}
+.acct-row:last-child{border-bottom:none}
+.acct-row > span{font-size:12.5px;color:var(--t2)}
+.acct-row > b{font-size:13.5px;font-weight:600;color:var(--t1);
+  font-variant-numeric:tabular-nums;text-align:right;word-break:break-word}
+.acct-row.hl{background:rgba(10,132,255,.07)}
+.acct-row.hl > b{font-size:19px;font-weight:800;letter-spacing:-.03em;color:var(--blue)}
+.acct-row code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;
+  color:var(--t2);background:rgba(255,255,255,.06);border:1px solid var(--sep);
+  padding:3px 8px;border-radius:6px}
+.acct-pt{display:inline-flex;align-items:center;gap:5px}
+.acct-pt::before{content:'★';color:var(--amber);font-size:11px}
+
+/* ── star rating ── */
+.acct-stars{display:flex;align-items:center;gap:3px}
+.acct-stars i{font-style:normal;font-size:15px;color:rgba(255,255,255,.16);
+  transition:color .35s,text-shadow .35s,transform .35s}
+.acct-stars i.on{color:#FFD658;text-shadow:0 0 10px rgba(255,214,88,.6)}
+.acct-stars i.pop{animation:starPop .5s cubic-bezier(.34,1.6,.64,1)}
+@keyframes starPop{0%{transform:scale(.4);opacity:.3}60%{transform:scale(1.35)}100%{transform:scale(1)}}
+.acct-star-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 18px;border-bottom:0.5px solid var(--sep);
+  background:linear-gradient(90deg,rgba(255,214,88,.07),transparent)}
+.acct-star-meta{font-size:11.5px;color:var(--t3);margin-top:3px}
+.acct-star-meta b{color:#FFD658;font-weight:700}
+
+/* ── the corner widget: email above, account points below ── */
+#acctCorner{position:fixed;top:66px;right:14px;z-index:120;display:none;
+  align-items:center;gap:10px;padding:8px 14px 8px 8px;border-radius:100px;cursor:pointer;
+  background:rgba(20,20,24,.78);border:1px solid var(--glass-border);
+  backdrop-filter:blur(28px) saturate(190%);-webkit-backdrop-filter:blur(28px) saturate(190%);
+  box-shadow:0 8px 28px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.09) inset;
+  max-width:min(280px,calc(100vw - 28px));
+  transition:background .2s,border-color .2s,transform .16s;
+  animation:fadeUp .4s cubic-bezier(.34,1.2,.64,1) both}
+#acctCorner.show{display:flex}
+#acctCorner:hover{background:rgba(30,30,36,.86);border-color:var(--glass-border-strong)}
+#acctCorner:active{transform:scale(.97)}
+.ac-avatar{width:34px;height:34px;flex:0 0 auto;border-radius:50%;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:800;letter-spacing:-.02em;color:#fff;
+  background:linear-gradient(135deg,var(--blue),#5E5CE6);
+  box-shadow:0 2px 10px rgba(10,132,255,.5),0 0 0 1.5px rgba(255,255,255,.14)}
+.ac-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.ac-meta{min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.ac-mail{font-size:12px;font-weight:600;color:var(--t1);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.ac-pts{display:inline-flex;align-items:baseline;gap:4px;margin-top:1px}
+.ac-pts i{font-style:normal;font-size:10px;color:#FFD658;
+  text-shadow:0 0 7px rgba(255,214,88,.7);align-self:center}
+.ac-pts b{font-size:13px;font-weight:800;letter-spacing:-.02em;color:#FFD658;
+  font-variant-numeric:tabular-nums}
+.ac-pts small{font-size:9.5px;font-weight:600;letter-spacing:.5px;
+  text-transform:uppercase;color:var(--t3)}
+/* the pull-down arrow */
+.ac-caret{width:15px;height:15px;flex:0 0 auto;color:var(--t3);margin-left:1px;
+  transition:transform .3s cubic-bezier(.34,1.3,.64,1),color .2s}
+#acctCorner:hover .ac-caret{color:var(--t1)}
+#acctCorner.is-open .ac-caret{transform:rotate(180deg);color:#6BB6FF}
+/* ── the "pull down" coach mark ── */
+.ac-hint{position:absolute;top:calc(100% + 12px);right:8px;z-index:2;
+  display:none;align-items:center;gap:8px;white-space:nowrap;pointer-events:none;
+  padding:9px 15px;border-radius:13px;font-size:12.5px;font-weight:700;letter-spacing:-.01em;
+  color:#03121f;background:linear-gradient(135deg,#8CCBFF,#0A84FF);
+  box-shadow:0 10px 30px rgba(10,132,255,.55),0 1px 0 rgba(255,255,255,.35) inset}
+.ac-hint::before{content:'';position:absolute;bottom:100%;right:26px;
+  border:7px solid transparent;border-bottom-color:#8CCBFF}
+.ac-hint svg{width:15px;height:15px;flex:0 0 auto;animation:hintArrow 1.35s ease-in-out infinite}
+@keyframes hintArrow{0%,100%{transform:translateY(-2px);opacity:.65}50%{transform:translateY(3px);opacity:1}}
+@keyframes hintIn{from{opacity:0;transform:translateY(-10px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes hintBob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@keyframes hintOut{to{opacity:0;transform:translateY(-8px) scale(.94)}}
+
+/* the whole pill breathes while the hint is up */
+@keyframes cornerPulse{0%,100%{box-shadow:0 8px 28px rgba(0,0,0,.55),0 0 0 0 rgba(10,132,255,.42)}
+  50%{box-shadow:0 8px 28px rgba(0,0,0,.55),0 0 0 9px rgba(10,132,255,0)}}
+@keyframes caretHint{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(4px)}}
+
+#acctCorner.hint{animation:cornerPulse 1.8s ease-out 4}
+#acctCorner.hint .ac-caret{animation:caretHint 1.8s ease-in-out 4;color:#6BB6FF}
+#acctCorner.hint .ac-hint{display:flex;
+  animation:hintIn .48s cubic-bezier(.34,1.5,.64,1) both, hintBob 1.8s .5s ease-in-out infinite}
+#acctCorner.hint-out .ac-hint{display:flex;animation:hintOut .3s ease-in both}
+
+@media (prefers-reduced-motion:reduce){
+  #acctCorner.hint,#acctCorner.hint .ac-caret,#acctCorner.hint .ac-hint,.ac-hint svg{animation:none}
+  #acctCorner.hint .ac-hint{display:flex}
+}
+@media(max-width:560px){.ac-hint{font-size:11.5px;padding:8px 12px}}
+
+@media(max-width:560px){
+  #acctCorner{top:62px;right:10px;padding:6px 12px 6px 6px;gap:8px}
+  .ac-caret{width:13px;height:13px}
+  .ac-avatar{width:30px;height:30px;font-size:11.5px}
+  .ac-mail{font-size:11px;max-width:140px}
+  .ac-pts b{font-size:12px}
+}
+
+/* ── the account points equation ── */
+.ap-card{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+  padding:26px 34px;border-radius:24px;text-align:center;pointer-events:none;
+  background:rgba(16,16,22,.9);border:1px solid rgba(255,214,88,.34);
+  backdrop-filter:blur(30px) saturate(180%);
+  box-shadow:0 26px 70px rgba(0,0,0,.75),0 0 44px rgba(255,214,88,.22),
+             0 1px 0 rgba(255,255,255,.12) inset;
+  opacity:0}
+.ap-lbl{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--t3);margin-bottom:12px}
+.ap-eq{display:flex;align-items:center;justify-content:center;gap:10px;
+  font-variant-numeric:tabular-nums;line-height:1}
+.ap-eq span{opacity:0;display:inline-block;will-change:transform,opacity}
+.ap-n{font-size:38px;font-weight:800;letter-spacing:-.035em;color:#fff}
+.ap-op{font-size:25px;font-weight:700;color:#FFD658;text-shadow:0 0 14px rgba(255,214,88,.65)}
+.ap-gain{color:#FFD658;text-shadow:0 0 22px rgba(255,214,88,.75)}
+.ap-total{background:linear-gradient(135deg,#fff,#FFD658);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text}
+.ap-sub{font-size:12px;color:var(--t2);margin-top:12px}
+
+/* the panel itself */
+.acct-modal{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;
+  padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(14px) saturate(160%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%)}
+.acct-modal.open{display:flex;animation:fadeUp .28s cubic-bezier(.34,1.2,.64,1) both}
+.acct-sheet{position:relative;width:100%;max-width:420px;max-height:86vh;overflow-y:auto;
+  background:rgba(18,18,22,.94);border:1px solid var(--glass-border-strong);border-radius:var(--r3);
+  backdrop-filter:blur(32px) saturate(180%);
+  box-shadow:0 24px 70px rgba(0,0,0,.8),0 1px 0 rgba(255,255,255,.1) inset;
+  animation:sheetPop .34s cubic-bezier(.34,1.4,.64,1) both}
+@keyframes sheetPop{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+.acct-x{position:absolute;top:13px;right:14px;width:30px;height:30px;padding:0;border-radius:9px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font);font-size:14px;line-height:1;color:var(--t2);
+  background:rgba(255,255,255,.07);border:1px solid var(--glass-border);
+  transition:background .18s,color .18s,transform .16s;z-index:3}
+.acct-x:hover{background:rgba(255,255,255,.15);color:var(--t1)}
+.acct-x:active{transform:scale(.9)}
+.acct-x:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* the headline: account points, not task points */
+.acct-hero{padding:22px 18px;text-align:center;border-bottom:0.5px solid var(--sep);
+  background:linear-gradient(180deg,rgba(10,132,255,.12),transparent)}
+.acct-hero-lbl{font-size:10.5px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--t3)}
+.acct-hero-num{font-size:44px;font-weight:800;letter-spacing:-.04em;line-height:1.05;margin:6px 0 3px;
+  font-variant-numeric:tabular-nums;
+  background:linear-gradient(135deg,#fff,#6BB6FF);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text}
+.acct-hero-sub{font-size:11.5px;color:var(--t3)}
+
+.acct-sub-lbl{padding:14px 18px 7px;font-size:10px;font-weight:700;letter-spacing:.9px;
+  text-transform:uppercase;color:var(--t3);border-bottom:0.5px solid var(--sep);
+  background:rgba(255,255,255,.02)}
+
+/* the things you can click to open it */
+.profile-tap{cursor:pointer;transition:transform .18s,opacity .18s}
+.profile-tap:hover{opacity:.85}
+.profile-tap:active{transform:scale(.97)}
+
+
+/* ════════ POINT AWARD: star flight + running equation ════════ */
+#score-fx{position:fixed;inset:0;z-index:2000;pointer-events:none;overflow:hidden}
+.sfx-star{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;will-change:transform,opacity}
+.sfx-star svg{width:100%;height:100%;display:block;
+  filter:drop-shadow(0 0 10px rgba(255,214,88,.95)) drop-shadow(0 0 26px rgba(255,159,10,.65))}
+.sfx-spark{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;
+  background:radial-gradient(circle,#fff6d0 0%,#FFD658 45%,rgba(255,159,10,0) 72%);will-change:transform,opacity}
+.sfx-ring{position:absolute;border-radius:50%;margin:0;border:2px solid rgba(255,214,88,.9);
+  will-change:transform,opacity;pointer-events:none}
+.sfx-burst{position:absolute;width:2px;height:16px;margin:-8px 0 0 -1px;border-radius:2px;
+  background:linear-gradient(to bottom,#fff6d0,rgba(255,159,10,0));will-change:transform,opacity}
+
+/* the equation that plays over the running total */
+.pts-stat{position:relative}
+.eq{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:6px;
+  pointer-events:none;font-variant-numeric:tabular-nums;line-height:1}
+.eq span{opacity:0;will-change:transform,opacity;display:inline-block}
+.eq .eq-n{font-size:34px;font-weight:800;letter-spacing:-.03em;color:#fff}
+.eq .eq-op{font-size:22px;font-weight:700;color:var(--amber);
+  text-shadow:0 0 12px rgba(255,159,10,.6)}
+.eq .eq-gain{color:#FFD658;text-shadow:0 0 16px rgba(255,214,88,.7)}
+.eq .eq-total{color:#fff;text-shadow:0 0 22px rgba(255,214,88,.55)}
+.pts-num-lg.is-swapping{opacity:0}
+
+.pts-mid.is-hit{animation:eqHit .5s cubic-bezier(.34,1.5,.64,1)}
+@keyframes eqHit{0%{transform:scale(1)}35%{transform:scale(1.14)}100%{transform:scale(1)}}
+
+@media (prefers-reduced-motion:reduce){
+  .sfx-star,.sfx-spark,.sfx-ring,.sfx-burst{display:none}
+  .pts-mid.is-hit{animation:none}
+}
 </style>
 </head>
 <body>
+<div class="balloon-wrap" id="balloonWrap"></div>
 <div class="ambient-bg"></div>
 
 <div id="photoModal">
@@ -439,13 +775,90 @@ canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:999}
       </div>
       <div class="fs-grid" id="sfGrid"></div>
     </div>
-    <div class="timeline" id="monthHistorySection">
-      <div class="tl-header">All Your Uploaded Tasks</div>
-      <div class="tl-items" id="monthHistoryItems">
-        <div class="tl-item"><div class="tl-text" style="color:var(--t3)">Loading…</div></div>
+    <div class="hist" id="monthHistorySection">
+      <div class="hist-head">
+        <div class="hist-title">Your submission record<small id="histSub">Loading…</small></div>
+      </div>
+      <div class="hist-stats" id="histStats">
+        <div class="hist-stat hl"><b id="hsTotal">0</b><span>Tasks</span></div>
+        <div class="hist-stat"><b id="hsFiles">0</b><span>Files</span></div>
+        <div class="hist-stat gd"><b id="hsStreak">0</b><span>Day streak</span></div>
+        <div class="hist-stat"><b id="hsBest">0</b><span>Best streak</span></div>
+      </div>
+      <div class="hist-tools">
+        <div class="hist-search">
+          <span class="hs-ico">🔍</span>
+          <input type="text" id="histSearch" placeholder="Search your tasks…" autocomplete="off" spellcheck="false">
+        </div>
+        <button class="hist-chip on" data-range="all">All</button>
+        <button class="hist-chip" data-range="month">This month</button>
+        <button class="hist-chip" data-range="week">This week</button>
+      </div>
+      <div id="monthHistoryItems">
+        <div class="hist-empty">Loading your history…</div>
       </div>
     </div>
     <button class="btn-secondary" onclick="resetAll()">↩  Submit Another Task</button>
+  </div>
+</div>
+
+<div id="acctCorner" onclick="openAcct()" title="View account information">
+  <div class="ac-avatar" id="acCornerAvatar">—</div>
+  <div class="ac-meta">
+    <span class="ac-mail" id="acCornerMail">—</span>
+    <span class="ac-pts"><i>★</i><b id="acCornerPts">0</b><small>points</small></span>
+  </div>
+  <svg class="ac-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
+  <div class="ac-hint" id="acHint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>
+    </svg>
+    <span>Pull down for your account</span>
+  </div>
+</div>
+
+<div id="acctModal" class="acct-modal" onclick="closeAcct(event)">
+  <div class="acct-sheet" onclick="event.stopPropagation()">
+    <button class="acct-x" onclick="closeAcct()" aria-label="Close">✕</button>
+    <div class="acct-head">
+      <span class="acct-label">Account information</span>
+      <span class="acct-badge" id="acctBadge">Verified</span>
+    </div>
+    <div class="acct-id">
+      <div class="acct-avatar" id="acctAvatar">—</div>
+      <div class="acct-meta">
+        <div class="acct-name" id="acctName">—</div>
+        <div class="acct-mail" id="acctMail">—</div>
+      </div>
+    </div>
+
+    <div class="acct-hero">
+      <div class="acct-hero-lbl">Cloud iNIT account points</div>
+      <div class="acct-hero-num" id="acctTotal">0</div>
+      <div class="acct-hero-sub" id="acctTotalSub">across the whole platform</div>
+    </div>
+
+    <div class="acct-star-row">
+      <div>
+        <div style="font-size:12.5px;color:var(--t2)">Task rating this month</div>
+        <div class="acct-star-meta" id="acctStarMeta">—</div>
+      </div>
+      <div class="acct-stars" id="acctStars"><i>★</i><i>★</i><i>★</i><i>★</i><i>★</i></div>
+    </div>
+
+    <div class="acct-rows">
+      <div class="acct-row"><span>Batch</span><b id="acctBatch">—</b></div>
+      <div class="acct-row"><span>Student ID</span><b><code id="acctKey">—</code></b></div>
+      <div class="acct-sub-lbl">Daily task points</div>
+      <div class="acct-row"><span>Today</span><b class="acct-pt" id="acctPtD">0</b></div>
+      <div class="acct-row"><span>This week</span><b class="acct-pt" id="acctPtW">0</b></div>
+      <div class="acct-row"><span>This month</span><b class="acct-pt" id="acctPtM">0</b></div>
+      <div class="acct-row"><span>Tasks submitted</span><b id="acctTasks">0</b></div>
+    </div>
   </div>
 </div>
 
@@ -557,8 +970,6 @@ canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:999}
   </div>
 </div>
 <div id="toast"><div class="t-ico" id="tIco"></div><div><div class="t-ttl" id="tTtl"></div><div class="t-msg" id="tMsg"></div></div></div>
-<canvas id="confettiCanvas"></canvas>
-<div class="balloon-wrap" id="balloonWrap"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -582,6 +993,21 @@ try{
 }catch(e){console.warn('task app init failed',e);}
 
 const BATCH_ID='batch_1930',BATCH_TIME='7:30 PM';
+// Profile photos live in the shared tracker Storage under this batch folder
+// (same folder analytics.html reads). Keep the stem + extension logic in sync
+// with analytics so a photo shown on one page shows on the other.
+const PHOTO_FOLDER='profilephoto730pm';
+function photoStem(name){return (name||'').toLowerCase().trim().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');}
+const PHOTO_EXTS=['jpg','jpeg','png','webp','JPG','PNG'];
+async function fetchBatchPhoto(name){
+  const stem=photoStem(name);
+  if(!stem)return null;
+  for(const ext of PHOTO_EXTS){
+    try{return await sto.ref(PHOTO_FOLDER+'/'+stem+'.'+ext).getDownloadURL();}
+    catch(e){if(e&&e.code&&e.code!=='storage/object-not-found'&&e.code!=='storage/unknown')break;}
+  }
+  return null;
+}
 let sName=null,taskTitle=null,files=[],allStu=[];
 let profilePhotoUrl=null,photoBlob=null,studentEmail=null,curSk=null,curAuthUid=null;
 let authUser=null,authEmail=null,connectMode=false;
@@ -604,6 +1030,7 @@ window.addEventListener('DOMContentLoaded',()=>{
       if(user&&user.email){
         authUser=user;
         curAuthUid=user.uid;
+        watchAccountPoints(user.uid);
         authEmail=(user.email||'').trim().toLowerCase();
         showAuthChip(user);
         try{
@@ -620,6 +1047,7 @@ window.addEventListener('DOMContentLoaded',()=>{
         showAllNames();
       }else{
         authUser=null;curAuthUid=null;authEmail=null;connectMode=false;
+      watchAccountPoints(null);
         hideConnectBanner();
         showAllNames();
       }
@@ -715,8 +1143,9 @@ function renderStu(list){
 }
 
 async function loadTilePhoto(name,sk){
-  try{const url=await sto.ref(`profilephoto10batch/${sk}.jpg`).getDownloadURL();photoCache[sk]=url;const el=document.getElementById('av_'+sk);if(el)el.innerHTML=`<img src="${esc(url)}" alt=""/>`;}
-  catch{photoCache[sk]=null;}
+  const url=await fetchBatchPhoto(name);
+  photoCache[sk]=url;
+  if(url){const el=document.getElementById('av_'+sk);if(el)el.innerHTML=`<img src="${esc(url)}" alt=""/>`;}
 }
 
 function filterStu(){const q=document.getElementById('stuQ').value.toLowerCase();renderStu(allStu.filter(n=>n.toLowerCase().includes(q)));}
@@ -733,10 +1162,9 @@ async function resolveLink(sk,name){
 }
 
 // Resolve a student's profile photo into profilePhotoUrl + cache. Returns url|null.
-async function ensurePhotoUrl(sk){
+async function ensurePhotoUrl(sk,name){
   if(photoCache[sk]===undefined){
-    try{const url=await sto.ref(`profilephoto10batch/${sk}.jpg`).getDownloadURL();photoCache[sk]=url;}
-    catch{photoCache[sk]=null;}
+    photoCache[sk]=await fetchBatchPhoto(name||sName);
   }
   profilePhotoUrl=photoCache[sk];
   return profilePhotoUrl;
@@ -832,7 +1260,7 @@ document.getElementById('emailModal')&&document.getElementById('emailModal').add
 // New-user flow: after email, force the photo if missing, then continue into the task form.
 async function afterEmailReady(sk,name){
   curSk=sk;
-  await ensurePhotoUrl(sk);
+  await ensurePhotoUrl(sk,name);
   updateNavLogo(profilePhotoUrl);
   if(!profilePhotoUrl){photoAfter='flow';openPhotoModal(name);}
   else proceedAfterPhoto();
@@ -856,7 +1284,7 @@ async function goToDashboard(name,sk){
   const mh=new Date();
   document.getElementById('mhTitle').textContent=mh.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
 
-  await ensurePhotoUrl(sk);
+  await ensurePhotoUrl(sk,name);
   updateNavLogo(profilePhotoUrl);
   const aw=document.getElementById('dashAvatarWrap');
   const warn=document.getElementById('dhPhotoWarn');
@@ -891,6 +1319,7 @@ async function fetchDashStats(sk){
     const weekly=data.lastWeek===curWeek?(data.weekly||0):0;
     const daily=data.lastDate===curDate?(data.daily||0):0;
     animCount('dhM',0,monthly,900);animCount('dhW',0,weekly,800);animCount('dhD',0,daily,600);
+    fillDashProfile(sk,daily,weekly,monthly);
   }catch(e){}
 }
 
@@ -901,6 +1330,7 @@ async function fetchDashMonth(sk){
     const qs=await db.collection('submissions').where('safeKey','==',sk).get();
     const docs=qs.docs.map(d=>d.data()).sort((a,b)=>(b.ts||0)-(a.ts||0));
     animCount('dhT',0,docs.length,850);
+    animCount('acctTasks',0,docs.length,850);
 
     const curMonth=mStr(new Date());
     const monthDocs=docs.filter(s=>(s.monthStr||'')===curMonth);
@@ -936,23 +1366,183 @@ async function fetchDashMonth(sk){
   }
 }
 
+
+/* ══════════════════════════════════════════════════════════════
+   SUBMISSION HISTORY
+   Grouped by month, searchable, filterable, and expandable to show the
+   files that were handed in. Everything is computed from the documents
+   already fetched, so filtering costs no extra reads.
+   ══════════════════════════════════════════════════════════════ */
+let HIST_DOCS = [];
+let HIST_RANGE = 'all';
+let HIST_QUERY = '';
+
+const MONTH_NAMES = ['January','February','March','April','May','June',
+                     'July','August','September','October','November','December'];
+const SHORT_MONTH = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function histDate(s){
+  if(s.ts) return new Date(s.ts);
+  const p = (s.dateStr||'').split('-');           /* YYYY-MM-DD */
+  return p.length === 3 ? new Date(+p[0], +p[1]-1, +p[2]) : new Date();
+}
+
+/* consecutive days ending today (or yesterday) that have a submission */
+function histStreaks(docs){
+  const days = [...new Set(docs.map(s => s.dateStr).filter(Boolean))].sort();
+  if(!days.length) return { current:0, best:0 };
+  const asNum = d => { const p = d.split('-'); return Date.UTC(+p[0], +p[1]-1, +p[2]) / 86400000; };
+  const nums = days.map(asNum);
+
+  let best = 1, run = 1;
+  for(let i=1;i<nums.length;i++){
+    run = (nums[i] - nums[i-1] === 1) ? run + 1 : 1;
+    if(run > best) best = run;
+  }
+
+  const today = Math.floor(Date.now() / 86400000);
+  const last  = nums[nums.length-1];
+  let current = 0;
+  if(today - last <= 1){
+    current = 1;
+    for(let i=nums.length-1;i>0;i--){
+      if(nums[i] - nums[i-1] === 1) current++; else break;
+    }
+  }
+  return { current, best };
+}
+
+function histFileTile(f, i){
+  const url = f && (f.url || f.downloadURL || f.link);
+  const name = (f && (f.name || f.fileName)) || 'file';
+  const isImg = /\.(png|jpe?g|gif|webp|avif)$/i.test(name) || /image/i.test((f && f.type) || '');
+  if(url && isImg){
+    return '<div class="hist-file" onclick="event.stopPropagation();openLightbox(\'' +
+           String(url).replace(/'/g, "\\'") + '\',\'' + String(name).replace(/'/g, "\\'") +
+           '\')"><img src="' + esc(url) + '" alt="" loading="lazy"></div>';
+  }
+  const icon = /\.pdf$/i.test(name) ? '📄' : /\.(mp4|webm|mov)$/i.test(name) ? '🎬' : '📎';
+  const open = url ? ' onclick="event.stopPropagation();window.open(\'' +
+               String(url).replace(/'/g, "\\'") + '\',\'_blank\')"' : '';
+  return '<div class="hist-file"' + open + ' title="' + esc(name) + '">' + icon + '</div>';
+}
+
+function histMatches(s){
+  if(HIST_QUERY){
+    const hay = ((s.taskTitle||'') + ' ' + (s.dateStr||'')).toLowerCase();
+    if(hay.indexOf(HIST_QUERY) === -1) return false;
+  }
+  if(HIST_RANGE === 'month') return (s.monthStr||'') === mStr(new Date());
+  if(HIST_RANGE === 'week')  return (s.weekStr||'')  === wsStr(new Date());
+  return true;
+}
+
+function renderHistory(){
+  const box = document.getElementById('monthHistoryItems');
+  if(!box) return;
+
+  const shown = HIST_DOCS.filter(histMatches);
+  if(!shown.length){
+    box.innerHTML = '<div class="hist-empty">' +
+      (HIST_DOCS.length ? 'Nothing matches that filter.' : 'No tasks submitted yet.') + '</div>';
+    return;
+  }
+
+  /* group into months, newest first */
+  const groups = [];
+  const seen = {};
+  shown.forEach(s => {
+    const d = histDate(s);
+    const key = d.getFullYear() + '-' + d.getMonth();
+    if(!seen[key]){ seen[key] = { label: MONTH_NAMES[d.getMonth()] + ' ' + d.getFullYear(), items: [] }; groups.push(seen[key]); }
+    seen[key].items.push(s);
+  });
+
+  box.innerHTML = groups.map(g => {
+    const cards = g.items.map((s, i) => {
+      const d = histDate(s);
+      const files = Array.isArray(s.files) ? s.files : [];
+      const pts = (s.points || 0) > 0 ? '<span class="hist-tag pt">★ +' + s.points + '</span>' : '';
+      const time = d.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+      const id = 'hf_' + g.label.replace(/\W/g,'') + '_' + i;
+      return '<div class="hist-card" onclick="histToggle(this,\'' + id + '\')">' +
+               '<div class="hist-date"><b>' + d.getDate() + '</b><span>' + SHORT_MONTH[d.getMonth()] + '</span></div>' +
+               '<div class="hist-body">' +
+                 '<div class="hist-task">' + esc(s.taskTitle || 'Task') + '</div>' +
+                 '<div class="hist-meta">' +
+                   '<span class="hist-tag fi">' + (s.fileCount || files.length || 0) + ' file' +
+                     (((s.fileCount||files.length||0) !== 1) ? 's' : '') + '</span>' +
+                   pts +
+                   '<span class="hist-tag">🕐 ' + time + '</span>' +
+                 '</div>' +
+               '</div>' +
+               '<div class="hist-caret">›</div>' +
+             '</div>' +
+             '<div class="hist-files" id="' + id + '">' +
+               (files.length ? files.map(histFileTile).join('')
+                             : '<div style="grid-column:1/-1;font-size:12px;color:var(--t3)">No files recorded.</div>') +
+             '</div>';
+    }).join('');
+    return '<div class="hist-month"><div class="hist-month-lbl"><b>' + g.label + '</b> · ' +
+           g.items.length + ' task' + (g.items.length !== 1 ? 's' : '') + '</div>' + cards + '</div>';
+  }).join('');
+}
+
+function histToggle(card, id){
+  const panel = document.getElementById(id);
+  if(!panel) return;
+  const open = panel.classList.toggle('show');
+  card.classList.toggle('open', open);
+}
+
+function wireHistoryTools(){
+  const s = document.getElementById('histSearch');
+  if(s && !s._wired){
+    s._wired = true;
+    s.addEventListener('input', () => { HIST_QUERY = s.value.trim().toLowerCase(); renderHistory(); });
+    s.addEventListener('keydown', e => { if(e.key === 'Escape'){ s.value=''; HIST_QUERY=''; renderHistory(); s.blur(); } });
+  }
+  document.querySelectorAll('.hist-chip').forEach(c => {
+    if(c._wired) return;
+    c._wired = true;
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.hist-chip').forEach(x => x.classList.remove('on'));
+      c.classList.add('on');
+      HIST_RANGE = c.getAttribute('data-range');
+      renderHistory();
+    });
+  });
+}
+
 async function fetchAllHistory(sk,boxId,countId){
   const box=document.getElementById(boxId);
   try{
     const qs=await db.collection('submissions').where('safeKey','==',sk).get();
-    let docs=qs.docs.map(d=>d.data()).sort((a,b)=>(b.ts||0)-(a.ts||0));
+    const docs=qs.docs.map(d=>d.data()).sort((a,b)=>(b.ts||0)-(a.ts||0));
     if(countId)document.getElementById(countId).textContent=docs.length;
-    if(!docs.length){box.innerHTML='<div class="tl-item"><div class="tl-text" style="color:var(--t3)">No tasks uploaded yet.</div></div>';return;}
-    box.innerHTML=docs.map((s,i)=>`<div class="tl-item"><div class="tl-dot ${i===0?'curr':'done'}"></div><div class="tl-text"><strong>${esc(s.taskTitle||'Task')}</strong> — ${esc(s.dateStr||'')} · ${s.fileCount||0} file${(s.fileCount||0)!==1?'s':''}</div></div>`).join('');
+
+    HIST_DOCS=docs;
+    const files=docs.reduce((n,s)=>n+(s.fileCount||(Array.isArray(s.files)?s.files.length:0)||0),0);
+    const st=histStreaks(docs);
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)animCount(id,0,v,700);};
+    set('hsTotal',docs.length); set('hsFiles',files);
+    set('hsStreak',st.current); set('hsBest',st.best);
+    const sub=document.getElementById('histSub');
+    if(sub)sub.textContent=docs.length
+      ? docs.length+' submission'+(docs.length!==1?'s':'')+' · '+files+' file'+(files!==1?'s':'')
+      : 'Nothing submitted yet';
+
+    wireHistoryTools();
+    renderHistory();
   }catch(e){
-    box.innerHTML='<div class="tl-item"><div class="tl-text" style="color:var(--pink)">Could not load upload history.</div></div>';
+    box.innerHTML='<div class="hist-empty" style="color:var(--pink)">Could not load your history.</div>';
   }
 }
 
 // Submit New Task — REQUIRE a photo first.
 async function dashStartTask(){
   if(!curSk){toast('error','Select a student','Please choose your name first.');return;}
-  await ensurePhotoUrl(curSk);
+  await ensurePhotoUrl(curSk,sName);
   if(!profilePhotoUrl){
     toast('error','Photo Required','Add your identity photo before submitting a task.');
     photoAfter='task';
@@ -1015,7 +1605,7 @@ async function saveProfilePhoto(){
   if(!photoBlob)return;const btn=document.getElementById('pmSaveBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span> Saving…';
   document.getElementById('pmStatus').textContent='Uploading…';document.getElementById('pmStatus').className='pm-status';
   try{
-    const sk=safeKey(sName);const ref=sto.ref(`profilephoto10batch/${sk}.jpg`);
+    const sk=safeKey(sName);const ref=sto.ref(PHOTO_FOLDER+'/'+photoStem(sName)+'.jpg');
     await ref.put(photoBlob,{contentType:'image/jpeg'});const url=await ref.getDownloadURL();
     profilePhotoUrl=url;photoCache[sk]=url;
     const avEl=document.getElementById('av_'+sk);if(avEl)avEl.innerHTML=`<img src="${esc(url)}" alt=""/>`;
@@ -1085,7 +1675,7 @@ async function doSubmit(){
   if(!sName||!taskTitle||!files.length){toast('error','Missing Info','Complete all steps first.');return;}
   // Final guard: never allow submission without an identity photo.
   if(!profilePhotoUrl){
-    await ensurePhotoUrl(safeKey(sName));
+    await ensurePhotoUrl(safeKey(sName),sName);
     if(!profilePhotoUrl){toast('error','Photo Required','Add your identity photo before submitting.');photoAfter='task';openPhotoModal(sName);return;}
   }
   const btn=document.getElementById('subBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>  Uploading…';
@@ -1116,7 +1706,15 @@ async function doSubmit(){
     await db.collection('studentLinks').doc(safe).set({studentName:sName,email:studentEmail||null,authUid:curAuthUid||null,linkedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
     linkCache[safe]={exists:true,email:studentEmail||null};
 
+    /* 400 account points for submitting today — the transaction is the
+       guard, so a second submission simply returns false */
+    let bonus=false;
+    try{ bonus=await awardSubmitBonus(); }
+    catch(err){ console.error('Submission bonus failed:',err); }
+
     showSuccess(uploaded,pts,safe);
+
+    /* no toast needed — the equation animation announces it */
   }catch(e){
     console.error(e);toast('error','Upload Failed',e.message);
     btn.disabled=false;btn.innerHTML='Submit Task ✓';pb.style.display='none';
@@ -1144,8 +1742,625 @@ async function fetchPoints(safeKey,earnedNow){
     badge.className='pts-earned'+(earnedNow?'':' already');
     document.getElementById('tlPts').textContent=earnedNow?'+1 point awarded':'No new points (already earned today)';
     document.getElementById('ptsBody').innerHTML=`<div class="pts-grid"><div class="pts-stat"><div class="pts-num" id="ptW">${weekly}</div><div class="pts-lbl">This Week</div></div><div class="pts-stat pts-mid"><div class="pts-num pts-num-lg" id="ptM">${monthly}</div><div class="pts-lbl pts-lbl-lg">This Month Total</div></div><div class="pts-stat"><div class="pts-num" id="ptD">${daily}</div><div class="pts-lbl">Today</div></div></div>`;
-    animCount('ptM',0,monthly,900);animCount('ptW',0,weekly,800);animCount('ptD',0,daily,600);
+    animCount('ptW',0,weekly,800);animCount('ptD',0,daily,600);
+    fillAccountPoints(daily,weekly,monthly);
+    if(earnedNow){
+      /* hold the total at its previous value, then let the star deliver the point */
+      const gained=1, prevM=Math.max(0,monthly-gained);
+      document.getElementById('ptM').textContent=prevM;
+      setTimeout(()=>runPointScore(prevM,gained,monthly),650);
+    }else{
+      animCount('ptM',0,monthly,900);
+    }
   }catch{badge.textContent='Error';document.getElementById('ptsBody').innerHTML='<div style="padding:18px;font-size:13px;color:var(--pink)">Could not load points.</div>';}
+}
+
+
+function launchBalloons(){
+  const wrap=document.getElementById('balloonWrap');
+  if(!wrap)return;
+  wrap.innerHTML='';
+  const W=window.innerWidth;
+  const COLORS=['#0A84FF','#30D158','#BF5AF2','#FF9F0A','#FF375F','#64D2FF','#FFD60A'];
+  const cornerZone=Math.min(120,W*0.28);
+  function spawn(fromLeft,delay){
+    const b=document.createElement('div');
+    b.className='balloon';
+    const col=COLORS[Math.floor(Math.random()*COLORS.length)];
+    b.style.background=`radial-gradient(circle at 32% 28%, ${col}, ${col}dd 60%, ${col}99 100%)`;
+    b.style.boxShadow=`0 6px 18px rgba(0,0,0,0.35)`;
+    const baseX=fromLeft?(Math.random()*cornerZone):(W-cornerZone+Math.random()*cornerZone);
+    b.style.left=baseX+'px';
+    const sway=(fromLeft?1:-1)*(24+Math.random()*40);
+    const rot=(fromLeft?1:-1)*(6+Math.random()*10);
+    b.style.setProperty('--sway',sway+'px');
+    b.style.setProperty('--rot',rot+'deg');
+    b.style.animationDelay=delay+'ms';
+    b.style.animationDuration=(5+Math.random()*2)+'s';
+    const scale=0.75+Math.random()*0.6;
+    b.style.transform=`scale(${scale})`;
+    wrap.appendChild(b);
+    setTimeout(()=>b.remove(),8000+delay);
+  }
+  const perCorner=6;
+  for(let i=0;i<perCorner;i++){
+    spawn(true,i*260+Math.random()*200);
+    spawn(false,i*260+Math.random()*200);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   POINT AWARD ANIMATION
+   A star lifts off the submitted task, arcs across the screen trailing
+   sparks, and lands on the running total. The total then plays out as
+   an equation — 1 + 1 = 2 — before collapsing to just the new figure.
+   Built on the Web Animations API, so no extra library is loaded.
+   ══════════════════════════════════════════════════════════════ */
+const REDUCE_FX = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function fxLayer(){
+  let l = document.getElementById('score-fx');
+  if(!l){ l = document.createElement('div'); l.id = 'score-fx'; document.body.appendChild(l); }
+  return l;
+}
+function centreOf(el){
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width/2, y: r.top + r.height/2 };
+}
+const STAR_SVG =
+  '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+  '<defs><linearGradient id="sfxg" x1="0" y1="0" x2="0" y2="1">' +
+  '<stop offset="0%" stop-color="#FFF3C4"/><stop offset="55%" stop-color="#FFD658"/>' +
+  '<stop offset="100%" stop-color="#FF9F0A"/></linearGradient></defs>' +
+  '<path fill="url(#sfxg)" d="M12 1.6l3.09 6.26 6.91 1-5 4.87 1.18 6.88L12 17.36l-6.18 3.25L7 13.73 2 8.86l6.91-1z"/>' +
+  '</svg>';
+
+/* a cubic bezier from the task to the counter, bowed upward */
+function arcPoint(t, a, b, c1, c2){
+  const u = 1 - t;
+  return {
+    x: u*u*u*a.x + 3*u*u*t*c1.x + 3*u*t*t*c2.x + t*t*t*b.x,
+    y: u*u*u*a.y + 3*u*u*t*c1.y + 3*u*t*t*c2.y + t*t*t*b.y
+  };
+}
+
+function ringAt(layer, p, size, colour, dur){
+  const r = document.createElement('div');
+  r.className = 'sfx-ring';
+  r.style.cssText = 'left:' + p.x + 'px;top:' + p.y + 'px;width:' + size + 'px;height:' + size +
+                    'px;margin:' + (-size/2) + 'px 0 0 ' + (-size/2) + 'px;border-color:' + colour;
+  layer.appendChild(r);
+  r.animate(
+    [{ transform:'scale(.35)', opacity:.95 }, { transform:'scale(1.9)', opacity:0 }],
+    { duration: dur, easing:'cubic-bezier(.2,.7,.3,1)' }
+  ).onfinish = () => r.remove();
+}
+
+function burstAt(layer, p, n){
+  for(let i=0;i<n;i++){
+    const b = document.createElement('div');
+    b.className = 'sfx-burst';
+    b.style.left = p.x + 'px'; b.style.top = p.y + 'px';
+    layer.appendChild(b);
+    const ang = (i/n) * 360 + Math.random()*12;
+    b.animate(
+      [{ transform:'rotate(' + ang + 'deg) translateY(0) scaleY(.5)', opacity:1 },
+       { transform:'rotate(' + ang + 'deg) translateY(-' + (34 + Math.random()*26) + 'px) scaleY(1.25)', opacity:0 }],
+      { duration: 520 + Math.random()*260, easing:'cubic-bezier(.2,.7,.3,1)' }
+    ).onfinish = () => b.remove();
+  }
+}
+
+/* the star's journey; resolves once it lands */
+function flyStar(from, to){
+  return new Promise(resolve => {
+    const layer = fxLayer();
+    const star = document.createElement('div');
+    star.className = 'sfx-star';
+    star.innerHTML = STAR_SVG;
+    star.style.left = from.x + 'px';
+    star.style.top  = from.y + 'px';
+    layer.appendChild(star);
+
+    ringAt(layer, from, 54, 'rgba(255,214,88,.9)', 620);
+
+    /* lift off, then swing wide before homing in */
+    const midX = (from.x + to.x)/2;
+    const lift = Math.max(140, Math.abs(from.y - to.y) * 0.6 + 120);
+    const c1 = { x: from.x - (from.x - to.x) * 0.15 - 90, y: from.y - lift };
+    const c2 = { x: midX + 120, y: to.y - lift * 0.5 };
+
+    const DUR = 1500, t0 = performance.now();
+    let lastSpark = 0;
+
+    (function step(now){
+      const p = Math.min((now - t0) / DUR, 1);
+      /* ease out so it decelerates onto the target */
+      const e = 1 - Math.pow(1 - p, 2.2);
+      const pt = arcPoint(e, from, to, c1, c2);
+
+      star.style.transform =
+        'translate(' + (pt.x - from.x) + 'px,' + (pt.y - from.y) + 'px) ' +
+        'rotate(' + (e * 900) + 'deg) scale(' + (1 + Math.sin(p * Math.PI) * 0.45) + ')';
+
+      if(now - lastSpark > 34 && p < 0.94){
+        lastSpark = now;
+        const s = document.createElement('div');
+        s.className = 'sfx-spark';
+        s.style.left = pt.x + 'px'; s.style.top = pt.y + 'px';
+        layer.appendChild(s);
+        s.animate(
+          [{ transform:'scale(1)', opacity:.95 },
+           { transform:'translate(' + (Math.random()*24-12) + 'px,' + (14 + Math.random()*20) + 'px) scale(0)', opacity:0 }],
+          { duration: 620, easing:'cubic-bezier(.2,.6,.3,1)' }
+        ).onfinish = () => s.remove();
+      }
+
+      if(p < 1) requestAnimationFrame(step);
+      else {
+        star.animate([{ transform: star.style.transform.replace(/scale\([^)]*\)/, 'scale(1.35)'), opacity:1 },
+                      { transform: star.style.transform.replace(/scale\([^)]*\)/, 'scale(0)'),    opacity:0 }],
+                     { duration: 260, easing:'cubic-bezier(.5,0,.75,0)' }).onfinish = () => star.remove();
+        ringAt(layer, to, 40, 'rgba(255,214,88,.95)', 560);
+        ringAt(layer, to, 40, 'rgba(255,159,10,.55)', 780);
+        burstAt(layer, to, 12);
+        resolve();
+      }
+    })(performance.now());
+  });
+}
+
+/* prev + gain = total, then collapse to total */
+function playEquation(numEl, prev, gain, total){
+  return new Promise(resolve => {
+    const host = numEl.parentElement;              // .pts-stat.pts-mid
+    host.classList.add('is-hit');
+    setTimeout(() => host.classList.remove('is-hit'), 520);
+
+    const eq = document.createElement('div');
+    eq.className = 'eq';
+    eq.innerHTML =
+      '<span class="eq-n eq-prev">'  + prev  + '</span>' +
+      '<span class="eq-op">+</span>' +
+      '<span class="eq-n eq-gain">'  + gain  + '</span>' +
+      '<span class="eq-op">=</span>' +
+      '<span class="eq-n eq-total">' + total + '</span>';
+    host.appendChild(eq);
+    numEl.classList.add('is-swapping');
+
+    const parts = eq.querySelectorAll('span');
+    const IN = [{ opacity:0, transform:'translateY(10px) scale(.7)' },
+                { opacity:1, transform:'translateY(0) scale(1)' }];
+
+    parts.forEach((el, i) => {
+      el.animate(IN, { duration: 340, delay: i * 130, easing:'cubic-bezier(.34,1.5,.64,1)', fill:'forwards' });
+    });
+
+    /* hold the full sum, then drop everything except the answer */
+    const HOLD = parts.length * 130 + 900;
+    setTimeout(() => {
+      const answer = eq.querySelector('.eq-total');
+      const rest   = [...parts].filter(p => p !== answer);
+      const aFrom  = answer.getBoundingClientRect();
+
+      rest.forEach((el, i) => {
+        el.animate([{ opacity:1, transform:'translateX(0) scale(1)' },
+                    { opacity:0, transform:'translateX(-14px) scale(.6)' }],
+                   { duration: 300, delay: i * 45, easing:'cubic-bezier(.5,0,.75,0)', fill:'forwards' });
+      });
+
+      setTimeout(() => {
+        /* slide the answer into the middle where the real number lives */
+        const target = numEl.getBoundingClientRect();
+        const dx = (target.left + target.width/2) - (aFrom.left + aFrom.width/2);
+        answer.animate([{ transform:'translateX(0) scale(1)' },
+                        { transform:'translateX(' + dx + 'px) scale(1.18)' },
+                        { transform:'translateX(' + dx + 'px) scale(1)' }],
+                       { duration: 480, easing:'cubic-bezier(.34,1.4,.64,1)', fill:'forwards' })
+          .onfinish = () => {
+            numEl.textContent = total;
+            numEl.classList.remove('is-swapping');
+            eq.remove();
+            resolve();
+          };
+      }, 260);
+    }, HOLD);
+  });
+}
+
+async function runPointScore(prev, gain, total){
+  const numEl = document.getElementById('ptM');
+  if(!numEl) return;
+
+  if(REDUCE_FX){                       /* no flight, just land on the figure */
+    numEl.textContent = total;
+    return;
+  }
+
+  const src = document.getElementById('sucTaskTag')
+           || document.querySelector('.suc-check')
+           || document.getElementById('successScreen');
+  if(!src) { numEl.textContent = total; return; }
+
+  numEl.textContent = prev;
+  await flyStar(centreOf(src), centreOf(numEl));
+  await playEquation(numEl, prev, gain, total);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   PROFILE CARDS
+   The same block of identity + points is shown on the dashboard and on
+   the success page. Both are filled from these two helpers, so the two
+   screens can never drift apart.
+
+   Stars: one per 5 points this month, capped at five — a full month of
+   daily submissions (about 22 working days) comfortably earns all five.
+   ══════════════════════════════════════════════════════════════ */
+const POINTS_PER_STAR = 5;
+
+function starCount(monthly){
+  return Math.max(0, Math.min(5, Math.floor((monthly || 0) / POINTS_PER_STAR)));
+}
+
+function paintStars(rowId, metaId, monthly){
+  const row = document.getElementById(rowId);
+  if(row){
+    const stars = starCount(monthly);
+    row.querySelectorAll('i').forEach((el, i) => {
+      const on = i < stars;
+      const was = el.classList.contains('on');
+      el.classList.toggle('on', on);
+      if(on && !was){                       /* pop each newly-lit star in turn */
+        el.classList.remove('pop');
+        setTimeout(() => el.classList.add('pop'), 90 * i);
+      }
+    });
+  }
+  const meta = document.getElementById(metaId);
+  if(meta){
+    const stars = starCount(monthly);
+    const next  = (stars + 1) * POINTS_PER_STAR;
+    const pts = monthly + ' point' + (monthly === 1 ? '' : 's');
+    meta.innerHTML = stars >= 5
+      ? '<b>' + pts + '</b> — full marks this month'
+      : '<b>' + pts + '</b> · ' + Math.max(0, next - monthly) + ' more for the next star';
+  }
+}
+
+/* identity half — the same for both cards */
+function fillProfileIdentity(ids, sk){
+  const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+
+  set(ids.name, sName || '—');
+
+  const mail = document.getElementById(ids.mail);
+  if(mail){
+    if(studentEmail){ mail.textContent = studentEmail; mail.classList.remove('none'); }
+    else { mail.textContent = 'No email linked yet'; mail.classList.add('none'); }
+  }
+
+  const badge = document.getElementById(ids.badge);
+  if(badge){
+    const linked = !!(studentEmail || curAuthUid);
+    badge.textContent = linked ? 'Verified' : 'Not linked';
+    badge.classList.toggle('warn', !linked);
+  }
+
+  const av = document.getElementById(ids.avatar);
+  if(av){
+    if(profilePhotoUrl){
+      av.innerHTML = '<img src="' + esc(profilePhotoUrl) + '" alt="">';
+    }else{
+      av.innerHTML = '';
+      av.textContent = (sName || '?').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+    }
+  }
+
+  set(ids.batch, BATCH_TIME + ' batch');
+  set(ids.key, sk || '—');
+}
+
+const SUCCESS_IDS = { name:'acctName', mail:'acctMail', badge:'acctBadge', avatar:'acctAvatar',
+                      batch:'acctBatch', key:'acctKey' };
+
+/* ══════════════════════════════════════════════════════════════
+   ACCOUNT PANEL
+   Opens from the profile on either screen. The headline figure is the
+   student's Cloud iNIT account total, read from veeraUsers/{uid} in the
+   veera730pmonline project — the same balance the dashboard, playground
+   and sandbox consoles show. The daily task points below it are a
+   separate, smaller tally kept in the task-tracker project.
+   ══════════════════════════════════════════════════════════════ */
+let ACCOUNT_POINTS = 0;
+let acctSeeded = false;   /* the first snapshot is the opening balance, not a gain */
+let acctUnsub = null;
+
+/* ══════════════════════════════════════════════════════════════
+   DAILY SUBMISSION BONUS — 400 ACCOUNT POINTS
+   Credited to veeraUsers/{uid}.totalPoints in the veera730pmonline
+   project, so it lands in the same balance the dashboard, playground and
+   sandbox consoles show.
+
+   Once per calendar day. The "already claimed" flag lives on that day's
+   Firestore document — not in localStorage — so it holds across devices
+   and private windows, and clearing site data can't earn it twice. The
+   read and both writes happen inside one transaction, so two tabs
+   submitting at the same moment can only ever award it once.
+   ══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   ACCOUNT POINTS ANIMATION
+   A gold star lifts off the submitted task and lands in the middle of
+   the screen, where the sum plays out — 1,740 + 400 = 2,140 — before
+   collapsing to the new total and flying into the corner widget.
+   ══════════════════════════════════════════════════════════════ */
+const fmtPts = n => Number(n || 0).toLocaleString();
+
+function accountEquation(prev, gain, total){
+  return new Promise(resolve => {
+    const layer = fxLayer();
+    const card = document.createElement('div');
+    card.className = 'ap-card';
+    card.innerHTML =
+      '<div class="ap-lbl">Account points</div>' +
+      '<div class="ap-eq">' +
+        '<span class="ap-n ap-prev">'  + fmtPts(prev)  + '</span>' +
+        '<span class="ap-op">+</span>' +
+        '<span class="ap-n ap-gain">'  + fmtPts(gain)  + '</span>' +
+        '<span class="ap-op">=</span>' +
+        '<span class="ap-n ap-total">' + fmtPts(total) + '</span>' +
+      '</div>' +
+      '<div class="ap-sub">Daily submission bonus</div>';
+    layer.appendChild(card);
+
+    card.animate([{ opacity:0, transform:'translate(-50%,-50%) scale(.86)' },
+                  { opacity:1, transform:'translate(-50%,-50%) scale(1)' }],
+                 { duration:420, easing:'cubic-bezier(.34,1.5,.64,1)', fill:'forwards' });
+
+    const parts = card.querySelectorAll('.ap-eq span');
+    parts.forEach((el, i) => {
+      el.animate([{ opacity:0, transform:'translateY(14px) scale(.6)' },
+                  { opacity:1, transform:'translateY(0) scale(1)' }],
+                 { duration:360, delay:260 + i*170, easing:'cubic-bezier(.34,1.6,.64,1)', fill:'forwards' });
+    });
+
+    /* hold the whole sum, then drop everything but the answer */
+    const HOLD = 260 + parts.length*170 + 1100;
+    setTimeout(() => {
+      const answer = card.querySelector('.ap-total');
+      [...parts].filter(p => p !== answer).forEach((el, i) => {
+        el.animate([{ opacity:1, transform:'translateX(0) scale(1)' },
+                    { opacity:0, transform:'translateX(-18px) scale(.55)' }],
+                   { duration:320, delay:i*55, easing:'cubic-bezier(.5,0,.75,0)', fill:'forwards' });
+      });
+      answer.animate([{ transform:'scale(1)' }, { transform:'scale(1.22)' }, { transform:'scale(1.12)' }],
+                     { duration:520, delay:180, easing:'cubic-bezier(.34,1.4,.64,1)', fill:'forwards' });
+
+      /* then send the total up to the corner widget */
+      setTimeout(() => {
+        const corner = document.getElementById('acCornerPts');
+        const to = corner ? centreOf(corner) : { x: window.innerWidth - 60, y: 80 };
+        const from = centreOf(answer);
+        card.animate([{ opacity:1, transform:'translate(-50%,-50%) scale(1)' },
+                      { opacity:0, transform:'translate(calc(-50% + ' + (to.x - from.x) + 'px),' +
+                                   'calc(-50% + ' + (to.y - from.y) + 'px)) scale(.25)' }],
+                     { duration:620, easing:'cubic-bezier(.6,0,.35,1)', fill:'forwards' })
+          .onfinish = () => {
+            card.remove();
+            if(corner){
+              ringAt(layer, to, 44, 'rgba(255,214,88,.9)', 560);
+              burstAt(layer, to, 10);
+              corner.textContent = fmtPts(total);
+              const pill = document.getElementById('acctCorner');
+              if(pill) pill.animate([{ transform:'scale(1)' }, { transform:'scale(1.08)' }, { transform:'scale(1)' }],
+                                    { duration:420, easing:'cubic-bezier(.34,1.5,.64,1)' });
+            }
+            resolve();
+          };
+      }, 760);
+    }, HOLD);
+  });
+}
+
+async function runAccountScore(prev, gain, total){
+  const corner = document.getElementById('acCornerPts');
+  if(REDUCE_FX){
+    if(corner) corner.textContent = fmtPts(total);
+    return;
+  }
+  if(corner) corner.textContent = fmtPts(prev);   /* hold until the star lands */
+
+  const src = document.getElementById('sucTaskTag')
+           || document.querySelector('.suc-check')
+           || document.getElementById('successScreen');
+  const mid = { x: window.innerWidth/2, y: window.innerHeight * 0.44 };
+
+  if(src) await flyStar(centreOf(src), mid);
+  await accountEquation(prev, gain, total);
+}
+
+const SUBMIT_BONUS = 400;
+
+function accountDayKey(){
+  const d = new Date();
+  return d.getFullYear() + '-' +
+         String(d.getMonth() + 1).padStart(2, '0') + '-' +
+         String(d.getDate()).padStart(2, '0');
+}
+
+async function awardSubmitBonus(){
+  /* no linked account means there is no balance to credit */
+  if(!curAuthUid || !regDb) return false;
+
+  const userRef = regDb.collection('veeraUsers').doc(curAuthUid);
+  const dayRef  = userRef.collection('dailyPoints').doc(accountDayKey());
+  let awarded = false;
+
+  await regDb.runTransaction(async (tx) => {
+    awarded = false;                     /* reset on every retry attempt */
+
+    const snap = await tx.get(dayRef);
+    const data = snap.exists ? snap.data() : {};
+    if(data.dailyTaskBonus) return;      /* already claimed today */
+
+    tx.set(dayRef, {
+      points: (data.points || 0) + SUBMIT_BONUS,
+      dailyTaskBonus: SUBMIT_BONUS,
+      dailyTaskAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    tx.set(userRef, {
+      totalPoints: firebase.firestore.FieldValue.increment(SUBMIT_BONUS)
+    }, { merge: true });
+
+    awarded = true;
+  });
+
+  return awarded;
+}
+
+function dismissCornerHint(){
+  const box = document.getElementById('acctCorner');
+  if(!box || !box.classList.contains('hint')) return;
+  box.classList.remove('hint');
+  box.classList.add('hint-out');
+  setTimeout(() => box.classList.remove('hint-out'), 320);
+}
+
+function openAcct(){
+  const m = document.getElementById('acctModal');
+  if(!m) return;
+  fillAccountCard(curSk || (sName ? safeKey(sName) : ''));
+  m.classList.add('open');
+  dismissCornerHint();
+  const c = document.getElementById('acctCorner');
+  if(c) c.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAcct(e){
+  if(e && e.target && e.target.id !== 'acctModal' && e.type === 'click' && e.target.closest('.acct-sheet')) return;
+  const m = document.getElementById('acctModal');
+  if(!m) return;
+  m.classList.remove('open');
+  const c = document.getElementById('acctCorner');
+  if(c) c.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeAcct(); });
+
+/* live account balance, straight from the registration project */
+function watchAccountPoints(uid){
+  if(acctUnsub){ acctUnsub(); acctUnsub = null; }
+  acctSeeded = false;
+  ACCOUNT_POINTS = 0;
+  const el = document.getElementById('acctTotal');
+  if(!uid || !regDb){
+    if(el) el.textContent = '—';
+    const sub = document.getElementById('acctTotalSub');
+    if(sub) sub.textContent = 'Sign in to see your account points';
+    const box = document.getElementById('acctCorner');
+    if(box) box.classList.remove('show');
+    return;
+  }
+  acctUnsub = regDb.collection('veeraUsers').doc(uid).onSnapshot(
+    snap => {
+      const next = (snap.exists ? (snap.data().totalPoints || 0) : 0);
+      const prev = ACCOUNT_POINTS;
+      const first = !acctSeeded;
+      acctSeeded = true;
+      ACCOUNT_POINTS = next;
+
+      const sub = document.getElementById('acctTotalSub');
+      if(sub) sub.textContent = 'across the whole platform';
+      paintCorner();
+
+      /* Count from where the number already was, never from zero — a jump
+         back to 0 reads as the balance being wiped, not earned. */
+      const t = document.getElementById('acctTotal');
+      const c = document.getElementById('acCornerPts');
+      if(t) animCount('acctTotal', first ? 0 : prev, next, 900);
+
+      if(!first && next > prev){
+        /* the balance went up: play it out as a sum */
+        runAccountScore(prev, next - prev, next);
+      }else if(c){
+        animCount('acCornerPts', first ? 0 : prev, next, 900);
+      }
+    },
+    err => {
+      console.error('Account points listener failed:', err);
+      const t = document.getElementById('acctTotal');
+      if(t) t.textContent = '—';
+    }
+  );
+}
+
+/* make the profile areas open the panel */
+function wireProfileTaps(){
+  ['dashAvatarWrap','dashName','sucAvatarWrap','sucName'].forEach(id => {
+    const el = document.getElementById(id);
+    if(!el || el._acctWired) return;
+    el._acctWired = true;
+    el.classList.add('profile-tap');
+    el.title = 'View account information';
+    el.addEventListener('click', openAcct);
+  });
+  document.querySelectorAll('.dh-email-pill').forEach(el => {
+    if(el._acctWired) return;
+    el._acctWired = true;
+    el.classList.add('profile-tap');
+    el.addEventListener('click', openAcct);
+  });
+}
+window.addEventListener('DOMContentLoaded', wireProfileTaps);
+
+/* the corner widget mirrors whatever the account panel knows */
+function paintCorner(){
+  const box = document.getElementById('acctCorner');
+  if(!box) return;
+
+  const mail = studentEmail || authEmail || '';
+  const signedIn = !!(mail || curAuthUid);
+  box.classList.toggle('show', signedIn);
+  if(!signedIn) return;
+
+  /* Point it out once per session, then never again. The student can
+     dismiss it early just by opening the panel. */
+  if(!box._hinted){
+    box._hinted = true;
+    setTimeout(() => box.classList.add('hint'), 1200);
+    setTimeout(dismissCornerHint, 9000);
+  }
+
+  const m = document.getElementById('acCornerMail');
+  if(m) m.textContent = mail || (sName || 'Signed in');
+
+  const av = document.getElementById('acCornerAvatar');
+  if(av){
+    if(profilePhotoUrl){
+      av.innerHTML = '<img src="' + esc(profilePhotoUrl) + '" alt="">';
+    }else{
+      av.innerHTML = '';
+      av.textContent = (sName || mail || '?').split(/[\s@.]/).filter(Boolean)
+                        .map(w => w[0]).slice(0,2).join('').toUpperCase();
+    }
+  }
+}
+
+function fillAccountCard(sk){ fillProfileIdentity(SUCCESS_IDS, sk); paintCorner(); }
+
+function fillAccountPoints(daily, weekly, monthly){
+  animCount('acctPtD', 0, daily,   600);
+  animCount('acctPtW', 0, weekly,  700);
+  animCount('acctPtM', 0, monthly, 850);
+  paintStars('acctStars', 'acctStarMeta', monthly);
+}
+
+/* the dashboard feeds the same panel */
+function fillDashProfile(sk, daily, weekly, monthly){
+  fillProfileIdentity(SUCCESS_IDS, sk);
+  fillAccountPoints(daily, weekly, monthly);
+  wireProfileTaps();
 }
 
 function animCount(id,from,to,dur){
@@ -1174,9 +2389,9 @@ function showSuccess(uploaded,pts,sk){
   }
   renderSfGrid(uploaded);
   window.scrollTo({top:0,behavior:'smooth'});
+  fillAccountCard(sk);
   fetchPoints(sk,pts>0);
   fetchAllHistory(sk,'monthHistoryItems',null);
-  launchConfetti();
   launchBalloons();
   setTimeout(()=>toast('success','Submitted!',sName+' — task recorded successfully.'),500);
 }
@@ -1237,82 +2452,6 @@ function toast(type,ttl,msg=''){
   t.className='show';clearTimeout(TT);TT=setTimeout(()=>t.classList.remove('show'),4800);
 }
 
-function launchBalloons(){
-  const wrap=document.getElementById('balloonWrap');
-  if(!wrap)return;
-  wrap.innerHTML='';
-  const W=window.innerWidth;
-  const COLORS=['#0A84FF','#30D158','#BF5AF2','#FF9F0A','#FF375F','#64D2FF','#FFD60A'];
-  const cornerZone=Math.min(120,W*0.28);
-  function spawn(fromLeft,delay){
-    const b=document.createElement('div');
-    b.className='balloon';
-    const col=COLORS[Math.floor(Math.random()*COLORS.length)];
-    b.style.background=`radial-gradient(circle at 32% 28%, ${col}, ${col}dd 60%, ${col}99 100%)`;
-    b.style.boxShadow=`0 6px 18px rgba(0,0,0,0.35)`;
-    const baseX=fromLeft?(Math.random()*cornerZone):(W-cornerZone+Math.random()*cornerZone);
-    b.style.left=baseX+'px';
-    const sway=(fromLeft?1:-1)*(24+Math.random()*40);
-    const rot=(fromLeft?1:-1)*(6+Math.random()*10);
-    b.style.setProperty('--sway',sway+'px');
-    b.style.setProperty('--rot',rot+'deg');
-    b.style.animationDelay=delay+'ms';
-    b.style.animationDuration=(5+Math.random()*2)+'s';
-    const scale=0.75+Math.random()*0.6;
-    b.style.transform=`scale(${scale})`;
-    wrap.appendChild(b);
-    setTimeout(()=>b.remove(),8000+delay);
-  }
-  const perCorner=6;
-  for(let i=0;i<perCorner;i++){
-    spawn(true,i*260+Math.random()*200);
-    spawn(false,i*260+Math.random()*200);
-  }
-}
-
-function launchConfetti(){
-  const canvas=document.getElementById('confettiCanvas');
-  const W=window.innerWidth,H=window.innerHeight;
-  canvas.width=W;canvas.height=H;
-  const ctx=canvas.getContext('2d');
-  const COLORS=['#0A84FF','#30D158','#BF5AF2','#FF9F0A','#FF375F','#64D2FF','#FFD60A','#FF6961'];
-  function makePiece(ox,oy,angle,speed){
-    const type=Math.random()<0.5?'rect':Math.random()<0.6?'circle':'ribbon';
-    const spd=speed+Math.random()*7;
-    return{type,x:ox,y:oy,w:type==='ribbon'?3+Math.random()*3:6+Math.random()*9,h:type==='ribbon'?14+Math.random()*10:type==='circle'?5+Math.random()*6:3+Math.random()*5,r:Math.random()*Math.PI*2,vx:Math.cos(angle)*spd,vy:Math.sin(angle)*spd,vr:(Math.random()-.5)*(type==='ribbon'?0.35:0.28),gravity:0.10+Math.random()*0.09,drag:0.994,col:COLORS[Math.floor(Math.random()*COLORS.length)],alpha:1};
-  }
-  function burst(ox,oy,centerAngle,spread,count){
-    const pieces=[];
-    for(let i=0;i<count;i++){const angle=centerAngle+(Math.random()-.5)*spread;pieces.push(makePiece(ox,oy,angle,6+Math.random()*7));}
-    return pieces;
-  }
-  let allActive=[];let rafId=null;
-  function drawAll(){
-    ctx.clearRect(0,0,W,H);let anyAlive=false;
-    allActive.forEach(p=>{
-      p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.vx*=p.drag;p.vy*=p.drag;p.r+=p.vr;
-      if(p.y>H+40)p.alpha=0;else if(p.y>H*0.75)p.alpha=Math.max(0,p.alpha-0.018);
-      if(p.alpha<=0)return;anyAlive=true;
-      ctx.save();ctx.globalAlpha=p.alpha;ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.col;
-      if(p.type==='circle'){ctx.beginPath();ctx.ellipse(0,0,p.w/2,p.h/2,0,0,Math.PI*2);ctx.fill();}else{ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);}
-      ctx.restore();
-    });
-    if(anyAlive){rafId=requestAnimationFrame(drawAll);}else{ctx.clearRect(0,0,W,H);rafId=null;}
-  }
-  function addWave(delay,leftX,rightX,leftAngle,rightAngle,spread,count){
-    setTimeout(()=>{
-      const newPieces=[...burst(leftX,H*0.05,leftAngle,spread,count),...burst(rightX,H*0.05,rightAngle,spread,count)];
-      allActive.push(...newPieces);allActive=allActive.filter(p=>p.alpha>0);
-      if(!rafId)rafId=requestAnimationFrame(drawAll);
-    },delay);
-  }
-  const L=Math.max(60,W*0.06);const R=Math.min(W-60,W*0.94);
-  addWave(0,L,R,Math.PI*0.18,Math.PI*0.82,Math.PI*0.62,72);
-  addWave(700,L+20,R-20,Math.PI*0.14,Math.PI*0.86,Math.PI*0.55,60);
-  addWave(1500,L-10,R+10,Math.PI*0.22,Math.PI*0.78,Math.PI*0.68,68);
-  addWave(2400,L+10,R-10,Math.PI*0.16,Math.PI*0.84,Math.PI*0.58,55);
-  addWave(3400,L,R,Math.PI*0.20,Math.PI*0.80,Math.PI*0.64,80);
-}
 </script>
 <script src="ai-agent-widget.js"></script>
 </body>

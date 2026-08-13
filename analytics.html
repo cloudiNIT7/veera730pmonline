@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Analytics · Veera Cloud</title>
+<link rel="icon" type="image/png" href="https://static.vecteezy.com/system/resources/thumbnails/045/720/728/small_2x/dark-cat-head-free-png.png">
+<style>
+  :root {
+    --void: #06060d;
+    --bg: #06060d;
+    --bg-2: #0a0b16;
+    --surface: rgba(255,255,255,0.045);
+    --surface-hover: rgba(255,255,255,0.085);
+    --surface-strong: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.09);
+    --border-hover: rgba(255,255,255,0.2);
+    --text-primary: #f4f2fc;
+    --text-secondary: #a9a7c8;
+    --text-tertiary: #6d6b8c;
+    --accent: #35e0ff;
+    --accent-hover: #6be9ff;
+    --accent-light: rgba(53,224,255,0.10);
+    --card-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 18px 46px -14px rgba(0,0,0,0.7), 0 0 0 0.5px rgba(255,255,255,0.05);
+    --card-shadow-hover: 0 1px 0 rgba(255,255,255,0.08) inset, 0 26px 64px -14px rgba(0,0,0,0.8), 0 0 0 0.5px rgba(255,255,255,0.1);
+    --radius: 22px;
+    --radius-sm: 14px;
+    --wa-green: #25D366;
+    --an-purple: #9a5cff;
+    --an-purple-2: #cbaaff;
+    --amber: #ffab2e;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .num, .stat-num, .us-stat-v, .lb-rk-num, .trend-total, .trend-chip { font-variant-numeric: tabular-nums; }
+
+  /* ─── BACKGROUND: one fixed compositing layer, so nothing drifts on scroll ─── */
+  .bg-fixed {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    overflow: hidden; contain: strict;
+    transform: translateZ(0); will-change: transform;
+    background:
+      radial-gradient(1100px 620px at 12% -8%, rgba(154,92,255,0.22), transparent 60%),
+      radial-gradient(900px 700px at 108% 12%, rgba(53,224,255,0.14), transparent 55%),
+      radial-gradient(1000px 800px at 50% 118%, rgba(154,92,255,0.10), transparent 60%);
+  }
+
+  /* ─── TEXTURE: fine grid floor + film grain ─── */
+  .bg-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(1000px 700px at 50% 0%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(1000px 700px at 50% 0%, #000 0%, transparent 75%);
+    opacity: 0.6;
+  }
+  .bg-grain {
+    position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+    opacity: 0.05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ─── AMBIENT ORBS ─── */
+  .orb { position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none; }
+  .orb-purple {
+    width: 640px; height: 540px;
+    background: radial-gradient(circle, rgba(154,92,255,0.30) 0%, transparent 70%);
+    top: -180px; left: -160px;
+    animation: driftA 28s ease-in-out infinite;
+  }
+  .orb-blue {
+    width: 560px; height: 480px;
+    background: radial-gradient(circle, rgba(53,224,255,0.20) 0%, transparent 70%);
+    bottom: -140px; right: -140px;
+    animation: driftB 32s ease-in-out infinite;
+  }
+  .orb-magenta {
+    width: 460px; height: 420px;
+    background: radial-gradient(circle, rgba(255,80,190,0.14) 0%, transparent 70%);
+    top: 38%; right: 6%;
+    animation: driftC 36s ease-in-out infinite;
+  }
+  @keyframes driftA {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(70px,80px) scale(1.08); }
+  }
+  @keyframes driftB {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(-60px,-70px) scale(0.94); }
+  }
+  @keyframes driftC {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(-50px,60px) scale(1.1); }
+  }
+
+  /* ─── REVEAL SWEEP (plays on arrival — panels slide away) ─── */
+  #reveal-transition { position: fixed; inset: 0; z-index: 99999; pointer-events: none; }
+  .rv-panel { position: absolute; inset: 0; will-change: transform; }
+  .rv-panel-1 { background: linear-gradient(135deg, var(--an-purple-2) 0%, var(--an-purple) 100%); z-index: 1; }
+  .rv-panel-2 { background: var(--bg); z-index: 2; }
+  .rv-logo {
+    position: absolute; top: 50%; left: 50%; z-index: 3;
+    width: 76px; height: 76px; border-radius: 22px;
+    background: linear-gradient(135deg, var(--an-purple-2), var(--an-purple));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 18px 50px rgba(154,92,255,0.55);
+    transform: translate(-50%,-50%);
+  }
+
+  /* ─── PAGE LAYOUT ─── */
+  .shell {
+    position: relative; z-index: 1;
+    max-width: 1180px; margin: 0 auto;
+    padding: 26px 22px 60px;
+    display: flex; gap: 20px; align-items: flex-start;
+  }
+  .page { flex: 1; min-width: 0; padding: 0; }
+
+  /* ─── ACTIVITY SIDEBAR ─── */
+  .usage-sidebar {
+    width: 272px; flex-shrink: 0; position: sticky; top: 26px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.03));
+    border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--card-shadow);
+    backdrop-filter: blur(26px) saturate(1.5); -webkit-backdrop-filter: blur(26px) saturate(1.5);
+    padding: 18px; overflow: hidden;
+  }
+  .us-head { margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .us-head-ico {
+    width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--an-purple), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px rgba(154,92,255,0.35);
+  }
+  .us-title { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.2px; }
+  .us-sub { font-size: 11.5px; color: var(--text-tertiary); margin-top: 2px; }
+  .us-now {
+    background: linear-gradient(135deg, var(--an-purple), #6f3ee0);
+    border-radius: var(--radius-sm); padding: 14px 15px; color: #fff; margin-bottom: 12px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 10px 26px -8px rgba(154,92,255,0.5);
+  }
+  .us-now::after {
+    content: ''; position: absolute; top: -40%; right: -20%; width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%); pointer-events: none;
+  }
+  .us-now-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; }
+  .us-now-page { font-size: 14px; font-weight: 600; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .us-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .us-stat { background: var(--accent-light); border: 1px solid rgba(53,224,255,0.14); border-radius: var(--radius-sm); padding: 11px 12px; text-align: center; }
+  .us-stat-v { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+  .us-stat-l { font-size: 10.5px; color: var(--text-tertiary); margin-top: 2px; }
+  .us-list-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-tertiary); margin-bottom: 8px; font-weight: 600; }
+  .us-list { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; margin-bottom: 8px; }
+  .us-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+    border-radius: 11px; background: rgba(255,255,255,0.035); border: 1px solid var(--border);
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .us-item:hover { background: rgba(255,255,255,0.06); border-color: var(--border-hover); }
+  .us-item-ico {
+    width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+    background: var(--accent-light);
+  }
+  .us-item-body { min-width: 0; flex: 1; }
+  .us-item-name { font-size: 12.5px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .us-item-time { font-size: 10.5px; color: var(--text-tertiary); margin-top: 1px; }
+  .us-item-dur { font-size: 12px; font-weight: 700; color: var(--an-purple-2); flex-shrink: 0; }
+  .us-empty { text-align: center; padding: 20px 8px; color: var(--text-tertiary); font-size: 12px; }
+
+  /* ─── RADAR / SPIDER ─── */
+  .us-radar-block { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 6px; }
+  .us-radar-sub { font-size: 11px; color: var(--text-tertiary); margin: -4px 0 8px; }
+  .us-radar-wrap { display: flex; justify-content: center; }
+  #us-radar { max-width: 260px; overflow: visible; }
+  .radar-grid { fill: none; stroke: var(--border); stroke-width: 1; }
+  .radar-axis { stroke: var(--border); stroke-width: 1; }
+  .radar-area { fill: rgba(154,92,255,0.24); stroke: var(--an-purple-2); stroke-width: 2; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(154,92,255,0.45)); }
+  .radar-dot { fill: var(--an-purple-2); }
+  .radar-label { font-size: 9px; font-weight: 600; fill: var(--text-secondary); font-family: inherit; }
+  .radar-val { font-size: 8px; fill: var(--text-tertiary); font-family: inherit; }
+
+  @media (max-width: 900px) {
+    .shell { flex-direction: column; }
+    .usage-sidebar { width: 100%; position: static; order: 2; }
+    .page { order: 1; width: 100%; }
+  }
+
+  /* leaderboard avatar photo */
+  .lb-av img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── TOP BAR ─── */
+  .topbar { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; flex-wrap: wrap; }
+
+  .page-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 4px;
+  }
+  .page-eyebrow-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--wa-green); flex-shrink: 0;
+    animation: eyebrowPulse 2s ease-out infinite;
+  }
+  @keyframes eyebrowPulse {
+    0% { box-shadow: 0 0 0 0 rgba(37,211,102,0.55); }
+    70% { box-shadow: 0 0 0 6px rgba(37,211,102,0); }
+    100% { box-shadow: 0 0 0 0 rgba(37,211,102,0); }
+  }
+
+  /* Expanding icon back-button (same pattern as the dashboard header buttons) */
+  .hbtn {
+    height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 10px;
+    border: 0.5px solid var(--border); border-radius: 980px;
+    background: var(--surface);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    color: var(--text-primary); cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 600;
+    letter-spacing: -0.1px; white-space: nowrap;
+    overflow: hidden; position: relative;
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.2s, padding 0.28s cubic-bezier(0.22,1,0.36,1), background 0.2s, border-color 0.2s;
+  }
+  .hbtn:hover { box-shadow: var(--card-shadow-hover); background: var(--surface-hover); border-color: var(--border-hover); padding: 0 14px; }
+  .hbtn:active { transform: scale(0.95); }
+  .hbtn svg { flex-shrink: 0; }
+  .hbtn .hbtn-label {
+    max-width: 0; opacity: 0; margin-left: 0;
+    overflow: hidden; transform: translateX(6px);
+    transition: max-width 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.22s ease,
+                margin-left 0.32s cubic-bezier(0.22,1,0.36,1), transform 0.32s cubic-bezier(0.22,1,0.36,1);
+  }
+  .hbtn:hover .hbtn-label, .hbtn:focus-visible .hbtn-label {
+    max-width: 150px; opacity: 1; margin-left: 7px; transform: translateX(0);
+  }
+
+  .page-title-wrap { display: flex; align-items: center; gap: 12px; }
+  .page-title-icon {
+    width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--an-purple-2), var(--an-purple));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px -4px rgba(154,92,255,0.55), inset 0 1px 0 rgba(255,255,255,0.25);
+    position: relative;
+  }
+  .page-title-icon::after {
+    content: ''; position: absolute; inset: -1px; border-radius: 15px;
+    padding: 1px; background: conic-gradient(from 0deg, var(--an-purple-2), var(--accent), var(--an-purple-2));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity: 0.7; animation: spin 6s linear infinite;
+  }
+  .page-title { font-size: 22px; font-weight: 800; letter-spacing: -0.6px;
+    background: linear-gradient(135deg, #ffffff, #c9c6e8);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .page-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 1px; }
+
+  .topbar-user {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 9px;
+    background: var(--surface);
+    backdrop-filter: blur(20px) saturate(160%);
+    border: 0.5px solid var(--border);
+    border-radius: 980px;
+    padding: 5px 13px 5px 6px;
+    box-shadow: var(--card-shadow);
+  }
+  .topbar-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #1aa9c9);
+    color: #06060d; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+  }
+  .topbar-name { font-size: 12.5px; font-weight: 600; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ─── STAT CARDS ─── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 640px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .stat-card {
+    background: linear-gradient(165deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    backdrop-filter: saturate(180%) blur(30px);
+    -webkit-backdrop-filter: saturate(180%) blur(30px);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 16px 18px;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    position: relative; overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .stat-card:hover { transform: translateY(-3px); border-color: var(--border-hover); box-shadow: var(--card-shadow-hover); }
+  .stat-card::after {
+    content: '';
+    position: absolute; top: 0; left: 16px; right: 16px; height: 0.5px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  }
+  .stat-icon-badge {
+    width: 42px; height: 42px; margin: 0 auto 10px; border-radius: 13px;
+    display: flex; align-items: center; justify-content: center; position: relative;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  }
+  .stat-icon-badge::before {
+    content: ''; position: absolute; inset: -6px; border-radius: 17px; z-index: -1;
+    filter: blur(10px); opacity: 0.55;
+  }
+  .stat-icon-badge svg { position: relative; z-index: 1; }
+  .stat-icon-badge.ib-purple { box-shadow: inset 0 0 0 1px rgba(154,92,255,0.25); }
+  .stat-icon-badge.ib-purple::before { background: radial-gradient(circle, rgba(154,92,255,0.55), transparent 70%); }
+  .stat-icon-badge.ib-cyan::before { background: radial-gradient(circle, rgba(53,224,255,0.55), transparent 70%); }
+  .stat-icon-badge.ib-amber::before { background: radial-gradient(circle, rgba(255,171,46,0.55), transparent 70%); }
+  .stat-icon-badge.ib-green::before { background: radial-gradient(circle, rgba(37,211,102,0.55), transparent 70%); }
+  .stat-num {
+    font-size: 27px; font-weight: 800; letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-num.c-purple { color: var(--an-purple-2); }
+  .stat-num.c-blue { color: var(--accent); }
+  .stat-num.c-green { color: var(--wa-green); }
+  .stat-num.c-orange { color: var(--amber); }
+  .stat-label { font-size: 10.5px; font-weight: 600; color: var(--text-tertiary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* ─── GLASS PANELS ─── */
+  .panel {
+    background: linear-gradient(165deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018));
+    backdrop-filter: saturate(180%) blur(30px);
+    -webkit-backdrop-filter: saturate(180%) blur(30px);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 20px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.25s ease;
+  }
+  .panel:hover { border-color: var(--border-hover); }
+  .panel::after {
+    content: '';
+    position: absolute; top: 0; left: 18px; right: 18px; height: 0.5px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  }
+  .panel-title { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; color: var(--text-primary);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-title::before {
+    content: ''; width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--an-purple-2), var(--accent));
+    box-shadow: 0 0 8px rgba(154,92,255,0.6);
+  }
+  .panel-sub { font-size: 11.5px; color: var(--text-tertiary); margin-top: 2px; margin-bottom: 18px; }
+
+  /* ─── 7-DAY CHART ─── */
+  .an-chart {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 10px; height: 190px; padding: 0 4px;
+  }
+  .an-bar-col {
+    flex: 1; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    gap: 7px;
+  }
+  .an-bar-val { font-size: 11px; font-weight: 700; color: var(--an-purple-2); font-variant-numeric: tabular-nums; }
+  .an-bar {
+    width: 100%; max-width: 46px;
+    border-radius: 9px 9px 4px 4px;
+    background: linear-gradient(180deg, var(--an-purple-2), var(--an-purple));
+    box-shadow: 0 4px 16px rgba(154,92,255,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+    transform-origin: bottom center;
+    min-height: 5px;
+    position: relative;
+  }
+  .an-bar.an-bar-today { background: linear-gradient(180deg, #7fe9ff, var(--accent)); box-shadow: 0 4px 16px rgba(53,224,255,0.45), inset 0 1px 0 rgba(255,255,255,0.35); }
+  .an-bar.an-bar-empty { background: rgba(255,255,255,0.06); box-shadow: none; }
+  .an-bar-mins { font-size: 9.5px; color: var(--text-tertiary); font-weight: 500; }
+  .an-bar-day { font-size: 11px; font-weight: 600; color: var(--text-tertiary); }
+  .an-bar-day.an-day-today { color: var(--accent); font-weight: 800; }
+
+  /* ─── UNLOCK PROGRESS ─── */
+  .an-unlock-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; font-weight: 600; color: var(--text-secondary); margin-bottom: 9px; }
+  .an-unlock-row b { color: var(--an-purple-2); font-size: 15px; }
+  .an-unlock-track { width: 100%; height: 12px; border-radius: 999px; background: rgba(154,92,255,0.10); border: 1px solid var(--border); overflow: hidden; }
+  .an-unlock-fill {
+    height: 100%; width: 0%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--an-purple-2), var(--an-purple), var(--accent));
+    background-size: 200% 100%;
+    box-shadow: 0 0 14px rgba(154,92,255,0.55);
+    transition: width 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .an-unlock-note { margin-top: 10px; font-size: 11.5px; color: var(--text-tertiary); }
+  .an-unlock-note b { color: var(--wa-green); }
+
+  /* ─── LOADING / LOGIN STATES ─── */
+  #page-loading {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    padding: 90px 0; color: var(--text-tertiary); font-size: 13.5px;
+  }
+  .spinner {
+    width: 26px; height: 26px;
+    border: 2.5px solid var(--border);
+    border-top-color: var(--an-purple-2);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #page-content { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001s !important; transition-duration: 0.001s !important; }
+    #reveal-transition { display: none; }
+  }
+
+  /* ─── LIVE CLASS LEADERBOARD ─── */
+  :root {
+    --lb-up: #1db977; --lb-up-bg: rgba(29,185,119,0.14); --lb-up-glow: rgba(29,185,119,0.4);
+    --lb-down: #e5484d; --lb-down-bg: rgba(229,72,77,0.14); --lb-down-glow: rgba(229,72,77,0.35);
+    --lb-gold: #e0a92e;
+  }
+  .lb-panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:4px; flex-wrap:wrap; }
+  .lb-head-right { display:flex; align-items:center; gap:8px; }
+  .lb-my-pts {
+    display:flex; align-items:baseline; gap:4px;
+    background: rgba(154,92,255,0.14); border:1px solid rgba(154,92,255,0.3);
+    border-radius:99px; padding:5px 12px;
+  }
+  .lb-my-pts-val { font-size:13px; font-weight:800; color:var(--an-purple-2); font-variant-numeric:tabular-nums; }
+  .lb-my-pts-lbl { font-size:10px; font-weight:700; letter-spacing:.4px; color:var(--text-secondary); text-transform:uppercase; }
+  .lb-live { display:flex; align-items:center; gap:7px; background:var(--accent-light); border:1px solid rgba(53,224,255,0.22); border-radius:99px; padding:5px 11px; }
+  .lb-live-dot { width:7px; height:7px; border-radius:50%; background:var(--lb-up); }
+  .lb-live-txt { font-size:11px; font-weight:700; letter-spacing:.6px; color:var(--text-secondary); font-variant-numeric:tabular-nums; }
+  .lb-layout { display:grid; grid-template-columns:1fr 300px; gap:18px; align-items:start; margin-top:14px; }
+  .lb-list { position:relative; }
+  .lb-row {
+    display:grid; grid-template-columns:52px 1fr auto; align-items:center; gap:10px;
+    padding:11px 12px; border-radius:14px; position:relative; background:rgba(255,255,255,0.015);
+    border:1px solid transparent; will-change:transform; overflow:hidden;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .lb-row + .lb-row { margin-top:2px; }
+  .lb-pts { display:flex; flex-direction:column; align-items:flex-end; line-height:1.15; padding-left:4px; }
+  .lb-pts-num { font-size:14px; font-weight:800; color:var(--an-purple-2); font-variant-numeric:tabular-nums; }
+  .lb-pts-lbl { font-size:9px; font-weight:700; letter-spacing:.5px; color:var(--text-tertiary); text-transform:uppercase; }
+  .lb-row.me-row .lb-pts-num { color:var(--accent); }
+  .lb-row:hover { background:var(--surface-hover); border-color:var(--border); }
+  .lb-flash { position:absolute; inset:0; border-radius:14px; opacity:0; pointer-events:none; }
+  .lb-flash.up { background:linear-gradient(90deg,var(--lb-up-bg),transparent 72%); }
+  .lb-flash.down { background:linear-gradient(90deg,var(--lb-down-bg),transparent 72%); }
+  .lb-rk { display:flex; align-items:center; gap:5px; }
+  .lb-rk-num { font-size:15px; font-weight:700; color:var(--text-tertiary); min-width:20px; font-variant-numeric:tabular-nums; }
+  .lb-row:first-child .lb-rk-num { color:var(--lb-gold); }
+  .lb-move { font-size:10px; font-weight:800; display:inline-flex; align-items:center; min-width:24px; opacity:0; }
+  .lb-move.up { color:var(--lb-up); opacity:1; }
+  .lb-move.down { color:var(--lb-down); opacity:1; }
+  .lb-move.same { color:var(--text-tertiary); opacity:.5; }
+  .lb-who { display:flex; align-items:center; gap:11px; min-width:0; }
+  .lb-av {
+    width:38px; height:38px; border-radius:50%; flex-shrink:0; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--an-purple),var(--accent));
+    color:#fff; font-size:13px; font-weight:700; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+  }
+  .lb-who-t { min-width:0; }
+  .lb-name { font-size:14px; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lb-sub { font-size:11px; color:var(--text-tertiary); margin-top:1px; }
+  .lb-sub .me { color:var(--accent); font-weight:600; }
+  .lb-row.me-row { background:var(--accent-light); border-color:rgba(53,224,255,0.25); }
+  .lb-empty { text-align:center; padding:34px; color:var(--text-tertiary); font-size:13px; }
+
+  /* ─── WHO'S ONLINE ─── */
+  .online-list {
+    display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;
+  }
+  .online-row {
+    display:flex; align-items:center; gap:10px;
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:99px; padding:6px 14px 6px 6px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .online-row:hover { background:var(--surface-hover); border-color:var(--border-hover); }
+  .online-row.me-row { background:var(--accent-light); border-color:rgba(53,224,255,0.25); }
+  .online-av {
+    position:relative; width:34px; height:34px; border-radius:50%; flex-shrink:0; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--an-purple),var(--accent));
+    color:#fff; font-size:12px; font-weight:700;
+  }
+  .online-av img { width:100%; height:100%; object-fit:cover; }
+  .online-dot-sm {
+    position:absolute; right:-1px; bottom:-1px; width:10px; height:10px; border-radius:50%;
+    border:2px solid var(--void);
+  }
+  .online-dot-sm.online { background:var(--lb-up); }
+  .online-dot-sm.recent { background:var(--amber); }
+  .online-body { min-width:0; }
+  .online-name { font-size:12.5px; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; }
+  .online-name .me { color:var(--accent); font-weight:700; }
+  .online-status { font-size:10.5px; color:var(--text-tertiary); margin-top:1px; }
+
+  /* ─── TOP 3 PODIUM (right side, stacked) ─── */
+  .lb-podium {
+    background: linear-gradient(180deg, var(--accent-light), transparent);
+    border: 1px solid var(--border); border-radius: 16px; padding: 16px 14px 16px;
+    position: sticky; top: 26px;
+  }
+  .lb-podium-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); text-align:center; margin-bottom:14px; }
+  .lb-podium-cards { display:flex; flex-direction:column; gap:10px; }
+  .lb-pod-card {
+    display:flex; align-items:center; gap:12px;
+    background: rgba(255,255,255,0.035); border:1px solid var(--border); border-radius:14px;
+    padding:12px 14px; position:relative; min-width:0;
+    transition: transform 0.2s ease;
+  }
+  .lb-pod-card:hover { transform: translateY(-2px); }
+  .lb-pod-card.first { border-color: rgba(224,169,46,0.55); box-shadow:0 10px 26px -8px rgba(224,169,46,0.28), inset 0 0 0 1px rgba(224,169,46,0.08); }
+  .lb-pod-card.second { border-color: rgba(184,188,196,0.4); box-shadow: 0 8px 20px -8px rgba(184,188,196,0.18); }
+  .lb-pod-card.third { border-color: rgba(205,139,92,0.4); box-shadow: 0 8px 20px -8px rgba(205,139,92,0.18); }
+  .lb-pod-card.first .lb-pod-av { border:2px solid var(--lb-gold); }
+  .lb-pod-card.second .lb-pod-av { border:2px solid #b8bcc4; }
+  .lb-pod-card.third .lb-pod-av { border:2px solid #cd8b5c; }
+  .lb-pod-medal { font-size:22px; line-height:1; flex-shrink:0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+  .lb-pod-av {
+    width:44px; height:44px; border-radius:50%; overflow:hidden; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--an-purple),var(--accent));
+    color:#fff; font-size:13px; font-weight:700; border:2px solid var(--border);
+  }
+  .lb-pod-card.first .lb-pod-av { width:50px; height:50px; }
+  .lb-pod-av img { width:100%; height:100%; object-fit:cover; }
+  .lb-pod-body { min-width:0; flex:1; }
+  .lb-pod-place { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-tertiary); }
+  .lb-pod-card.first .lb-pod-place { color:var(--lb-gold); }
+  .lb-pod-name { font-size:13px; font-weight:600; color:var(--text-primary); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lb-pod-pts { margin-left:auto; flex-shrink:0; font-size:13px; font-weight:800; color:var(--an-purple-2); text-align:right; font-variant-numeric:tabular-nums; }
+  .lb-pod-pts span { display:block; font-size:9px; font-weight:700; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.4px; }
+  .lb-podium-empty { text-align:center; color:var(--text-tertiary); font-size:12px; padding:20px 0; }
+
+  /* ─── SIDE-BY-SIDE DUAL LAYOUT ─── */
+  .dual-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .dual-row .lb-list { margin-top:14px; max-height:360px; overflow-y:auto; }
+  .podium-panel { background: linear-gradient(180deg, var(--accent-light), transparent); }
+  .podium-panel .lb-podium-title { margin-bottom:12px; }
+  .podium-h { display:flex; flex-direction:column; gap:10px; }
+
+  /* ─── PERSONAL PERFORMANCE ─── */
+  .perf-panel { margin-top:16px; }
+  .perf-layout { display:grid; grid-template-columns:minmax(280px,1fr) 1fr; gap:22px; align-items:center; margin-top:14px; }
+  .perf-chart-wrap { display:flex; justify-content:center; }
+  #perf-radar { max-width:340px; overflow: visible; }
+  .perf-grid-line { fill:none; stroke:var(--border); stroke-width:1; }
+  .perf-axis { stroke:var(--border); stroke-width:1; }
+  .perf-area { fill:rgba(154,92,255,0.22); stroke:var(--an-purple-2); stroke-width:2.5; stroke-linejoin:round; filter: drop-shadow(0 0 8px rgba(154,92,255,0.5)); }
+  .perf-dot { fill:var(--an-purple-2); stroke:var(--void); stroke-width:2; }
+  .perf-axis-label { font-size:11px; font-weight:600; fill:var(--text-secondary); font-family:inherit; }
+  .perf-axis-score { font-size:10px; font-weight:700; fill:var(--text-tertiary); font-family:inherit; }
+  .perf-readout { display:flex; flex-direction:column; gap:10px; }
+  .perf-loading { color:var(--text-tertiary); font-size:13px; padding:20px 0; }
+  .perf-callout { display:flex; align-items:flex-start; gap:12px; padding:14px 16px; border-radius:14px; border:1px solid var(--border); }
+  .perf-callout.strong { background:rgba(29,185,119,0.10); border-color:rgba(29,185,119,0.3); }
+  .perf-callout.weak { background:rgba(255,171,46,0.10); border-color:rgba(255,171,46,0.3); }
+  .perf-callout-ico { font-size:20px; line-height:1; flex-shrink:0; margin-top:1px; }
+  .perf-callout-body { min-width:0; }
+  .perf-callout-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; margin-bottom:2px; }
+  .perf-callout.strong .perf-callout-label { color:#2fe093; }
+  .perf-callout.weak .perf-callout-label { color:var(--amber); }
+  .perf-callout-name { font-size:15px; font-weight:700; color:var(--text-primary); }
+  .perf-callout-msg { font-size:12.5px; color:var(--text-secondary); margin-top:2px; line-height:1.45; }
+  .perf-bars { display:flex; flex-direction:column; gap:9px; margin-top:4px; }
+  .perf-bar-row { display:grid; grid-template-columns:96px 1fr 34px; align-items:center; gap:10px; }
+  .perf-bar-name { font-size:12px; font-weight:600; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .perf-bar-track { height:7px; border-radius:4px; background:rgba(255,255,255,0.06); overflow:hidden; }
+  .perf-bar-fill {
+    display:block; height:100%; border-radius:4px; background:linear-gradient(90deg,var(--an-purple),var(--accent)); width:0;
+    transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .perf-bar-val { font-size:11px; font-weight:700; color:var(--text-tertiary); text-align:right; font-variant-numeric:tabular-nums; }
+
+  @media (max-width: 720px) {
+    .perf-layout { grid-template-columns:1fr; }
+  }
+
+  /* ─── WEEKLY POINTS TREND (stock-style) ─── */
+  .trend-panel { margin-top:16px; }
+  .trend-tabs { display:flex; gap:6px; margin-top:14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:4px; width:fit-content; }
+  .trend-tab {
+    font-family:inherit; font-size:12px; font-weight:700; color:var(--text-tertiary);
+    background:transparent; border:0; border-radius:9px; padding:7px 16px; cursor:pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .trend-tab:hover { color:var(--text-secondary); }
+  .trend-tab.active { background:linear-gradient(135deg,var(--an-purple),var(--an-purple-2)); color:#fff; box-shadow:0 4px 12px -2px rgba(154,92,255,0.5); }
+  .trend-summary { display:flex; align-items:center; gap:8px; font-variant-numeric:tabular-nums; }
+  .trend-chip { display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:700; padding:5px 12px; border-radius:99px; }
+  .trend-chip.up { background:rgba(29,185,119,0.14); color:#2fe093; border:1px solid rgba(29,185,119,0.35); }
+  .trend-chip.down { background:rgba(229,72,77,0.14); color:#ff6b70; border:1px solid rgba(229,72,77,0.35); }
+  .trend-chip.flat { background:var(--accent-light); color:var(--text-secondary); border:1px solid var(--border); }
+  .trend-total { font-size:12px; color:var(--text-tertiary); font-weight:600; }
+  .trend-chart-wrap { margin-top:16px; width:100%; }
+  #trend-chart { display:block; overflow:visible; }
+  .trend-grid { stroke:var(--border); stroke-width:1; }
+  .trend-axis-lbl { font-size:10px; fill:var(--text-tertiary); font-family:inherit; }
+  .trend-area { opacity:0.18; }
+  .trend-line { fill:none; stroke:var(--an-purple-2); stroke-width:2.5; stroke-linejoin:round; stroke-linecap:round; filter: drop-shadow(0 0 5px rgba(154,92,255,0.4)); }
+  .trend-seg-up { stroke:#1db977; filter: drop-shadow(0 0 5px rgba(29,185,119,0.5)); }
+  .trend-seg-down { stroke:#e5484d; filter: drop-shadow(0 0 5px rgba(229,72,77,0.5)); }
+  .trend-pt { stroke:var(--void); stroke-width:2; }
+  .trend-pt-val { font-size:10px; font-weight:700; fill:var(--text-secondary); font-family:inherit; }
+  .trend-xlbl { font-size:10px; fill:var(--text-tertiary); font-family:inherit; }
+  .trend-mins-lbl { font-size:9px; fill:var(--text-tertiary); opacity:0.65; font-family:inherit; font-weight:500; }
+  .trend-legend { display:flex; gap:16px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
+  .trend-legend span { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--text-tertiary); font-weight:600; }
+  .trend-legend .dot { width:9px; height:9px; border-radius:50%; }
+  .trend-empty { text-align:center; color:var(--text-tertiary); font-size:13px; padding:40px 0; fill: var(--text-tertiary); }
+
+  @media (max-width: 820px) {
+    .dual-row { grid-template-columns:1fr; }
+  }
+  @media (max-width: 760px) {
+    .lb-layout { grid-template-columns:1fr; }
+    .lb-podium { position:static; order:-1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Arrival reveal: panels start covering the screen, then sweep away -->
+<div id="reveal-transition" aria-hidden="true">
+  <div class="rv-panel rv-panel-1"></div>
+  <div class="rv-panel rv-panel-2"></div>
+  <div class="rv-logo">
+    <svg width="34" height="34" fill="none" viewBox="0 0 18 18">
+      <path d="M3 15V9M9 15V3M15 15v-4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+</div>
+
+<div class="bg-fixed" aria-hidden="true">
+  <div class="bg-grid"></div>
+  <div class="orb orb-purple"></div>
+  <div class="orb orb-blue"></div>
+  <div class="orb orb-magenta"></div>
+</div>
+<div class="bg-grain" aria-hidden="true"></div>
+
+<div class="shell">
+
+  <aside class="usage-sidebar" id="usage-sidebar">
+    <div class="us-head">
+      <div class="us-head-ico">
+        <svg width="15" height="15" fill="none" viewBox="0 0 16 16">
+          <path d="M8 4v4l2.6 2.6M14.5 8a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="us-title">Activity</div>
+        <div class="us-sub">Everywhere you've been</div>
+      </div>
+    </div>
+    <div class="us-now" id="us-now">
+      <div class="us-now-label">Currently viewing</div>
+      <div class="us-now-page" id="us-now-page">Your Analytics</div>
+    </div>
+    <div class="us-stat-row">
+      <div class="us-stat">
+        <div class="us-stat-v" id="us-total-time">0m</div>
+        <div class="us-stat-l">Total time</div>
+      </div>
+      <div class="us-stat">
+        <div class="us-stat-v" id="us-visits">0</div>
+        <div class="us-stat-l">Pages opened</div>
+      </div>
+    </div>
+    <div class="us-list-label">Recent activity</div>
+    <div class="us-list" id="us-list">
+      <div class="us-empty">Loading your history…</div>
+    </div>
+
+    <div class="us-radar-block">
+      <div class="us-list-label" style="margin-top:6px">Overall focus</div>
+      <div class="us-radar-sub">Time spread across everything you do</div>
+      <div class="us-radar-wrap">
+        <svg id="us-radar" viewBox="0 0 260 260" width="100%" height="auto" aria-label="Activity radar chart"></svg>
+      </div>
+    </div>
+  </aside>
+
+  <div class="page">
+
+  <div class="topbar">
+    <button type="button" class="hbtn" id="back-btn" title="Back to Dashboard" aria-label="Back to Dashboard">
+      <svg width="14" height="14" fill="none" viewBox="0 0 16 16">
+        <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="hbtn-label">Back to Dashboard</span>
+    </button>
+
+    <div class="page-title-wrap">
+      <div class="page-title-icon">
+        <svg width="20" height="20" fill="none" viewBox="0 0 18 18">
+          <path d="M3 15V9M9 15V3M15 15v-4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="page-eyebrow"><span class="page-eyebrow-dot" id="page-eyebrow-dot"></span>Live · Updating in real time</div>
+        <div class="page-title">Your Analytics</div>
+        <div class="page-sub">Last 7 days of learning activity</div>
+      </div>
+    </div>
+
+    <div class="topbar-user" id="topbar-user" style="display:none;">
+      <div class="topbar-avatar" id="topbar-avatar">U</div>
+      <span class="topbar-name" id="topbar-name">User</span>
+    </div>
+  </div>
+
+  <div id="page-loading">
+    <div class="spinner"></div>
+    Loading your stats…
+  </div>
+
+  <div id="page-content">
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-badge ib-purple">
+          <svg width="19" height="19" viewBox="0 0 20 20" fill="none">
+            <path d="M10 1.5l1.9 5.6 5.6 1.9-5.6 1.9-1.9 5.6-1.9-5.6-5.6-1.9 5.6-1.9L10 1.5Z" fill="#cbaaff"/>
+          </svg>
+        </div>
+        <div class="stat-num c-purple" id="st-total">0</div>
+        <div class="stat-label">Total points</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-badge ib-cyan">
+          <svg width="19" height="19" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10.5" r="7.5" stroke="#35e0ff" stroke-width="1.5"/>
+            <path d="M10 6.5V10.5L12.7 12.2" stroke="#35e0ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7.5 1.5h5" stroke="#35e0ff" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="stat-num c-blue" id="st-today">0m</div>
+        <div class="stat-label">Active today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-badge ib-amber">
+          <svg width="18" height="19" viewBox="0 0 18 20" fill="none">
+            <path d="M9 1c1 3-3 4-3 7.5a3 3 0 0 0 6 0c0-1-.4-1.9-1-2.5.7 2.4-.7 3-1.4 3C8.9 8.6 9 7 9 1Z" fill="#ffab2e"/>
+            <path d="M4.5 11c0 3.6 2 7 4.5 7s4.5-3.4 4.5-7c0-1-.3-2-.7-2.8C11.6 10.8 10 12 8.8 12c-1.5 0-2.4-1.3-2.2-2.9-1 .8-2.1 1.9-2.1 3.9Z" fill="#ffab2e" opacity="0.55"/>
+          </svg>
+        </div>
+        <div class="stat-num c-orange" id="st-streak">0</div>
+        <div class="stat-label">Day streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-badge ib-green">
+          <svg width="19" height="19" viewBox="0 0 20 20" fill="none">
+            <path d="M6 3h8v3.2c0 2.6-1.8 4.7-4 4.7s-4-2.1-4-4.7V3Z" stroke="#25D366" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M6 4H3.8C3.8 6 4.8 7.3 6 7.5M14 4h2.2c0 2-1 3.3-2.2 3.5" stroke="#25D366" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M10 11v3.2M7.3 17h5.4M8.5 14.2h3l.3 2.8h-3.6l.3-2.8Z" stroke="#25D366" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="stat-num c-green" id="st-week">0</div>
+        <div class="stat-label">Points this week</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Points earned per day</div>
+      <div class="panel-sub">Blue bar is today · stay active 1 hour to earn the full 1,000 daily points</div>
+      <div class="an-chart" id="an-chart"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Mock Interview unlock</div>
+      <div class="panel-sub">Reach 5,000 points to unlock the Mock Interview</div>
+      <div class="an-unlock-row">
+        <span id="an-unlock-pts">0 / 5,000 pts</span>
+        <b id="an-unlock-pct">0%</b>
+      </div>
+      <div class="an-unlock-track"><div class="an-unlock-fill" id="an-unlock-fill"></div></div>
+      <div class="an-unlock-note" id="an-unlock-note">Keep going — every active day counts.</div>
+    </div>
+
+    <div class="panel online-panel">
+      <div class="lb-panel-head">
+        <div>
+          <div class="panel-title">Who's online</div>
+          <div class="panel-sub">Everyone active on Cloud iNIT right now</div>
+        </div>
+        <div class="lb-live">
+          <span class="lb-live-dot" id="online-dot"></span>
+          <span class="lb-live-txt" id="online-count-txt">0 online</span>
+        </div>
+      </div>
+      <div class="online-list" id="online-list">
+        <div class="lb-empty">Checking who's active…</div>
+      </div>
+    </div>
+
+    <div class="dual-row">
+      <div class="panel">
+        <div class="lb-panel-head">
+          <div>
+            <div class="panel-title">Live tasks</div>
+            <div class="panel-sub">7:30 PM batch · task submissions</div>
+          </div>
+          <div class="lb-head-right">
+            <div class="lb-my-pts" id="lb-my-pts" style="display:none;">
+              <span class="lb-my-pts-lbl">You</span>
+              <span class="lb-my-pts-val" id="lb-my-pts-val">0</span>
+              <span class="lb-my-pts-lbl">days</span>
+            </div>
+            <div class="lb-live">
+              <span class="lb-live-dot" id="lb-dot"></span>
+              <span class="lb-live-txt" id="lb-live-txt">LIVE</span>
+            </div>
+          </div>
+        </div>
+        <div class="lb-list" id="lb-list">
+          <div class="lb-empty">Loading standings…</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="lb-panel-head">
+          <div>
+            <div class="panel-title">Live tests</div>
+            <div class="panel-sub">Students who've given exams</div>
+          </div>
+          <div class="lb-live">
+            <span class="lb-live-dot" id="ex-dot"></span>
+            <span class="lb-live-txt">LIVE</span>
+          </div>
+        </div>
+        <div class="lb-list" id="ex-list">
+          <div class="lb-empty">Loading exam results…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dual-row">
+      <div class="panel podium-panel">
+        <div class="lb-podium-title">Top 3 · Tasks</div>
+        <div class="lb-podium-cards podium-h" id="lb-podium-cards"></div>
+      </div>
+      <div class="panel podium-panel">
+        <div class="lb-podium-title">Top 3 · Tests</div>
+        <div class="lb-podium-cards podium-h" id="ex-podium-cards"></div>
+      </div>
+    </div>
+
+    <div class="panel perf-panel">
+      <div class="lb-panel-head">
+        <div>
+          <div class="panel-title">Your performance</div>
+          <div class="panel-sub">Where you're strong and where to focus, across all your activity</div>
+        </div>
+      </div>
+      <div class="perf-layout">
+        <div class="perf-chart-wrap">
+          <svg id="perf-radar" viewBox="0 0 320 320" width="100%" height="auto" aria-label="Personal performance radar"></svg>
+        </div>
+        <div class="perf-readout" id="perf-readout">
+          <div class="perf-loading">Analyzing your performance…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel trend-panel">
+      <div class="lb-panel-head">
+        <div>
+          <div class="panel-title">Points trend</div>
+          <div class="panel-sub" id="trend-sub">Your points week by week — up and down over time</div>
+        </div>
+        <div class="trend-summary" id="trend-summary"></div>
+      </div>
+      <div class="trend-tabs" id="trend-tabs" role="tablist">
+        <button type="button" class="trend-tab" data-grain="hour" role="tab">Hourly</button>
+        <button type="button" class="trend-tab" data-grain="day" role="tab">Daily</button>
+        <button type="button" class="trend-tab active" data-grain="week" role="tab">Weekly</button>
+      </div>
+      <div class="trend-chart-wrap">
+        <svg id="trend-chart" viewBox="0 0 720 260" width="100%" height="auto" preserveAspectRatio="none" aria-label="Points trend chart"></svg>
+      </div>
+      <div class="trend-legend" id="trend-legend"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+
+<script>
+// ─── ARRIVAL REVEAL + BACK TRANSITION ───
+(function(){
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasGsap = typeof window.gsap !== 'undefined';
+  var reveal = document.getElementById('reveal-transition');
+
+  // Sweep the covering panels away on arrival
+  if (reveal) {
+    if (!hasGsap || reduceMotion) {
+      reveal.style.display = 'none';
+    } else {
+      var tl = gsap.timeline({ onComplete: function(){ reveal.style.display = 'none'; } });
+      tl.to('.rv-logo', { scale: 1.08, duration: 0.28, yoyo: true, repeat: 1, ease: 'sine.inOut' })
+        .to('.rv-logo', { scale: 0, opacity: 0, duration: 0.3, ease: 'back.in(2)' })
+        .to('.rv-panel-2', { x: '101%', duration: 0.5, ease: 'power4.inOut' }, '-=0.1')
+        .to('.rv-panel-1', { x: '101%', duration: 0.5, ease: 'power4.inOut' }, '-=0.36');
+    }
+  }
+
+  // Back button: reverse sweep, then return to the dashboard
+  document.getElementById('back-btn').addEventListener('click', function(){
+    var go = function(){ window.location.href = 'dashboard.html'; };
+    if (!reveal || !hasGsap || reduceMotion) { go(); return; }
+    reveal.style.display = 'block';
+    gsap.set('.rv-panel-1', { x: '-101%' });
+    gsap.set('.rv-panel-2', { x: '-101%' });
+    gsap.set('.rv-logo', { scale: 0, opacity: 0 });
+    var tl = gsap.timeline({ onComplete: go });
+    tl.to('.rv-panel-1', { x: '0%', duration: 0.45, ease: 'power4.inOut' })
+      .to('.rv-panel-2', { x: '0%', duration: 0.45, ease: 'power4.inOut' }, '-=0.32')
+      .to('.rv-logo', { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(2)' }, '-=0.12');
+  });
+})();
+
+// ─── ANALYTICS RENDERER (called by the Firebase module below) ───
+window.renderAnalytics = function(data, total, unlock, streak, animate){
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasGsap = typeof window.gsap !== 'undefined';
+  if (animate === undefined) animate = true;
+
+  var totalEl = document.getElementById('st-total');
+  var todayEl = document.getElementById('st-today');
+  var streakEl = document.getElementById('st-streak');
+  var weekEl = document.getElementById('st-week');
+  var chart = document.getElementById('an-chart');
+  var fill = document.getElementById('an-unlock-fill');
+  var pctEl = document.getElementById('an-unlock-pct');
+  var ptsEl = document.getElementById('an-unlock-pts');
+  var noteEl = document.getElementById('an-unlock-note');
+
+  var today = data[data.length - 1] || { seconds: 0 };
+  var todayMins = Math.round((today.seconds || 0) / 60);
+  var weekPts = data.reduce(function(s, d){ return s + d.points; }, 0);
+  var pct = unlock > 0 ? Math.min(100, Math.round((total / unlock) * 100)) : 0;
+  var max = Math.max.apply(null, data.map(function(d){ return d.points; }).concat([1]));
+
+  ptsEl.textContent = total.toLocaleString() + ' / ' + unlock.toLocaleString() + ' pts';
+  if (total >= unlock) {
+    noteEl.innerHTML = '<b>Unlocked!</b> Head back to the dashboard and open Mock Interview from the sidebar.';
+  } else {
+    noteEl.textContent = (unlock - total).toLocaleString() + ' points to go — every active day counts.';
+  }
+
+  // Bar + percentage always land at the right value immediately — the GSAP
+  // sweep below is a visual bonus on top of this, never a requirement for it.
+  fill.style.width = pct + '%';
+  pctEl.textContent = pct + '%';
+
+  // Build the 7-day bar chart
+  chart.innerHTML = '';
+  data.forEach(function(d){
+    var col = document.createElement('div');
+    col.className = 'an-bar-col';
+    var mins = Math.round((d.seconds || 0) / 60);
+    var hPct = Math.max(3, Math.round((d.points / max) * 72));
+    col.innerHTML =
+      '<span class="an-bar-val">' + (d.points > 0 ? d.points.toLocaleString() : '·') + '</span>' +
+      '<div class="an-bar' + (d.isToday ? ' an-bar-today' : '') + (d.points === 0 ? ' an-bar-empty' : '') + '" style="height:' + hPct + '%"></div>' +
+      '<span class="an-bar-mins">' + (mins > 0 ? mins + 'm' : '—') + '</span>' +
+      '<span class="an-bar-day' + (d.isToday ? ' an-day-today' : '') + '">' + (d.isToday ? 'Today' : d.label) + '</span>';
+    chart.appendChild(col);
+  });
+
+  if (!hasGsap || reduceMotion || !animate) {
+    totalEl.textContent = total.toLocaleString();
+    todayEl.textContent = todayMins + 'm';
+    streakEl.textContent = streak;
+    weekEl.textContent = weekPts.toLocaleString();
+    return;
+  }
+
+  // Entrance: stat cards + panels stagger in
+  gsap.from('.stat-card', { y: 22, opacity: 0, scale: 0.94, duration: 0.55, stagger: 0.08, ease: 'back.out(1.5)', clearProps: 'all' });
+  gsap.from('.panel', { y: 30, opacity: 0, duration: 0.6, stagger: 0.12, delay: 0.15, ease: 'power3.out', clearProps: 'all' });
+
+  // Count-up numbers (pct is intentionally NOT included here — it's already
+  // set correctly, synchronously, above; animating it from 0 would just
+  // flash the right value back down to 0% before counting back up).
+  var c = { total: 0, mins: 0, streak: 0, week: 0 };
+  gsap.to(c, {
+    total: total, mins: todayMins, streak: streak, week: weekPts,
+    duration: 1.2, delay: 0.2, ease: 'power2.out',
+    onUpdate: function(){
+      totalEl.textContent = Math.round(c.total).toLocaleString();
+      todayEl.textContent = Math.round(c.mins) + 'm';
+      streakEl.textContent = Math.round(c.streak);
+      weekEl.textContent = Math.round(c.week).toLocaleString();
+    }
+  });
+
+  // Bars grow from the ground
+  gsap.from('#an-chart .an-bar', {
+    scaleY: 0, transformOrigin: 'bottom center',
+    duration: 0.75, stagger: 0.07, ease: 'power3.out', delay: 0.35, clearProps: 'transform'
+  });
+  gsap.from('#an-chart .an-bar-val', { opacity: 0, y: 7, duration: 0.4, stagger: 0.07, delay: 0.65, clearProps: 'all' });
+
+  // Unlock bar shimmer (width itself is already set above and animates via CSS transition)
+  gsap.fromTo(fill, { backgroundPosition: '100% 0' }, { backgroundPosition: '0% 0', duration: 2.2, ease: 'none', delay: 0.5 });
+};
+
+// ─── LIVE LEADERBOARD RENDER (with up/down movement animation) ───
+(function(){
+  var prevRank = {};    // uid -> previous index
+  var prevScore = {};   // uid -> previous points
+  var first = true;
+  var hasFlip = typeof window.Flip !== 'undefined';
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function ini(n){ return (n||'?').trim().split(/\s+/).map(function(w){return w[0];}).slice(0,2).join('').toUpperCase(); }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function cssEsc(s){ return String(s).replace(/["\\]/g,'\\$&'); }
+
+  // gentle live-dot pulse
+  if (window.gsap) {
+    gsap.to('#lb-dot', { boxShadow:'0 0 0 6px rgba(29,185,119,0)', duration:1.5, repeat:-1, ease:'power2.out' });
+  }
+
+  window.renderLeaderboard = function(rows, myUid){
+    var list = document.getElementById('lb-list');
+    if (!list) return;
+
+    if (!rows.length) {
+      list.innerHTML = '<div class="lb-empty">No students yet.</div>';
+      return;
+    }
+
+    var doFlip = !first && hasFlip && !reduceMotion && list.querySelector('.lb-row');
+    var flipState = doFlip ? Flip.getState('#lb-list .lb-row') : null;
+
+    list.innerHTML = rows.map(function(r, idx){
+      var pr = prevRank[r.uid];
+      var moveCls = 'same', moveTxt = '', dir = '';
+      if (pr !== undefined) {
+        if (idx < pr) { moveCls='up'; moveTxt='▲'+(pr-idx); dir='up'; }
+        else if (idx > pr) { moveCls='down'; moveTxt='▼'+(idx-pr); dir='down'; }
+        else { moveTxt='–'; }
+      }
+      var isMe = r.uid === myUid;
+      var subLine = isMe
+        ? '<span class="me">You</span>'
+        : (r.latestTask ? '📝 ' + esc(r.latestTask.length > 30 ? r.latestTask.slice(0,30)+'…' : r.latestTask) : 'No submissions yet');
+      var ptsVal = (r.points || 0).toLocaleString();
+      return '<div class="lb-row'+(isMe?' me-row':'')+'" data-uid="'+esc(r.uid)+'">' +
+        '<div class="lb-flash '+dir+'"></div>' +
+        '<div class="lb-rk"><span class="lb-rk-num">'+(idx+1)+'</span>' +
+          '<span class="lb-move '+moveCls+'">'+moveTxt+'</span></div>' +
+        '<div class="lb-who">' +
+          '<div class="lb-av" data-name="'+esc(r.name)+'">'+ini(r.name)+'</div>' +
+          '<div class="lb-who-t"><div class="lb-name">'+esc(r.name)+'</div>' +
+          '<div class="lb-sub"'+(r.latestTask&&!isMe?' title="'+esc(r.latestTask)+'"':'')+'>'+subLine+'</div></div>' +
+        '</div>' +
+        '<div class="lb-pts"><span class="lb-pts-num">'+ptsVal+'</span><span class="lb-pts-lbl">days</span></div>' +
+      '</div>';
+    }).join('');
+
+    if (window.gsap && !reduceMotion) {
+      if (first) {
+        gsap.from('#lb-list .lb-row', { y:14, opacity:0, duration:0.4, stagger:0.04, ease:'power2.out' });
+      } else if (doFlip && flipState) {
+        Flip.from(flipState, { duration:0.7, ease:'power3.inOut', absolute:true });
+        animateChanges(rows);
+      } else {
+        animateChanges(rows);
+      }
+    }
+
+    // store for next diff
+    var nr = {}, ns = {};
+    rows.forEach(function(r, i){ nr[r.uid] = i; ns[r.uid] = r.points; });
+    prevRank = nr; prevScore = ns;
+    first = false;
+
+    // ── load profile photos into avatars (task DB 'profiles') ──
+    if (typeof window.fetchStudentPhoto === 'function') {
+      rows.forEach(function(r){
+        window.fetchStudentPhoto(r.name).then(function(url){
+          if (!url) return;
+          document.querySelectorAll('.lb-av[data-name="'+String(r.name).replace(/["\\]/g,'\\$&')+'"]').forEach(function(av){
+            if (av.querySelector('img')) return;
+            var img = document.createElement('img');
+            img.src = url; img.alt = '';
+            img.onerror = function(){ try{ img.remove(); }catch(e){} };
+            av.innerHTML = '';
+            av.appendChild(img);
+            if (window.gsap) gsap.from(img, { opacity:0, duration:0.35 });
+          });
+        });
+      });
+    }
+
+    renderPodium(rows);
+  };
+
+  function renderPodium(rows){
+    var wrap = document.getElementById('lb-podium-cards');
+    if (!wrap) return;
+    var top3 = rows.slice(0,3);
+    if (!top3.length){ wrap.innerHTML = '<div class="lb-podium-empty">No entries yet</div>'; return; }
+    var medals = ['🥇','🥈','🥉'];
+    var places = ['1st','2nd','3rd'];
+    var cls = ['first','second','third'];
+    wrap.innerHTML = top3.map(function(r, i){
+      return '<div class="lb-pod-card '+cls[i]+'" data-uid="'+esc(r.uid)+'">' +
+        '<div class="lb-pod-medal">'+medals[i]+'</div>' +
+        '<div class="lb-pod-av" data-name="'+esc(r.name)+'">'+ini(r.name)+'</div>' +
+        '<div class="lb-pod-body">' +
+          '<div class="lb-pod-place">'+places[i]+' place</div>' +
+          '<div class="lb-pod-name" title="'+esc(r.name)+'">'+esc(r.name)+'</div>' +
+        '</div>' +
+        '<div class="lb-pod-pts">'+(r.points||0).toLocaleString()+'<span>days</span></div>' +
+      '</div>';
+    }).join('');
+
+    // load photos into podium avatars
+    if (typeof window.fetchStudentPhoto === 'function') {
+      top3.forEach(function(r){
+        window.fetchStudentPhoto(r.name).then(function(url){
+          if (!url) return;
+          document.querySelectorAll('.lb-pod-av[data-name="'+cssEsc(r.name)+'"]').forEach(function(av){
+            if (av.querySelector('img')) return;
+            var img = document.createElement('img'); img.src = url; img.alt = '';
+            img.onerror = function(){ try{ img.remove(); }catch(e){} };
+            av.innerHTML = ''; av.appendChild(img);
+          });
+        });
+      });
+    }
+    if (window.gsap && !reduceMotion){
+      gsap.from('#lb-podium-cards .lb-pod-card', { y:16, opacity:0, duration:0.45, stagger:0.08, ease:'back.out(1.4)' });
+    }
+  }
+
+  function animateChanges(rows){
+    rows.forEach(function(r, idx){
+      var row = document.querySelector('.lb-row[data-uid="'+cssEsc(r.uid)+'"]');
+      if (!row) return;
+      var pSc = prevScore[r.uid];
+      var pRk = prevRank[r.uid];
+      var scoreUp = pSc !== undefined && r.points > pSc;
+      var scoreDown = pSc !== undefined && r.points < pSc;
+      var rankUp = pRk !== undefined && idx < pRk;
+      var rankDown = pRk !== undefined && idx > pRk;
+
+      // flash green (up) / red (down) on movement
+      var f = row.querySelector('.lb-flash');
+      if (rankUp || scoreUp) {
+        f.className = 'lb-flash up';
+        gsap.fromTo(f, { opacity:0.9 }, { opacity:0, duration:1, ease:'power2.out' });
+        var n1 = row.querySelector('.lb-rk-num');
+        gsap.fromTo(n1, { scale:1.4, color:'#1db977' }, { scale:1, color:'', duration:0.6, ease:'back.out(2)', clearProps:'color' });
+      } else if (rankDown || scoreDown) {
+        f.className = 'lb-flash down';
+        gsap.fromTo(f, { opacity:0.9 }, { opacity:0, duration:1, ease:'power2.out' });
+        var n2 = row.querySelector('.lb-rk-num');
+        gsap.fromTo(n2, { scale:1.4, color:'#e5484d' }, { scale:1, color:'', duration:0.6, ease:'back.out(2)', clearProps:'color' });
+      }
+    });
+  }
+})();
+</script>
+
+<script type="module">
+  // ─── Firebase auth + Firestore: pull the last 7 dailyPoints docs ───
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, deleteDoc, collection, collectionGroup, onSnapshot } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+  import { getStorage, ref as storageRef, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCFdcL1yRhonVFSMpLkZm2Cyqt2-NCHwBI",
+    authDomain: "veera730pmonline.firebaseapp.com",
+    projectId: "veera730pmonline",
+    storageBucket: "veera730pmonline.firebasestorage.app",
+    messagingSenderId: "570230262031",
+    appId: "1:570230262031:web:63f3917d8197259bbcd67a",
+    measurementId: "G-9V7EDX772E"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const auth = getAuth(fbApp);
+  const db = getFirestore(fbApp);
+
+  // ─── Second project: task tracker (source of 7:30 PM batch roster + submissions) ───
+  const taskConfig = {
+    apiKey: "AIzaSyAE3mBpbQ0be_I7baVrVMT0ppTfvEPB38I",
+    authDomain: "student-task-tracker-c892a.firebaseapp.com",
+    projectId: "student-task-tracker-c892a",
+    storageBucket: "student-task-tracker-c892a.firebasestorage.app",
+    messagingSenderId: "270942651958",
+    appId: "1:270942651958:web:5114d65ea5bcbf613d7a97"
+  };
+  const taskApp = initializeApp(taskConfig, 'tasktracker');
+  const taskDb = getFirestore(taskApp);
+  const taskStorage = getStorage(taskApp);
+  const BATCH_ID = 'batch_1930';
+  const PHOTO_FOLDER = 'profilephoto730pm';
+
+  // ─── Profile photo fetch (task DB 'profiles' folder), exposed globally ───
+  const _photoCache = new Map();
+  function _stem(name){
+    return (name||'').toLowerCase().trim().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  }
+  window.fetchStudentPhoto = async function(name){
+    if (_photoCache.has(name)) return _photoCache.get(name);
+    const stem = _stem(name);
+    if (!stem) { _photoCache.set(name, null); return null; }
+    const exts = ['jpg','jpeg','png','webp','JPG','PNG'];
+    let url = null;
+    for (const ext of exts){
+      try { url = await getDownloadURL(storageRef(taskStorage, PHOTO_FOLDER + '/' + stem + '.' + ext)); break; }
+      catch(e){ if (e.code !== 'storage/object-not-found' && e.code !== 'storage/unknown') break; }
+    }
+    _photoCache.set(name, url);
+    return url;
+  };
+
+  const MOCK_INTERVIEW_UNLOCK_POINTS = 5000;
+
+  function dayKeyFor(offset){
+    const d = new Date();
+    d.setDate(d.getDate() - offset);
+    return {
+      key: d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'),
+      label: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]
+    };
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    const loading = document.getElementById('page-loading');
+    const content = document.getElementById('page-content');
+
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // Top bar chip
+    const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+    document.getElementById('topbar-name').textContent = displayName;
+    document.getElementById('topbar-avatar').textContent = displayName.trim().charAt(0).toUpperCase() || 'U';
+    document.getElementById('topbar-user').style.display = 'flex';
+
+    // Make sure MY real name is on my own veeraUsers doc, so I show up correctly
+    // for other students in "Who's online" (each user can only ever write their own doc).
+    setDoc(doc(db, 'veeraUsers', user.uid), { name: displayName }, { merge: true })
+      .catch(err => console.error('Could not save display name to veeraUsers:', err));
+
+    // ─── LIVE main analytics: subscribe to user totals + last 7 daily docs ───
+    const days = [];
+    for (let i = 6; i >= 0; i--) days.push(dayKeyFor(i));
+
+    let liveTotal = 0;
+    const dailyData = days.map(d => ({ label: d.label, points: 0, seconds: 0, isToday: false }));
+    dailyData[dailyData.length - 1].isToday = true;
+    let analyticsShown = false;
+    let firstAnalyticsRender = true;
+
+    function pushAnalytics(){
+      // Streak = consecutive days (ending today) with any points earned
+      let streak = 0;
+      for (let i = dailyData.length - 1; i >= 0; i--) {
+        if (dailyData[i].points > 0) streak++; else break;
+      }
+      if (!analyticsShown) {
+        loading.style.display = 'none';
+        content.style.display = 'block';
+        analyticsShown = true;
+      }
+      window.renderAnalytics(dailyData, liveTotal, MOCK_INTERVIEW_UNLOCK_POINTS, streak, firstAnalyticsRender);
+      firstAnalyticsRender = false;
+      if (typeof feedPerfStreak === 'function') feedPerfStreak(streak);
+    }
+
+    // user doc → totalPoints (live)
+    onSnapshot(doc(db, 'veeraUsers', user.uid), (snap) => {
+      liveTotal = snap.exists() ? (snap.data().totalPoints || 0) : 0;
+      pushAnalytics();
+    }, (err) => {
+      console.error('User totals listen failed:', err);
+      if (!analyticsShown) { loading.innerHTML = 'Could not load analytics. Please refresh and try again.'; }
+    });
+
+    // each of the last 7 daily docs (live)
+    days.forEach((d, i) => {
+      onSnapshot(doc(db, 'veeraUsers', user.uid, 'dailyPoints', d.key), (snap) => {
+        const v = snap.exists() ? snap.data() : {};
+        dailyData[i].points = v.points || 0;
+        dailyData[i].seconds = v.activeSeconds || 0;
+        pushAnalytics();
+      }, (err) => { console.error('Daily doc listen failed:', err); });
+    });
+
+    // ─── LIVE CLASS STANDINGS (from task-tracker DB) ───
+    startLiveLeaderboard(user);
+
+    // ─── WHO'S ONLINE (from the 7:30 PM auth project, veeraUsers) ───
+    startWhoIsOnline(user);
+
+    // ─── ACTIVITY SIDEBAR + RADAR (reads site-wide appUsage/history) ───
+    startActivityPanel(user);
+
+    // ─── EXAM TESTS TAKEN (from task-tracker DB examPoints) ───
+    startExamPanel(user);
+
+    // ─── YOUR PERFORMANCE (personal strengths/weaknesses radar) ───
+    startPerformancePanel(user);
+
+    // ─── WEEKLY POINTS TREND (stock-style graph) ───
+    startTrendPanel(user);
+  });
+
+  // Personal performance across 5 dimensions, computed from live data.
+  // Scores are 0..100 (self-relative, so the shape shows strong vs weak areas).
+  const perf = { tasksMonth:0, examPoints:0, streak:0, activityMin:0, weekPoints:0, _ready:false };
+  let perfRenderQueued=false;
+  function perfUpdate(patch){
+    Object.assign(perf, patch);
+    if(!perfRenderQueued){ perfRenderQueued=true; requestAnimationFrame(()=>{ perfRenderQueued=false; renderPerformance(); }); }
+  }
+
+  // ─── WEEKLY POINTS TREND ───
+  // Buckets the student's task submissions by ISO-ish week and plots a stock-style line.
+  function startTrendPanel(user){
+    const myNameLc = (user.displayName || (user.email ? user.email.split('@')[0] : '')).trim().toLowerCase();
+    const myStem = myNameLc.replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+
+    let rawSubs = [];        // { ts, points } for every submission of mine, all time
+    let rawLog = [];         // { ts, seconds } for every page-visit heartbeat of mine, all time
+    let activeGrain = 'week'; // 'hour' | 'day' | 'week'
+
+    function hourStartOf(d){ const s=new Date(d); s.setMinutes(0,0,0); return s; }
+    function dayStartOf(d){ const s=new Date(d); s.setHours(0,0,0,0); return s; }
+    function weekStartOf(d){ const s=dayStartOf(d); s.setDate(s.getDate()-s.getDay()); return s; }
+
+    function hourKey(s){ return s.getFullYear()+'-'+String(s.getMonth()+1).padStart(2,'0')+'-'+String(s.getDate()).padStart(2,'0')+'-'+String(s.getHours()).padStart(2,'0'); }
+    function dayKey(s){ return s.getFullYear()+'-'+String(s.getMonth()+1).padStart(2,'0')+'-'+String(s.getDate()).padStart(2,'0'); }
+    function weekKey(s){ return dayKey(weekStartOf(s)); }
+
+    function hourLabel(s){ return s.toLocaleTimeString(undefined,{ hour:'numeric' }); }
+    function dayLabel(s){ return s.toLocaleDateString(undefined,{ day:'numeric', month:'short' }); }
+    function weekLabel(s){ return s.toLocaleDateString(undefined,{ day:'numeric', month:'short' }); }
+
+    function recomputeAndRender(){
+      const now = new Date();
+      let buckets = [], meta;
+
+      if (activeGrain === 'hour') {
+        const N = 24;
+        const byKey = {}, secByKey = {};
+        rawSubs.forEach(s => { const k = hourKey(hourStartOf(new Date(s.ts))); byKey[k] = (byKey[k]||0) + s.points; });
+        rawLog.forEach(s => { const k = hourKey(hourStartOf(new Date(s.ts))); secByKey[k] = (secByKey[k]||0) + s.seconds; });
+        for (let i = N-1; i >= 0; i--) {
+          const s = hourStartOf(now); s.setHours(s.getHours()-i);
+          const k = hourKey(s);
+          buckets.push({ key: k, label: hourLabel(s), value: byKey[k] || 0, mins: Math.round((secByKey[k]||0)/60) });
+        }
+        meta = { xLabelStep:3, prevLabel:'last hour', totalUnit:'hrs', subTitle:'Your points hour by hour, over the last day', ariaLabel:'Hourly points trend chart' };
+      } else if (activeGrain === 'day') {
+        const N = 14;
+        const byKey = {}, secByKey = {};
+        rawSubs.forEach(s => { const k = dayKey(dayStartOf(new Date(s.ts))); byKey[k] = (byKey[k]||0) + s.points; });
+        rawLog.forEach(s => { const k = dayKey(dayStartOf(new Date(s.ts))); secByKey[k] = (secByKey[k]||0) + s.seconds; });
+        for (let i = N-1; i >= 0; i--) {
+          const s = dayStartOf(now); s.setDate(s.getDate()-i);
+          const k = dayKey(s);
+          buckets.push({ key: k, label: dayLabel(s), value: byKey[k] || 0, mins: Math.round((secByKey[k]||0)/60) });
+        }
+        meta = { xLabelStep:2, prevLabel:'yesterday', totalUnit:'days', subTitle:'Your points day by day, over the last two weeks', ariaLabel:'Daily points trend chart' };
+      } else {
+        const N = 8;
+        const byKey = {}, secByKey = {};
+        rawSubs.forEach(s => { const k = weekKey(new Date(s.ts)); byKey[k] = (byKey[k]||0) + s.points; });
+        rawLog.forEach(s => { const k = weekKey(new Date(s.ts)); secByKey[k] = (secByKey[k]||0) + s.seconds; });
+        for (let i = N-1; i >= 0; i--) {
+          const s = weekStartOf(now); s.setDate(s.getDate()-i*7);
+          const k = weekKey(s);
+          buckets.push({ key: k, label: weekLabel(s), value: byKey[k] || 0, mins: Math.round((secByKey[k]||0)/60) });
+        }
+        meta = { xLabelStep:1, prevLabel:'last week', totalUnit:'wks', subTitle:'Your points week by week — up and down over time', ariaLabel:'Weekly points trend chart' };
+      }
+
+      const subEl = document.getElementById('trend-sub');
+      if (subEl) subEl.textContent = meta.subTitle;
+      const svgEl = document.getElementById('trend-chart');
+      if (svgEl) svgEl.setAttribute('aria-label', meta.ariaLabel);
+
+      renderTrend(buckets, meta);
+    }
+
+    document.querySelectorAll('.trend-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.classList.contains('active')) return;
+        activeGrain = btn.getAttribute('data-grain');
+        document.querySelectorAll('.trend-tab').forEach(b => b.classList.toggle('active', b === btn));
+        recomputeAndRender();
+      });
+    });
+
+    try{
+      onSnapshot(collection(taskDb,'submissions'), (snap)=>{
+        const arr = [];
+        snap.forEach(docSnap=>{
+          const d = docSnap.data() || {};
+          if(d.batchId !== 'batch_1930') return;
+          const sk = (d.safeKey||'').toLowerCase();
+          const nm = (d.studentName||'').trim().toLowerCase();
+          if(sk !== myStem && nm !== myNameLc) return;
+          let ts = null;
+          if(d.timestamp && d.timestamp.seconds) ts = d.timestamp.seconds*1000;
+          else if(d.ts) ts = d.ts;
+          else if(d.dateStr) ts = new Date(d.dateStr+'T12:00:00').getTime();
+          if(!ts) return;
+          arr.push({ ts, points: (typeof d.points==='number' ? d.points : 1) });
+        });
+        rawSubs = arr;
+        recomputeAndRender();
+      }, (err)=>{ console.error('trend listen failed', err); trendEmpty('Trend unavailable right now.'); });
+    }catch(e){ trendEmpty('Trend unavailable right now.'); }
+
+    try{
+      onSnapshot(doc(db, 'veeraUsers', user.uid, 'appUsage', 'history'), (snap)=>{
+        const d = snap.exists() ? (snap.data()||{}) : {};
+        const log = Array.isArray(d.log) ? d.log : [];
+        rawLog = log.filter(it => it && it.at).map(it => ({ ts: it.at, seconds: it.seconds || 0 }));
+        recomputeAndRender();
+      }, (err)=>{ console.error('trend activity listen failed', err); });
+    }catch(e){}
+  }
+
+  function trendEmpty(msg){
+    const svg=document.getElementById('trend-chart'); const leg=document.getElementById('trend-legend'); const sum=document.getElementById('trend-summary');
+    if(sum) sum.innerHTML='';
+    if(leg) leg.innerHTML='';
+    if(svg) svg.innerHTML='<text x="360" y="130" text-anchor="middle" class="trend-empty">'+msg+'</text>';
+  }
+
+  function renderTrend(periods, meta){
+    meta = meta || { xLabelStep:1, prevLabel:'last week', totalUnit:'wks' };
+    const svg = document.getElementById('trend-chart');
+    const legend = document.getElementById('trend-legend');
+    const summary = document.getElementById('trend-summary');
+    if(!svg) return;
+
+    const anyData = periods.some(w=>w.value>0);
+    if(!anyData){ trendEmpty('No points yet — your trend will appear here.'); return; }
+
+    const W=720, H=278, padL=42, padR=18, padT=22, padB=52;
+    const innerW=W-padL-padR, innerH=H-padT-padB;
+    const vals=periods.map(w=>w.value);
+    const maxV=Math.max(1, ...vals);
+    const niceMax=Math.ceil(maxV/2)*2 || 2;
+    const x=i=> padL + (periods.length===1?innerW/2:(i/(periods.length-1))*innerW);
+    const y=v=> padT + innerH - (v/niceMax)*innerH;
+
+    let g='';
+    // horizontal gridlines + y labels (0, mid, max)
+    [0,0.5,1].forEach(t=>{
+      const yy=padT+innerH-(t*innerH); const val=Math.round(niceMax*t);
+      g+='<line class="trend-grid" x1="'+padL+'" y1="'+yy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+yy.toFixed(1)+'"/>';
+      g+='<text class="trend-axis-lbl" x="'+(padL-8)+'" y="'+(yy+3).toFixed(1)+'" text-anchor="end">'+val+'</text>';
+    });
+
+    // area fill under the line
+    let areaPath='M '+x(0).toFixed(1)+' '+y(periods[0].value).toFixed(1);
+    for(let i=1;i<periods.length;i++) areaPath+=' L '+x(i).toFixed(1)+' '+y(periods[i].value).toFixed(1);
+    areaPath+=' L '+x(periods.length-1).toFixed(1)+' '+(padT+innerH).toFixed(1)+' L '+x(0).toFixed(1)+' '+(padT+innerH).toFixed(1)+' Z';
+    g+='<path class="trend-area" fill="var(--an-purple)" d="'+areaPath+'"/>';
+
+    // colored segments: green when rising, red when falling
+    for(let i=1;i<periods.length;i++){
+      const up = periods[i].value >= periods[i-1].value;
+      g+='<line class="trend-line '+(up?'trend-seg-up':'trend-seg-down')+'" x1="'+x(i-1).toFixed(1)+'" y1="'+y(periods[i-1].value).toFixed(1)+'" x2="'+x(i).toFixed(1)+'" y2="'+y(periods[i].value).toFixed(1)+'"/>';
+    }
+
+    // points + value labels + x labels + minutes-active row (skip labels per xLabelStep to avoid crowding on hourly/daily views)
+    periods.forEach((w,i)=>{
+      const rising = i===0 ? true : periods[i].value >= periods[i-1].value;
+      const col = i===0 ? 'var(--an-purple)' : (rising ? '#1db977' : '#e5484d');
+      const mins = w.mins || 0;
+      g+='<circle class="trend-pt" cx="'+x(i).toFixed(1)+'" cy="'+y(w.value).toFixed(1)+'" r="4" fill="'+col+'"><title>'+w.label+': '+w.value+' pts · '+mins+' min active</title></circle>';
+      if(w.value>0) g+='<text class="trend-pt-val" x="'+x(i).toFixed(1)+'" y="'+(y(w.value)-10).toFixed(1)+'" text-anchor="middle">'+w.value+'</text>';
+      if(i % meta.xLabelStep === 0 || i === periods.length-1){
+        g+='<text class="trend-xlbl" x="'+x(i).toFixed(1)+'" y="'+(H-30)+'" text-anchor="middle">'+w.label+'</text>';
+        g+='<text class="trend-mins-lbl" x="'+x(i).toFixed(1)+'" y="'+(H-14)+'" text-anchor="middle">'+(mins>0 ? mins+'m' : '—')+'</text>';
+      }
+    });
+
+    svg.innerHTML=g;
+
+    // summary chip: change from previous period to latest
+    const last=periods[periods.length-1].value, prev=periods[periods.length-2] ? periods[periods.length-2].value : 0;
+    const diff=last-prev;
+    const total=periods.reduce((a,w)=>a+w.value,0);
+    const totalMins=periods.reduce((a,w)=>a+(w.mins||0),0);
+    if(summary){
+      const cls = diff>0?'up':(diff<0?'down':'flat');
+      const arrow = diff>0?'▲':(diff<0?'▼':'—');
+      summary.innerHTML = '<span class="trend-chip '+cls+'">'+arrow+' '+(diff>0?'+':'')+diff+' vs '+meta.prevLabel+'</span>'+
+                          '<span class="trend-total">'+total+' pts over '+periods.length+' '+meta.totalUnit+' · '+totalMins+' min active</span>';
+    }
+    if(legend){
+      legend.innerHTML = '<span><span class="dot" style="background:#1db977"></span>Rising</span>'+
+                         '<span><span class="dot" style="background:#e5484d"></span>Falling</span>';
+    }
+
+    // draw-in animation
+    if(window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      gsap.from('#trend-chart .trend-line', { opacity:0, duration:0.5, stagger:0.05, ease:'power2.out' });
+      gsap.from('#trend-chart .trend-pt', { scale:0, transformOrigin:'center', opacity:0, duration:0.35, stagger:0.05, delay:0.2, ease:'back.out(2)' });
+      gsap.from('#trend-chart .trend-area', { opacity:0, duration:0.6 });
+    }
+  }
+
+  function startPerformancePanel(user){
+    const authName = user.displayName || (user.email ? user.email.split('@')[0] : '');
+    const myEmail = (user.email || '').trim().toLowerCase();
+
+    // ─── Exam points + student name: from examPoints (studentTask DB) ───
+    // test.html writes each exam record with studentName, email and points.
+    // We match on EMAIL because it's exact and never drifts, unlike the name
+    // spelling. The name we display then comes from the record itself, so the
+    // analytics page always shows the same name the exam page saved.
+    let myStem = _stem(authName); // fallback for the studentPoints lookup below
+    try{
+      onSnapshot(collection(taskDb, 'examPoints'), (snap)=>{
+        const thisMonth = (new Date()).getFullYear()+'-'+String((new Date()).getMonth()+1).padStart(2,'0');
+        let mine = null;
+        const seen = [];
+        snap.forEach(docSnap => {
+          const d = docSnap.data() || {};
+          // Strict: only records explicitly tagged batch_1930 count. An
+          // untagged record is not assumed to be ours.
+          if (d.batchId !== BATCH_ID) return;
+          const docEmail = (d.email || '').trim().toLowerCase();
+          seen.push(docSnap.id + ' [' + (d.studentName||'?') + '] email=' + (docEmail||'(none)'));
+          if (docEmail && docEmail === myEmail) mine = d;
+        });
+
+        if (!mine){
+          // Fall back to matching on name so students whose record was saved
+          // before the email field existed still show up.
+          const myNameStem = _stem(authName);
+          snap.forEach(docSnap => {
+            const d = docSnap.data() || {};
+            if (d.batchId !== BATCH_ID) return;
+            if (myNameStem && _stem(d.studentName) === myNameStem) mine = d;
+          });
+          if (mine) console.info('[analytics] matched exam record by name, not email');
+        }
+
+        if (!mine){
+          console.warn(
+            '[analytics] no batch_1930 exam record for you.\n' +
+            '  your email: ' + (myEmail || '(none)') + '\n' +
+            '  your name:  ' + authName + '\n' +
+            '  records in batch_1930 (' + seen.length + '):\n    ' +
+            (seen.join('\n    ') || '(none)')
+          );
+          perfUpdate({ examPoints: 0 });
+          return;
+        }
+
+        // Show the name exactly as the exam page stored it.
+        if (mine.studentName){
+          const el = document.getElementById('topbar-name');
+          if (el) el.textContent = mine.studentName;
+          const av = document.getElementById('topbar-avatar');
+          if (av && !av.querySelector('img')){
+            av.textContent = mine.studentName.trim().charAt(0).toUpperCase() || 'U';
+          }
+          myStem = _stem(mine.studentName);
+          console.info('[analytics] showing exam name: ' + mine.studentName);
+        }
+        // test.html mirrors a lifetime cumulative total, not a monthly one —
+        // there's no pointsMonth field to gate on, so use the total as-is.
+        const pts = mine.points || mine.totalExamPoints || 0;
+        perfUpdate({ examPoints: pts });
+      }, (err)=>{ console.error('[analytics] examPoints listen failed', err); });
+    }catch(e){ console.error('[analytics] examPoints setup failed', e); }
+
+    // Tasks this month + streak + weekly: from studentPoints (task DB)
+    // studentPoints doc id pattern used elsewhere: `${BATCH_ID}_${stem}`
+    try{
+      onSnapshot(doc(taskDb, 'studentPoints', BATCH_ID + '_' + myStem), (snap)=>{
+        const d = snap.exists() ? (snap.data()||{}) : {};
+        const thisMonth = (new Date()).getFullYear()+'-'+String((new Date()).getMonth()+1).padStart(2,'0');
+        const monthly = (d.lastMonth===thisMonth) ? (d.monthly||0) : 0;
+        // weekly guard
+        const now=new Date(); const ws=new Date(now); ws.setDate(now.getDate()-now.getDay());
+        const wkKey = ws.getFullYear()+'-'+String(ws.getMonth()+1).padStart(2,'0')+'-'+String(ws.getDate()).padStart(2,'0');
+        const weekly = (d.lastWeek===wkKey) ? (d.weekly||0) : 0;
+        perfUpdate({ tasksMonth: monthly, weekPoints: weekly });
+      }, (err)=>{ console.error('[analytics] studentPoints listen failed', err); });
+    }catch(e){ console.error('[analytics] studentPoints setup failed', e); }
+
+    // Streak + activity minutes: from appUsage history (login DB) + daily points
+    try{
+      onSnapshot(doc(db, 'veeraUsers', user.uid, 'appUsage', 'history'), (snap)=>{
+        const d = snap.exists() ? (snap.data()||{}) : {};
+        const mins = Math.round((d.totalSeconds||0)/60);
+        perfUpdate({ activityMin: mins });
+      }, ()=>{});
+    }catch(e){}
+  }
+
+  // Called both from its own listeners and can read the page's dailyData streak via perf.streak.
+  function renderPerformance(){
+    const svg = document.getElementById('perf-radar');
+    const readout = document.getElementById('perf-readout');
+    if(!svg || !readout) return;
+
+    // Convert raw values → 0..100 scores using sensible soft caps.
+    const dims = [
+      { key:'Tasks',       raw: perf.tasksMonth,  score: capScore(perf.tasksMonth, 20),  tip:'task submissions this month' },
+      { key:'Tests',       raw: perf.examPoints,  score: capScore(perf.examPoints, 20),  tip:'total exam points' },
+      { key:'Consistency', raw: perf.streak,      score: capScore(perf.streak, 7),        tip:'day active streak' },
+      { key:'Activity',    raw: perf.activityMin, score: capScore(perf.activityMin, 300), tip:'minutes on the platform' },
+      { key:'This Week',   raw: perf.weekPoints,  score: capScore(perf.weekPoints, 7),     tip:'points earned this week' }
+    ];
+
+    drawPerfRadar(svg, dims);
+
+    // strongest & weakest (ignore all-zero case gracefully)
+    const anyData = dims.some(d=>d.raw>0);
+    const sorted = dims.slice().sort((a,b)=>b.score-a.score);
+    const strong = sorted[0], weak = sorted[sorted.length-1];
+
+    let html = '';
+    if(!anyData){
+      html += '<div class="perf-callout weak"><span class="perf-callout-ico">🌱</span><div class="perf-callout-body"><div class="perf-callout-label">Getting started</div><div class="perf-callout-name">No activity yet</div><div class="perf-callout-msg">Submit a task or take a test and your strengths will show up here.</div></div></div>';
+    } else {
+      html += '<div class="perf-callout strong"><span class="perf-callout-ico">💪</span><div class="perf-callout-body">'+
+        '<div class="perf-callout-label">Strongest area</div>'+
+        '<div class="perf-callout-name">'+strong.key+'</div>'+
+        '<div class="perf-callout-msg">You\'re doing great here — '+strong.raw+' '+strong.tip+'. Keep it up!</div></div></div>';
+      html += '<div class="perf-callout weak"><span class="perf-callout-ico">🎯</span><div class="perf-callout-body">'+
+        '<div class="perf-callout-label">Focus area</div>'+
+        '<div class="perf-callout-name">'+weak.key+'</div>'+
+        '<div class="perf-callout-msg">This is your lowest right now — '+weak.raw+' '+weak.tip+'. A little effort here boosts your overall score.</div></div></div>';
+    }
+
+    // bars
+    html += '<div class="perf-bars">'+dims.map(function(d){
+      return '<div class="perf-bar-row"><span class="perf-bar-name">'+d.key+'</span>'+
+        '<span class="perf-bar-track"><span class="perf-bar-fill" data-w="'+d.score+'"></span></span>'+
+        '<span class="perf-bar-val">'+d.score+'</span></div>';
+    }).join('')+'</div>';
+
+    readout.innerHTML = html;
+    // animate the bars in with a real CSS transition (reliable regardless of GSAP timing) —
+    // double rAF makes sure the 0-width state paints first so the fill visibly slides out,
+    // not just the number next to it.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      readout.querySelectorAll('.perf-bar-fill').forEach(function(el){ el.style.width = el.getAttribute('data-w')+'%'; });
+    } else {
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          readout.querySelectorAll('.perf-bar-fill').forEach(function(el){
+            el.style.width = el.getAttribute('data-w')+'%';
+          });
+        });
+      });
+    }
+  }
+
+  function capScore(v, softMax){
+    if(!v || v<=0) return 0;
+    return Math.max(4, Math.min(100, Math.round((v/softMax)*100)));
+  }
+
+  function drawPerfRadar(svg, dims){
+    const cx=160, cy=160, R=110, N=dims.length;
+    const ang = i => (-Math.PI/2) + i*(2*Math.PI/N);
+    const pt = (i,r) => [cx+Math.cos(ang(i))*r, cy+Math.sin(ang(i))*r];
+    let g='';
+    for(let ring=1; ring<=4; ring++){
+      const rr=R*ring/4; let pts='';
+      for(let i=0;i<N;i++){ const [x,y]=pt(i,rr); pts+=(i?' ':'')+x.toFixed(1)+','+y.toFixed(1); }
+      g+='<polygon class="perf-grid-line" points="'+pts+'"/>';
+    }
+    for(let i=0;i<N;i++){
+      const [x,y]=pt(i,R);
+      g+='<line class="perf-axis" x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'"/>';
+      const [lx,ly]=pt(i,R+22);
+      const anchor = Math.abs(lx-cx)<8 ? 'middle' : (lx<cx?'end':'start');
+      g+='<text class="perf-axis-label" x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="middle">'+dims[i].key+'</text>';
+      g+='<text class="perf-axis-score" x="'+lx.toFixed(1)+'" y="'+(ly+13).toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="middle">'+dims[i].score+'</text>';
+    }
+    let dpts=''; const coords=[];
+    for(let i=0;i<N;i++){ const r=(dims[i].score/100)*R; const [x,y]=pt(i,Math.max(2,r)); coords.push([x,y]); dpts+=(i?' ':'')+x.toFixed(1)+','+y.toFixed(1); }
+    g+='<polygon class="perf-area" points="'+dpts+'"/>';
+    coords.forEach(function(c){ g+='<circle class="perf-dot" cx="'+c[0].toFixed(1)+'" cy="'+c[1].toFixed(1)+'" r="3.5"/>'; });
+    svg.innerHTML=g;
+    if(window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      gsap.from('.perf-area', { scale:0.2, transformOrigin:'160px 160px', opacity:0, duration:0.7, ease:'back.out(1.5)' });
+      gsap.from('.perf-dot', { scale:0, transformOrigin:'center', opacity:0, duration:0.4, stagger:0.05, delay:0.25 });
+    }
+  }
+
+  // Feed the streak from the main analytics computation into perf too.
+  const _origPush = window.__perfStreakHook;
+  function feedPerfStreak(streak){ perfUpdate({ streak: streak||0 }); }
+
+  // Live list of students who've given exams + a separate Top 3 by exam points.
+  function startExamPanel(user){
+    const myName = (user.displayName || (user.email ? user.email.split('@')[0] : '')).trim().toLowerCase();
+
+    // gentle live-dot pulse
+    if (window.gsap) gsap.to('#ex-dot', { boxShadow:'0 0 0 6px rgba(29,185,119,0)', duration:1.5, repeat:-1, ease:'power2.out' });
+
+    const exStem = (n) => String(n||'').toLowerCase().trim().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+
+    let examDocs = null;    // raw examPoints docs
+
+    function recomputeExam(){
+      if (!examDocs) return;
+      const rows = [];
+      examDocs.forEach(d => {
+        const points = d.points || 0;
+        // Show anyone who has actually sat the exam. A student who started
+        // but left before the 60s point timer fired still has a record (with
+        // lastSeen but no points), and should appear at 0 rather than vanish.
+        if (points <= 0 && !d.lastSeen && !d.lastExamDate) return;
+        const name = d.studentName || d.id;
+        // Batch scoping is already handled by the batchId filter on the
+        // listener below. We deliberately do NOT require a roster match here:
+        // the exam page lets any signed-in user sit the test, so demanding a
+        // roster hit would silently drop real exam takers — the owner account,
+        // or anyone whose login name differs from their roster spelling.
+        rows.push({
+          uid: d.id,
+          name: name,
+          points: points,
+          lastDate: d.lastExamDate || null,
+          isMe: myName && String(name).trim().toLowerCase() === myName
+        });
+      });
+      rows.sort((a,b) => b.points - a.points || a.name.localeCompare(b.name));
+      renderExamList(rows);
+      renderExamPodium(rows);
+    }
+
+    onSnapshot(collection(taskDb, 'examPoints'), (snap) => {
+      const arr = [];
+      snap.forEach(docSnap => {
+        const d = docSnap.data() || {};
+        // Strict batch scoping: the record must be explicitly tagged
+        // batch_1930. An untagged record is NOT assumed to be ours — that
+        // assumption is what let other batches leak into this panel.
+        if (d.batchId !== BATCH_ID) return;
+        arr.push({ id: docSnap.id, ...d });
+      });
+      examDocs = arr;
+      recomputeExam();
+    }, (err) => {
+      console.error('Exam list listen failed:', err);
+      const el = document.getElementById('ex-list');
+      if (el) el.innerHTML = '<div class="lb-empty">Exam results unavailable right now.</div>';
+    });
+  }
+
+  function examIni(n){ return (n||'?').trim().split(/\s+/).map(function(w){return w[0];}).slice(0,2).join('').toUpperCase(); }
+  function examEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function examCssEsc(s){ return String(s).replace(/["\\]/g,'\\$&'); }
+  function examWhen(dateStr){
+    if (!dateStr) return '';
+    try {
+      const today = new Date().toLocaleDateString('en-CA');
+      if (dateStr === today) return 'today';
+      const d = new Date(dateStr + 'T00:00:00');
+      const diff = Math.round((Date.now() - d.getTime())/86400000);
+      if (diff === 1) return 'yesterday';
+      if (diff > 1 && diff < 30) return diff + 'd ago';
+      return d.toLocaleDateString(undefined, { day:'numeric', month:'short' });
+    } catch(e){ return dateStr; }
+  }
+
+  function renderExamList(rows){
+    const el = document.getElementById('ex-list');
+    if (!el) return;
+    if (!rows.length){ el.innerHTML = '<div class="lb-empty">No one has given a test yet.</div>'; return; }
+    el.innerHTML = rows.map(function(r, i){
+      const when = examWhen(r.lastDate);
+      const sub = r.isMe ? '<span class="me">You</span>'
+        : (r.points + (r.points === 1 ? ' test' : ' tests') + (when ? ' · last ' + when : ''));
+      return '<div class="lb-row'+(r.isMe?' me-row':'')+'">' +
+        '<div class="lb-rk"><span class="lb-rk-num">'+(i+1)+'</span></div>' +
+        '<div class="lb-who">' +
+          '<div class="lb-av" data-exname="'+examEsc(r.name)+'">'+examIni(r.name)+'</div>' +
+          '<div class="lb-who-t"><div class="lb-name">'+examEsc(r.name)+'</div>' +
+          '<div class="lb-sub">'+sub+'</div></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    loadExamPhotos(rows, '.lb-av[data-exname="');
+    if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      gsap.from('#ex-list .lb-row', { y:12, opacity:0, duration:0.35, stagger:0.03, ease:'power2.out' });
+    }
+  }
+
+  function renderExamPodium(rows){
+    const wrap = document.getElementById('ex-podium-cards');
+    if (!wrap) return;
+    const top3 = rows.slice(0,3);
+    if (!top3.length){ wrap.innerHTML = '<div class="lb-podium-empty">No entries yet</div>'; return; }
+    const medals = ['🥇','🥈','🥉'];
+    const places = ['1st','2nd','3rd'];
+    const cls = ['first','second','third'];
+    wrap.innerHTML = top3.map(function(r, i){
+      return '<div class="lb-pod-card '+cls[i]+'">' +
+        '<div class="lb-pod-medal">'+medals[i]+'</div>' +
+        '<div class="lb-pod-av" data-exname="'+examEsc(r.name)+'">'+examIni(r.name)+'</div>' +
+        '<div class="lb-pod-body">' +
+          '<div class="lb-pod-place">'+places[i]+' place</div>' +
+          '<div class="lb-pod-name" title="'+examEsc(r.name)+'">'+examEsc(r.name)+'</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    loadExamPhotos(top3, '.lb-pod-av[data-exname="');
+    if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      gsap.from('#ex-podium-cards .lb-pod-card', { y:16, opacity:0, duration:0.45, stagger:0.08, ease:'back.out(1.4)' });
+    }
+  }
+
+  function loadExamPhotos(rows, selPrefix){
+    if (typeof window.fetchStudentPhoto !== 'function') return;
+    rows.forEach(function(r){
+      window.fetchStudentPhoto(r.name).then(function(url){
+        if (!url) return;
+        document.querySelectorAll(selPrefix + examCssEsc(r.name) + '"]').forEach(function(av){
+          if (av.querySelector('img')) return;
+          const img = document.createElement('img'); img.src = url; img.alt = '';
+          img.onerror = function(){ try{ img.remove(); }catch(e){} };
+          av.innerHTML = ''; av.appendChild(img);
+        });
+      });
+    });
+  }
+
+  // Reads the site-wide usage history (written by ai-agent-widget.js on every
+  // page) and renders the recent list, totals, live timer, and radar chart.
+  function startActivityPanel(user){
+    const ref = doc(db, 'veeraUsers', user.uid, 'appUsage', 'history');
+    const pageStart = Date.now();
+
+    const fmtClock = (s) => {
+      s = Math.max(0, Math.floor(s));
+      const m = Math.floor(s/60), ss = s%60;
+      if (m >= 60){ const h=Math.floor(m/60); return h+':'+String(m%60).padStart(2,'0')+':'+String(ss).padStart(2,'0'); }
+      return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+    };
+    const fmtDur = (s) => {
+      s = Math.floor(s||0);
+      if (s < 60) return s+'s';
+      const m = Math.floor(s/60);
+      if (m < 60) return m+'m';
+      return Math.floor(m/60)+'h '+(m%60)+'m';
+    };
+    const iconFor = (name, cat) => {
+      const n = ((cat||'')+' '+(name||'')).toLowerCase();
+      if (n.includes('test')) return '📝';
+      if (n.includes('aws')) return '☁️';
+      if (n.includes('devops')) return '⚙️';
+      if (n.includes('git')) return '🌿';
+      if (n.includes('analytic')) return '📊';
+      if (n.includes('dashboard')) return '🏠';
+      if (n.includes('task')) return '✅';
+      if (n.includes('note')) return '📓';
+      if (n.includes('standing')||n.includes('leaderboard')) return '🏆';
+      return '📄';
+    };
+    const relTime = (ts) => {
+      const diff = (Date.now()-ts)/1000;
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return Math.floor(diff/60)+'m ago';
+      if (diff < 86400) return Math.floor(diff/3600)+'h ago';
+      return Math.floor(diff/86400)+'d ago';
+    };
+    const esc2 = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+    // label the current page (no live counter)
+    document.getElementById('us-now-page').textContent = 'Your Analytics';
+
+    function renderList(d){
+      const log = Array.isArray(d.log) ? d.log : [];
+      const totalSeconds = (d.totalSeconds || 0) + (Date.now()-pageStart)/1000;
+      const visits = d.visits || log.length || 0;
+      document.getElementById('us-total-time').textContent = fmtDur(totalSeconds);
+      document.getElementById('us-visits').textContent = visits;
+
+      const listEl = document.getElementById('us-list');
+      const items = log.slice().reverse().slice(0, 14);
+      if (!items.length){ listEl.innerHTML = '<div class="us-empty">Browse the site and your activity will show up here.</div>'; return; }
+      listEl.innerHTML = items.map(function(it){
+        return '<div class="us-item">' +
+          '<div class="us-item-ico">'+iconFor(it.name, it.category)+'</div>' +
+          '<div class="us-item-body"><div class="us-item-name">'+esc2(it.name)+'</div>' +
+          '<div class="us-item-time">'+(it.category?esc2(it.category)+' · ':'')+relTime(it.at)+'</div></div>' +
+          '<div class="us-item-dur">'+fmtDur(it.seconds)+'</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderRadar(d){
+      // Fixed axes so the shape is comparable over time
+      const AX = ['AWS','DevOps','Git','Tests','Tasks','Notes'];
+      const by = d.byCategory || {};
+      // Analytics/Dashboard fold into a general bucket we don't plot to keep 6 clean axes
+      const vals = AX.map(a => by[a] || 0);
+      const max = Math.max(1, ...vals);
+      const svg = document.getElementById('us-radar');
+      const cx = 130, cy = 130, R = 92, N = AX.length;
+      const ang = i => (-Math.PI/2) + i*(2*Math.PI/N);
+      const pt = (i, r) => [cx + Math.cos(ang(i))*r, cy + Math.sin(ang(i))*r];
+
+      let g = '';
+      // concentric rings
+      for (let ring=1; ring<=4; ring++){
+        const rr = R*ring/4;
+        let pts = '';
+        for (let i=0;i<N;i++){ const [x,y]=pt(i,rr); pts += (i?' ':'')+x.toFixed(1)+','+y.toFixed(1); }
+        g += '<polygon class="radar-grid" points="'+pts+'"/>';
+      }
+      // axes + labels
+      for (let i=0;i<N;i++){
+        const [x,y]=pt(i,R);
+        g += '<line class="radar-axis" x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'"/>';
+        const [lx,ly]=pt(i,R+16);
+        const anchor = Math.abs(lx-cx)<6 ? 'middle' : (lx<cx?'end':'start');
+        g += '<text class="radar-label" x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="middle">'+AX[i]+'</text>';
+        g += '<text class="radar-val" x="'+lx.toFixed(1)+'" y="'+(ly+10).toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="middle">'+fmtDur(vals[i])+'</text>';
+      }
+      // data polygon
+      let dpts = '';
+      const coords = [];
+      for (let i=0;i<N;i++){
+        const r = (vals[i]/max)*R;
+        const [x,y]=pt(i, Math.max(2, r));
+        coords.push([x,y]);
+        dpts += (i?' ':'')+x.toFixed(1)+','+y.toFixed(1);
+      }
+      g += '<polygon class="radar-area" points="'+dpts+'"/>';
+      coords.forEach(function(c){ g += '<circle class="radar-dot" cx="'+c[0].toFixed(1)+'" cy="'+c[1].toFixed(1)+'" r="3"/>'; });
+
+      svg.innerHTML = g;
+      if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        gsap.from('.radar-area', { scale:0.2, transformOrigin:'130px 130px', opacity:0, duration:0.7, ease:'back.out(1.5)' });
+        gsap.from('.radar-dot', { scale:0, transformOrigin:'center', opacity:0, duration:0.4, stagger:0.05, delay:0.3 });
+      }
+    }
+
+    // live subscribe so the sidebar updates as the widget writes from any tab
+    onSnapshot(ref, function(snap){
+      const d = snap.exists() ? (snap.data() || {}) : {};
+      renderList(d);
+      renderRadar(d);
+    }, function(err){
+      console.error('Activity read failed', err);
+      document.getElementById('us-list').innerHTML = '<div class="us-empty">Activity unavailable right now.</div>';
+    });
+  }
+
+  // Live 7:30 PM batch leaderboard from the task-tracker project.
+  // Ranks students by real points earned this calendar month (resets automatically
+  // when the month rolls over, since it's summed straight from each submission's date).
+  function startLiveLeaderboard(user){
+    const myName = (user.displayName || (user.email ? user.email.split('@')[0] : '')).trim().toLowerCase();
+    let roster = null;   // array of student names in batch_1930
+    let subs = null;     // array of submissions for batch_1930
+
+    function monthKeyOf(ts){
+      if (!ts) return null;
+      const d = new Date(ts);
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    }
+
+    function recompute(){
+      if (!roster || !subs) return;
+      const thisMonthKey = monthKeyOf(Date.now());
+
+      // per student: submissions this month (real points, resets every month) + latest task.
+      // Match submissions to roster names case/whitespace-insensitively so inconsistent
+      // capitalization or stray spaces don't silently drop real data.
+      const stats = {};
+      const keyIndex = {};
+      roster.forEach(name => {
+        const clean = String(name || '').trim();
+        if (!clean) return;
+        stats[clean] = { name: clean, count: 0, monthPoints: 0, latestTask: null, latestTs: 0 };
+        keyIndex[clean.toLowerCase()] = clean;
+      });
+
+      subs.forEach(s => {
+        const rawName = String(s.studentName || '').trim();
+        if (!rawName) return;
+        const key = keyIndex[rawName.toLowerCase()];
+        if (!key) return; // not on this batch's roster
+        const st = stats[key];
+        st.count += 1;                                          // all-time submission count
+        if (monthKeyOf(s.ts) === thisMonthKey) {
+          st.monthPoints += (typeof s.points === 'number' ? s.points : 1);
+        }
+        const ts = s.ts || 0;
+        if (ts >= st.latestTs && s.taskTitle) {
+          st.latestTs = ts;
+          st.latestTask = s.taskTitle;
+        }
+      });
+
+      const rows = Object.values(stats).map(v => ({
+        uid: v.name,                 // name is the stable key here
+        name: v.name,
+        points: v.monthPoints,       // real points this month, computed straight from submissions (resets monthly)
+        count: v.count,              // all-time number of task submissions
+        latestTask: v.latestTask,
+        isMe: myName && v.name.trim().toLowerCase() === myName
+      }));
+      // rank by this month's real points first, all-time submissions as tiebreaker
+      rows.sort((a,b) => b.points - a.points || b.count - a.count || a.name.localeCompare(b.name));
+
+      const meUid = (rows.find(r => r.isMe) || {}).uid || null;
+      const myRow = rows.find(r => r.isMe);
+      const myPtsEl = document.getElementById('lb-my-pts');
+      const myPtsVal = document.getElementById('lb-my-pts-val');
+      if (myRow && myPtsEl && myPtsVal) {
+        myPtsVal.textContent = (myRow.points || 0).toLocaleString();
+        myPtsEl.style.display = 'flex';
+      }
+      window.renderLeaderboard(rows, meUid);
+    }
+
+    // roster: batches/batch_1930 -> { students: [...] }
+    onSnapshot(doc(taskDb, 'batches', BATCH_ID), (docSnap) => {
+      const d = docSnap.exists() ? docSnap.data() : {};
+      roster = Array.isArray(d.students) ? d.students : [];
+      recompute();
+    }, (err) => {
+      console.error('Roster listen failed:', err);
+      const list = document.getElementById('lb-list');
+      if (list) list.innerHTML = '<div class="lb-empty">Standings unavailable right now.</div>';
+    });
+
+    // submissions: whole collection, filtered to this batch client-side.
+    // Real points come straight from here (data.points, or 1 per submission if not set),
+    // summed only for the current calendar month — so it naturally resets every month.
+    onSnapshot(collection(taskDb, 'submissions'), (snap) => {
+      const arr = [];
+      snap.forEach(docSnap => {
+        const data = docSnap.data() || {};
+        if (data.batchId !== BATCH_ID) return;
+        let ts = null;
+        if (data.timestamp && data.timestamp.seconds) ts = data.timestamp.seconds * 1000;
+        else if (data.timestamp) ts = new Date(data.timestamp).getTime();
+        arr.push({
+          studentName: data.studentName,
+          taskTitle: data.taskTitle || null,
+          ts,
+          points: (typeof data.points === 'number' ? data.points : null)
+        });
+      });
+      subs = arr;
+      recompute();
+    }, (err) => {
+      console.error('Submissions listen failed:', err);
+    });
+  }
+
+  // Who's online: explicit presence. Every page that's open writes a
+  // liveUsers/{uid} doc into the shared task-tracker project (same one
+  // used for batches/submissions/points, so it's consistent across every
+  // batch page instead of depending on each batch's own auth project).
+  // A short heartbeat keeps it fresh; closing the tab / navigating away
+  // deletes it outright. Anything not refreshed in the last ~50s is
+  // treated as offline as a safety net for crashes/force-closes that
+  // never get a clean "close" event.
+  function startWhoIsOnline(user){
+    const ONLINE_MS = 50 * 1000;
+    const HEARTBEAT_MS = 20 * 1000;
+    let rows = [];
+
+    function onlineIni(n){ return (n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+    function onlineEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function render(){
+      const list = document.getElementById('online-list');
+      const countTxt = document.getElementById('online-count-txt');
+      if (!list) return;
+
+      const onlineCount = rows.length;
+      if (countTxt) countTxt.textContent = onlineCount + (onlineCount === 1 ? ' online' : ' online');
+
+      if (!rows.length) {
+        list.innerHTML = '<div class="lb-empty">No one else is active right now.</div>';
+        return;
+      }
+
+      list.innerHTML = rows.map(r => {
+        const avInner = onlineIni(r.name);
+        return '<div class="online-row'+(r.isMe?' me-row':'')+'">' +
+          '<div class="online-av">'+avInner+'<span class="online-dot-sm online"></span></div>' +
+          '<div class="online-body"><div class="online-name">'+onlineEsc(r.name)+(r.isMe?' <span class="me">(You)</span>':'')+'</div>' +
+          '<div class="online-status">Online now</div></div>' +
+        '</div>';
+      }).join('');
+
+      if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.from('#online-list .online-row', { y:10, opacity:0, duration:0.35, stagger:0.03, ease:'power2.out' });
+        gsap.to('#online-dot', { boxShadow:'0 0 0 6px rgba(29,185,119,0)', duration:1.5, repeat:-1, ease:'power2.out' });
+      }
+    }
+
+    // ── Presence for THIS tab: add on arrival, refresh on a heartbeat,
+    // remove on close. analytics.html doesn't load ai-agent-widget.js (the
+    // widget that does this on every other page), so it does its own here.
+    const myDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'Student');
+    const myRef = doc(taskDb, 'liveUsers', user.uid);
+    function beat(){
+      setDoc(myRef, { uid: user.uid, name: myDisplayName, page: 'Analytics', lastActive: Date.now() }, { merge: true })
+        .catch(() => {});
+    }
+    function goOffline(){
+      deleteDoc(myRef).catch(() => {});
+    }
+    beat();
+    const hbTimer = setInterval(() => { if (!document.hidden) beat(); }, HEARTBEAT_MS);
+    window.addEventListener('pagehide', goOffline);
+    window.addEventListener('beforeunload', goOffline);
+
+    // ── Everyone else's presence, live ──
+    onSnapshot(collection(taskDb, 'liveUsers'), (snap) => {
+      const now = Date.now();
+      const list = [];
+      snap.forEach(docSnap => {
+        const d = docSnap.data() || {};
+        if (!d.lastActive || now - d.lastActive > ONLINE_MS) return; // stale — treat as offline
+        list.push({ uid: docSnap.id, name: d.name || 'Student', lastActive: d.lastActive, isMe: docSnap.id === user.uid });
+      });
+      list.sort((a,b) => b.lastActive - a.lastActive);
+      rows = list;
+      render();
+    }, (err) => {
+      console.error("Who's online: liveUsers read failed (check Firestore rules on the task-tracker project allow this):", err);
+      const list = document.getElementById('online-list');
+      const countTxt = document.getElementById('online-count-txt');
+      if (list) list.innerHTML = '<div class="lb-empty">Presence needs a Firestore rule change on the task-tracker project.</div>';
+      if (countTxt) countTxt.textContent = '\u2014';
+    });
+  }
+</script>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MBJM2CCKJ6"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-MBJM2CCKJ6');
+</script>
+
+</body>
+</html>

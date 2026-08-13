@@ -388,6 +388,9 @@
    Veera Cloud — Site-wide Activity Tracker
    Logs every page the student opens and how long they stay, to
    veeraUsers/{uid}/appUsage/history on the login project.
+   Also runs the single-device login guard (see guardSession below),
+   which force-signs-out this device if the account gets logged in
+   elsewhere.
    Self-contained: loads its own Firebase (compat) if not present.
    Included automatically on every page that loads this widget.
    ───────────────────────────────────────────────────────────── */
@@ -442,10 +445,75 @@
     return window.firebase;
   }
 
+  /* ── Single-device login guard ─────────────────────────────────────
+     Kept fully separate from the usage-tracker's own app resolution
+     below (which may land on a secondary app pointed at the shared
+     veera730pmonline project). This piece always reads the DEFAULT
+     Firebase app instead — i.e. whichever per-batch login project
+     (veera730amoffline, veera900offline, etc.) the host page itself
+     already initialized as default, exactly the app every page's own
+     auth/session code runs under.
+
+     login.html mints a fresh session id on every successful login and
+     stamps it onto veeraUsers/{uid}.activeSessionId in Firestore. This
+     listens to that same doc live and force-signs this device out the
+     moment it sees a session id that isn't its own — i.e. the account
+     was just logged in somewhere else. Pages can override the redirect
+     target by setting window.VEERA_LOGIN_PATH before this script loads;
+     it defaults to 'login.html'. ───────────────────────────────────── */
+  function waitForDefaultApp(fb, timeoutMs) {
+    return new Promise(function (resolve) {
+      var started = Date.now();
+      (function poll() {
+        var def = fb.apps && fb.apps.filter(function (a) { return a.name === '[DEFAULT]'; })[0];
+        if (def) return resolve(def);
+        if (Date.now() - started > timeoutMs) return resolve(null);
+        setTimeout(poll, 200);
+      })();
+    });
+  }
+
+  async function guardSession(fb) {
+    var defaultApp = await waitForDefaultApp(fb, 8000);
+    if (!defaultApp) return; // no per-batch login app on this page — nothing to guard
+
+    var auth = fb.auth(defaultApp);
+    var db = fb.firestore(defaultApp);
+    var unsub = null;
+
+    auth.onAuthStateChanged(function (user) {
+      if (unsub) { unsub(); unsub = null; }
+      if (!user) return;
+
+      var mySessionId = localStorage.getItem('veeraSessionId');
+      // No local session id means this tab never went through the
+      // session-stamping login flow — don't guess, just skip enforcement.
+      if (!mySessionId) return;
+
+      unsub = db.collection('veeraUsers').doc(user.uid).onSnapshot(function (snap) {
+        var data = snap.data();
+        if (!data || !data.activeSessionId) return;         // nothing stamped yet
+        if (data.activeSessionId === mySessionId) return;    // still the active device
+
+        if (unsub) { unsub(); unsub = null; }
+        var label = data.activeDeviceLabel || 'another device';
+        auth.signOut().catch(function () {}).finally(function () {
+          localStorage.removeItem('veeraSessionId');
+          alert('You were signed out because your account was logged in on ' + label + '.');
+          window.location.href = window.VEERA_LOGIN_PATH || 'login.html';
+        });
+      }, function (err) {
+        console.warn('sessionGuard listener error (non-fatal):', err);
+      });
+    });
+  }
+
   async function start() {
     var fb;
     try { fb = await ensureFirebase(); } catch (e) { return; }
     if (!fb) return;
+
+    guardSession(fb); // fire-and-forget — must never block/delay usage tracking below
 
     var app;
     try {
@@ -461,8 +529,20 @@
 
     auth.onAuthStateChanged(function (user) {
       if (!user) return;          // only track signed-in students
+      saveName(db, user);
       track(db, user);
     });
+  }
+
+  // Stamps the student's display name onto their veeraUsers doc so "Who's
+  // online" (analytics.html) can show a real name instead of a placeholder
+  // for anyone active anywhere on the site — not just people who've opened
+  // Analytics themselves, which used to be the only page doing this write.
+  function saveName(db, user) {
+    var displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+    if (!displayName) return;
+    db.collection('veeraUsers').doc(user.uid).set({ name: displayName }, { merge: true })
+      .catch(function (err) { console.warn('saveName failed (non-fatal):', err); });
   }
 
   function track(db, user) {
@@ -541,6 +621,113 @@
     window.addEventListener('beforeunload', finalize);
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) commit((Date.now() - enter) / 1000, false);
+    });
+  }
+
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start);
+})();
+
+
+/* ─────────────────────────────────────────────────────────────
+   Veera Cloud — Live Presence
+   Explicit "who's on the site right now" tracking, separate from the
+   usage-history tracker above. Writes into the SAME shared task-tracker
+   project every batch's analytics.html already reads (submissions,
+   points, batches, etc.), instead of the per-batch login project, so
+   presence is consistent across all batches rather than depending on
+   each batch's own auth project matching up.
+
+   On arrival: adds liveUsers/{uid}. A heartbeat keeps it fresh while the
+   tab is open. On a clean close/navigate-away: deletes it. Anything not
+   refreshed in ~50s is treated as offline by the reader (analytics.html),
+   as a safety net for crashes/force-closes that never fire a close event.
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  var TASK_TRACKER_CONFIG = {
+    apiKey: "AIzaSyAE3mBpbQ0be_I7baVrVMT0ppTfvEPB38I",
+    authDomain: "student-task-tracker-c892a.firebaseapp.com",
+    projectId: "student-task-tracker-c892a",
+    storageBucket: "student-task-tracker-c892a.firebasestorage.app",
+    messagingSenderId: "270942651958",
+    appId: "1:270942651958:web:5114d65ea5bcbf613d7a97"
+  };
+  var HEARTBEAT_MS = 20000;
+
+  function waitForDefaultApp(fb, timeoutMs) {
+    return new Promise(function (resolve) {
+      var started = Date.now();
+      (function poll() {
+        var def = fb.apps && fb.apps.filter(function (a) { return a.name === '[DEFAULT]'; })[0];
+        if (def) return resolve(def);
+        if (Date.now() - started > timeoutMs) return resolve(null);
+        setTimeout(poll, 200);
+      })();
+    });
+  }
+
+  function loadScript(src) {
+    return new Promise(function (res, rej) {
+      var s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  async function ensureFirebase() {
+    if (window.firebase && window.firebase.firestore) return window.firebase;
+    if (!(window.firebase && window.firebase.apps)) {
+      await loadScript('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+    }
+    await loadScript('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js');
+    return window.firebase;
+  }
+
+  function goLive(taskDb, user) {
+    var displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'Student');
+    var ref = taskDb.collection('liveUsers').doc(user.uid);
+
+    function beat() {
+      ref.set({ uid: user.uid, name: displayName, page: pageLabel(), lastActive: Date.now() }, { merge: true })
+        .catch(function () { /* best-effort */ });
+    }
+    function pageLabel() {
+      return (document.title || '').split('·')[0].split('|')[0].split('—')[0].trim() || location.pathname;
+    }
+    function goOffline() {
+      clearInterval(hb);
+      ref.delete().catch(function () { /* best-effort */ });
+    }
+
+    beat();
+    var hb = setInterval(function () { if (!document.hidden) beat(); }, HEARTBEAT_MS);
+    window.addEventListener('pagehide', goOffline);
+    window.addEventListener('beforeunload', goOffline);
+  }
+
+  async function start() {
+    var fb;
+    try { fb = await ensureFirebase(); } catch (e) { return; }
+    if (!fb) return;
+
+    var defaultApp = await waitForDefaultApp(fb, 8000);
+    if (!defaultApp) return; // no per-batch login app on this page — nothing to report presence for
+
+    var auth = fb.auth(defaultApp);
+
+    var taskApp;
+    try {
+      taskApp = (fb.apps || []).filter(function (a) { return a.options && a.options.projectId === 'student-task-tracker-c892a'; })[0]
+        || fb.initializeApp(TASK_TRACKER_CONFIG, 'livepresence');
+    } catch (e) {
+      try { taskApp = fb.initializeApp(TASK_TRACKER_CONFIG, 'livepresence2'); } catch (e2) { return; }
+    }
+    var taskDb = fb.firestore(taskApp);
+
+    auth.onAuthStateChanged(function (user) {
+      if (!user) return;
+      goLive(taskDb, user);
     });
   }
 

@@ -8,11 +8,11 @@
 <style>
   :root {
     --bg: #000000;
-    --surface: rgba(28,28,30,0.72);
-    --surface-hover: rgba(44,44,46,0.88);
-    --border: rgba(255,255,255,0.08);
-    --border-hover: rgba(255,255,255,0.16);
-    --sidebar-bg: rgba(20,20,22,0.9);
+    --surface: rgba(28,28,30,0.42);
+    --surface-hover: rgba(44,44,46,0.58);
+    --border: rgba(255,255,255,0.16);
+    --border-hover: rgba(255,255,255,0.30);
+    --sidebar-bg: rgba(20,20,22,0.46);
     --text-primary: #f5f5f7;
     --text-secondary: #98989d;
     --text-tertiary: #6e6e73;
@@ -20,9 +20,12 @@
     --accent-hover: #47a4ff;
     --accent-light: rgba(41,151,255,0.12);
     --active-indicator: #2997ff;
-    --search-bg: rgba(28,28,30,0.78);
-    --card-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35), 0 0 0 0.5px rgba(255,255,255,0.05);
-    --card-shadow-hover: 0 2px 6px rgba(0,0,0,0.32), 0 16px 44px rgba(0,0,0,0.45), 0 0 0 0.5px rgba(255,255,255,0.08);
+    --search-bg: rgba(28,28,30,0.46);
+    --card-shadow: 0 1px 2px rgba(0,0,0,0.25), 0 8px 28px rgba(0,0,0,0.32), inset 0 1px 0.5px rgba(255,255,255,0.16), inset 0 0 40px rgba(255,255,255,0.02), 0 0 0 0.5px rgba(255,255,255,0.06);
+    --card-shadow-hover: 0 2px 6px rgba(0,0,0,0.28), 0 20px 54px rgba(0,0,0,0.4), inset 0 1px 0.5px rgba(255,255,255,0.24), inset 0 0 50px rgba(255,255,255,0.03), 0 0 0 0.5px rgba(255,255,255,0.1);
+    --glass-chip: rgba(255,255,255,0.055);
+    --glass-chip-border: rgba(255,255,255,0.1);
+    --glass-sheen: linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.03) 28%, rgba(255,255,255,0) 55%, rgba(255,255,255,0.05) 100%);
     --radius: 20px;
     --radius-sm: 13px;
     --radius-xs: 9px;
@@ -37,11 +40,11 @@
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #000000;
-      --surface: rgba(28,28,30,0.72);
-      --surface-hover: rgba(44,44,46,0.88);
-      --border: rgba(255,255,255,0.08);
-      --border-hover: rgba(255,255,255,0.16);
-      --sidebar-bg: rgba(20,20,22,0.9);
+      --surface: rgba(28,28,30,0.42);
+      --surface-hover: rgba(44,44,46,0.58);
+      --border: rgba(255,255,255,0.16);
+      --border-hover: rgba(255,255,255,0.30);
+      --sidebar-bg: rgba(20,20,22,0.46);
       --text-primary: #f5f5f7;
       --text-secondary: #98989d;
       --text-tertiary: #6e6e73;
@@ -49,9 +52,9 @@
       --accent-hover: #47a4ff;
       --accent-light: rgba(41,151,255,0.12);
       --active-indicator: #2997ff;
-      --search-bg: rgba(28,28,30,0.78);
-      --card-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35), 0 0 0 0.5px rgba(255,255,255,0.05);
-      --card-shadow-hover: 0 2px 6px rgba(0,0,0,0.32), 0 16px 44px rgba(0,0,0,0.45), 0 0 0 0.5px rgba(255,255,255,0.08);
+      --search-bg: rgba(28,28,30,0.46);
+      --card-shadow: 0 1px 2px rgba(0,0,0,0.25), 0 8px 28px rgba(0,0,0,0.32), inset 0 1px 0.5px rgba(255,255,255,0.16), inset 0 0 40px rgba(255,255,255,0.02), 0 0 0 0.5px rgba(255,255,255,0.06);
+      --card-shadow-hover: 0 2px 6px rgba(0,0,0,0.28), 0 20px 54px rgba(0,0,0,0.4), inset 0 1px 0.5px rgba(255,255,255,0.24), inset 0 0 50px rgba(255,255,255,0.03), 0 0 0 0.5px rgba(255,255,255,0.1);
       --wa-green-light: rgba(37,211,102,0.14);
     }
   }
@@ -104,39 +107,7 @@
     animation: moveViolet 34s ease-in-out infinite;
   }
 
-  #constellation-canvas {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0;
-  }
 
-  #floating-icons {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .float-icon {
-    position: absolute;
-    width: 46px;
-    height: 46px;
-    opacity: 0;
-    will-change: transform;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12));
-  }
-  .float-icon img {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-  .float-icon { filter: drop-shadow(0 4px 14px rgba(0,0,0,0.6)); }
   .orb { opacity: 0.55; }
 
   @keyframes moveBlue {
@@ -172,8 +143,8 @@
   .sidebar {
     width: 0; min-width: 0;
     background: var(--sidebar-bg);
-    backdrop-filter: saturate(180%) blur(24px);
-    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    backdrop-filter: saturate(220%) blur(38px) brightness(1.12);
+    -webkit-backdrop-filter: saturate(220%) blur(38px) brightness(1.12);
     border-right: 0.5px solid transparent;
     display: flex; flex-direction: column;
     padding: 0;
@@ -181,6 +152,11 @@
     overflow: hidden; flex-shrink: 0;
     transition: width 0.36s cubic-bezier(0.4,0,0.2,1), min-width 0.36s, box-shadow 0.3s, border-color 0.3s;
   }
+  .sidebar::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none; z-index: 0;
+  }
+  .sidebar-inner { position: relative; z-index: 1; }
   .sidebar.sidebar-open {
     width: 252px; min-width: 252px;
     box-shadow: 4px 0 28px rgba(0,0,0,0.06);
@@ -203,9 +179,16 @@
     border-radius: var(--radius);
     padding: 18px;
     display: flex; flex-direction: column; align-items: center; gap: 8px;
-    backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(32px) saturate(200%) brightness(1.1);
     box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
   }
+  .brand-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none;
+  }
+  .brand-card > * { position: relative; z-index: 1; }
   .brand-card img { max-width: 150px; width: 100%; height: auto; cursor: pointer; }
   .brand-name {
     font-size: 17px; font-weight: 600; letter-spacing: -0.4px;
@@ -257,10 +240,15 @@
     display: flex; align-items: center; justify-content: center;
     padding: 0 24px;
     background: var(--sidebar-bg);
-    backdrop-filter: saturate(180%) blur(28px);
-    -webkit-backdrop-filter: saturate(180%) blur(28px);
+    backdrop-filter: saturate(220%) blur(42px) brightness(1.12);
+    -webkit-backdrop-filter: saturate(220%) blur(42px) brightness(1.12);
     border-bottom: 0.5px solid var(--border);
     position: relative; z-index: 5;
+    overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none; z-index: 0;
   }
 
   .header-left {
@@ -276,7 +264,7 @@
     padding: 12px 168px 12px 52px;
     border-radius: 980px;
     background: var(--search-bg);
-    backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(32px) saturate(200%) brightness(1.1);
     border: 0.5px solid var(--border);
     font-size: 16px; font-weight: 400;
     letter-spacing: -0.1px;
@@ -379,13 +367,19 @@
     position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
     display: flex; align-items: center; gap: 10px;
     background: var(--surface);
-    backdrop-filter: saturate(180%) blur(24px);
-    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    backdrop-filter: saturate(220%) blur(38px) brightness(1.12);
+    -webkit-backdrop-filter: saturate(220%) blur(38px) brightness(1.12);
     border: 0.5px solid var(--border);
     border-radius: 16px;
     padding: 6px 10px 6px 6px;
     box-shadow: var(--card-shadow);
+    overflow: hidden;
   }
+  .user-chip::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none;
+  }
+  .user-chip > * { position: relative; z-index: 1; }
   .user-chip-avatar {
     width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
     background: linear-gradient(135deg, var(--accent), var(--accent-hover));
@@ -414,22 +408,30 @@
     display: none;
     position: fixed; inset: 0; z-index: 9999;
     background: rgba(20,28,38,0.45);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     align-items: center; justify-content: center;
   }
   .profile-modal-overlay.open { display: flex; }
   .profile-modal {
     width: 300px;
     background: var(--surface, #fff);
+    backdrop-filter: saturate(220%) blur(44px) brightness(1.15);
+    -webkit-backdrop-filter: saturate(220%) blur(44px) brightness(1.15);
     border: 0.5px solid var(--border);
     border-radius: 20px;
     padding: 28px 24px 24px;
-    box-shadow: 0 24px 60px rgba(20,28,38,0.28);
+    box-shadow: 0 24px 60px rgba(20,28,38,0.28), var(--card-shadow);
     text-align: center;
     position: relative;
+    overflow: hidden;
     animation: profileModalIn .18s ease;
   }
+  .profile-modal::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none;
+  }
+  .profile-modal > * { position: relative; z-index: 1; }
   @keyframes profileModalIn {
     from { opacity: 0; transform: translateY(6px) scale(.97); }
     to { opacity: 1; transform: translateY(0) scale(1); }
@@ -470,22 +472,30 @@
     display: none;
     position: fixed; inset: 0; z-index: 9999;
     background: rgba(20,28,38,0.45);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     align-items: center; justify-content: center;
   }
   .mi-modal-overlay.open { display: flex; }
   .mi-modal {
     width: 340px;
     background: var(--surface, #fff);
+    backdrop-filter: saturate(220%) blur(44px) brightness(1.15);
+    -webkit-backdrop-filter: saturate(220%) blur(44px) brightness(1.15);
     border: 0.5px solid var(--border);
     border-radius: 20px;
     padding: 30px 26px 26px;
-    box-shadow: 0 24px 60px rgba(20,28,38,0.28);
+    box-shadow: 0 24px 60px rgba(20,28,38,0.28), var(--card-shadow);
     text-align: center;
     position: relative;
+    overflow: hidden;
     animation: profileModalIn .18s ease;
   }
+  .mi-modal::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none;
+  }
+  .mi-modal > * { position: relative; z-index: 1; }
   .mi-modal-close {
     position: absolute; top: 12px; right: 12px;
     width: 26px; height: 26px; border-radius: 50%;
@@ -533,8 +543,8 @@
     display: none;
     position: fixed; inset: 0; z-index: 9999;
     background: rgba(20,28,38,0.45);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
     align-items: center; justify-content: center;
     padding: 24px;
   }
@@ -542,14 +552,19 @@
   .an-modal {
     width: 100%; max-width: 480px;
     background: var(--surface, #fff);
-    backdrop-filter: saturate(180%) blur(32px);
-    -webkit-backdrop-filter: saturate(180%) blur(32px);
+    backdrop-filter: saturate(220%) blur(48px) brightness(1.15);
+    -webkit-backdrop-filter: saturate(220%) blur(48px) brightness(1.15);
     border: 0.5px solid var(--border);
     border-radius: 22px;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.22);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.22), var(--card-shadow);
     overflow: hidden;
     position: relative;
   }
+  .an-modal::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none; z-index: 0;
+  }
+  .an-modal > * { position: relative; z-index: 1; }
   .an-header {
     display: flex; align-items: center; gap: 12px;
     padding: 16px 18px;
@@ -565,7 +580,8 @@
   .an-sub { font-size: 11.5px; color: var(--text-tertiary); margin-top: 1px; }
   .an-close {
     margin-left: auto;
-    background: var(--bg); border: 0.5px solid var(--border);
+    background: var(--glass-chip); border: 0.5px solid var(--glass-chip-border);
+    backdrop-filter: blur(12px);
     color: var(--text-tertiary); width: 28px; height: 28px; border-radius: 50%;
     cursor: pointer; font-size: 14px;
     display: flex; align-items: center; justify-content: center;
@@ -578,8 +594,9 @@
   .an-stats { display: flex; gap: 10px; margin-bottom: 18px; }
   .an-stat {
     flex: 1; padding: 12px 10px; text-align: center;
-    background: var(--bg);
-    border: 0.5px solid var(--border);
+    background: var(--glass-chip);
+    backdrop-filter: blur(14px);
+    border: 0.5px solid var(--glass-chip-border);
     border-radius: var(--radius-sm);
   }
   .an-stat-num {
@@ -648,8 +665,8 @@
   /* ─── GLASS CARDS ─── */
   .card {
     background: var(--surface);
-    backdrop-filter: saturate(160%) blur(28px);
-    -webkit-backdrop-filter: saturate(160%) blur(28px);
+    backdrop-filter: saturate(200%) blur(40px) brightness(1.1);
+    -webkit-backdrop-filter: saturate(200%) blur(40px) brightness(1.1);
     border: 0.5px solid var(--border);
     border-radius: 22px;
     padding: 26px 22px 24px;
@@ -665,7 +682,16 @@
     content: '';
     position: absolute; top: 0; left: 18px; right: 18px; height: 0.5px;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    z-index: 1;
   }
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--glass-sheen);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .card > * { position: relative; z-index: 1; }
   .card-arrow {
     position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
     height: 28px; padding: 0 13px; border-radius: 980px;
@@ -770,19 +796,26 @@
   #loading-overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.25);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     z-index: 50; align-items: center; justify-content: center;
   }
   .loading-box {
     background: var(--surface);
-    backdrop-filter: blur(24px);
+    backdrop-filter: blur(36px) saturate(180%) brightness(1.1);
     border: 0.5px solid var(--border);
     border-radius: var(--radius);
     padding: 32px 48px;
     display: flex; flex-direction: column; align-items: center; gap: 16px;
     box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
   }
+  .loading-box::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none;
+  }
+  .loading-box > * { position: relative; z-index: 1; }
   .spinner {
     width: 28px; height: 28px;
     border: 2.5px solid var(--border);
@@ -797,8 +830,8 @@
   .ai-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.35);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     z-index: 999;
     display: flex; align-items: center; justify-content: center;
     padding: 24px;
@@ -808,16 +841,22 @@
 
   .ai-modal {
     background: var(--surface);
-    backdrop-filter: saturate(180%) blur(32px);
-    -webkit-backdrop-filter: saturate(180%) blur(32px);
+    backdrop-filter: saturate(220%) blur(48px) brightness(1.15);
+    -webkit-backdrop-filter: saturate(220%) blur(48px) brightness(1.15);
     border: 0.5px solid var(--border);
     border-radius: var(--radius);
     width: 100%; max-width: 660px; max-height: 78vh;
     display: flex; flex-direction: column;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.18), 0 0 0 0.5px rgba(0,0,0,0.06);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.18), 0 0 0 0.5px rgba(0,0,0,0.06), var(--card-shadow);
     animation: popUp 0.26s cubic-bezier(0.34,1.4,0.64,1);
     overflow: hidden;
+    position: relative;
   }
+  .ai-modal::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none; z-index: 0;
+  }
+  .ai-modal > * { position: relative; z-index: 1; }
   @keyframes popUp { from { opacity:0; transform:scale(0.9) translateY(16px); } to { opacity:1; transform:scale(1) translateY(0); } }
 
   .ai-modal-header {
@@ -838,8 +877,9 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
   }
   .ai-close-btn {
-    background: var(--bg);
-    border: 0.5px solid var(--border);
+    background: var(--glass-chip);
+    backdrop-filter: blur(12px);
+    border: 0.5px solid var(--glass-chip-border);
     color: var(--text-tertiary);
     width: 28px; height: 28px; border-radius: 50%;
     cursor: pointer; font-size: 14px;
@@ -859,14 +899,15 @@
   .ai-modal-body p:last-child { margin-bottom: 0; }
   .ai-modal-body strong { font-weight: 600; }
   .ai-modal-body code {
-    background: var(--bg);
+    background: var(--glass-chip);
     color: var(--accent);
     padding: 2px 6px; border-radius: 5px; font-size: 12.5px;
     font-family: 'SF Mono', 'Fira Code', monospace;
     border: 0.5px solid var(--border);
   }
   .ai-modal-body pre {
-    background: var(--bg);
+    background: var(--glass-chip);
+    backdrop-filter: blur(12px);
     border-radius: var(--radius-sm);
     padding: 14px; overflow-x: auto; margin: 10px 0;
     border: 0.5px solid var(--border);
@@ -887,8 +928,8 @@
   #feedback-modal-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     z-index: 1200;
     display: none; align-items: center; justify-content: center; padding: 24px;
   }
@@ -896,15 +937,21 @@
 
   #feedback-modal {
     background: var(--surface);
-    backdrop-filter: saturate(180%) blur(32px);
-    -webkit-backdrop-filter: saturate(180%) blur(32px);
+    backdrop-filter: saturate(220%) blur(48px) brightness(1.15);
+    -webkit-backdrop-filter: saturate(220%) blur(48px) brightness(1.15);
     border: 0.5px solid var(--border);
     border-radius: var(--radius);
     width: 100%; max-width: 440px;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.14);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.14), var(--card-shadow);
     animation: popUp 0.28s cubic-bezier(0.34,1.4,0.64,1);
     overflow: hidden;
+    position: relative;
   }
+  #feedback-modal::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glass-sheen); pointer-events: none; z-index: 0;
+  }
+  #feedback-modal > * { position: relative; z-index: 1; }
 
   .fb-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -916,7 +963,8 @@
   .fb-title { font-size: 15px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.2px; }
   .fb-subtitle { font-size: 12px; color: var(--text-tertiary); margin-top: 1px; }
   .fb-close-btn {
-    background: var(--bg); border: 0.5px solid var(--border);
+    background: var(--glass-chip); border: 0.5px solid var(--glass-chip-border);
+    backdrop-filter: blur(12px);
     color: var(--text-tertiary); width: 28px; height: 28px; border-radius: 50%;
     cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
     transition: background 0.18s, color 0.18s;
@@ -930,8 +978,9 @@
   .fb-review-link {
     display: flex; align-items: center; gap: 12px;
     padding: 11px 14px; border-radius: var(--radius-sm);
-    border: 0.5px solid var(--border);
-    background: var(--bg);
+    border: 0.5px solid var(--glass-chip-border);
+    background: var(--glass-chip);
+    backdrop-filter: blur(12px);
     text-decoration: none; color: var(--text-primary); font-size: 13px; font-weight: 500;
     transition: background 0.18s, border-color 0.18s, transform 0.15s;
   }
@@ -950,8 +999,8 @@
     position: fixed; bottom: 28px; left: 24px; z-index: 1201;
     border-radius: 50%;
     background: var(--surface);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 0.5px solid var(--border);
     width: 48px; height: 48px;
     display: flex; align-items: center; justify-content: center;
@@ -1005,8 +1054,8 @@
   #wa-popup {
     position: fixed; bottom: 136px; right: 20px;
     background: var(--surface);
-    backdrop-filter: saturate(180%) blur(24px);
-    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    backdrop-filter: saturate(220%) blur(38px) brightness(1.12);
+    -webkit-backdrop-filter: saturate(220%) blur(38px) brightness(1.12);
     border: 0.5px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--card-shadow-hover);
@@ -1034,7 +1083,7 @@
     background: rgba(255,255,255,0.22);
     display:flex; align-items:center; justify-content:center; flex-shrink:0;
     border: 1px solid rgba(255,255,255,0.3);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(14px);
   }
   .wa-popup-title { font-weight: 700; font-size: 15px; color: #fff; letter-spacing: -0.2px; line-height: 1.2; }
   .wa-popup-sub { font-size: 11.5px; color: rgba(255,255,255,0.75); margin-top: 2px; }
@@ -1097,8 +1146,8 @@
   #iris-popup {
     position: fixed; bottom: 82px; right: 20px;
     background: var(--surface);
-    backdrop-filter: saturate(180%) blur(24px);
-    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    backdrop-filter: saturate(220%) blur(38px) brightness(1.12);
+    -webkit-backdrop-filter: saturate(220%) blur(38px) brightness(1.12);
     border: 0.5px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--card-shadow-hover);
@@ -1112,7 +1161,7 @@
   .yt-icon-wrap { width: 38px; height: 38px; border-radius: 50%; background: #ff3b30; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .yt-popup-title { font-weight: 600; font-size: 14px; color: var(--text-primary); }
   .yt-popup-sub { font-size: 11.5px; color: var(--text-tertiary); margin-top: 1px; }
-  .yt-close { background: var(--bg); border: 0.5px solid var(--border); color: var(--text-tertiary); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 14px; margin-left: auto; display: flex; align-items: center; justify-content: center; transition: background .18s; }
+  .yt-close { background: var(--glass-chip); backdrop-filter: blur(12px); border: 0.5px solid var(--glass-chip-border); color: var(--text-tertiary); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 14px; margin-left: auto; display: flex; align-items: center; justify-content: center; transition: background .18s; }
   .yt-close:hover { background: rgba(255,59,48,0.1); color: #ff3b30; }
   .yt-popup-body { font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px; }
   .yt-popup-body strong { color: var(--text-primary); font-weight: 600; }
@@ -1146,8 +1195,8 @@
     position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
     display: flex; align-items: center; gap: 8px;
     background: var(--surface);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(32px) saturate(200%) brightness(1.1);
+    -webkit-backdrop-filter: blur(32px) saturate(200%) brightness(1.1);
     border: 0.5px solid var(--border);
     border-radius: 980px;
     padding: 5px 13px 5px 8px;
@@ -1312,12 +1361,12 @@
   #ai-agent-bubble {
     position: fixed; top: 0; left: 0;
     max-width: 230px;
-    background: rgba(23,23,28,0.92);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    border: 0.5px solid rgba(255,255,255,0.14);
+    background: rgba(23,23,28,0.68);
+    backdrop-filter: saturate(200%) blur(30px) brightness(1.15);
+    -webkit-backdrop-filter: saturate(200%) blur(30px) brightness(1.15);
+    border: 0.5px solid rgba(255,255,255,0.18);
     border-radius: 14px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25), 0 16px 40px rgba(0,0,0,0.45), 0 0 0 0.5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25), 0 16px 40px rgba(0,0,0,0.45), inset 0 1px 0.5px rgba(255,255,255,0.14), 0 0 0 0.5px rgba(0,0,0,0.2);
     padding: 9px 12px 10px;
     pointer-events: none;
     z-index: 501;
@@ -1354,9 +1403,9 @@
     content: '';
     position: absolute; left: var(--arrow-left, 16px); bottom: -6px;
     width: 12px; height: 12px;
-    background: rgba(23,23,28,0.92);
-    border-right: 0.5px solid rgba(255,255,255,0.14);
-    border-bottom: 0.5px solid rgba(255,255,255,0.14);
+    background: rgba(23,23,28,0.68);
+    border-right: 0.5px solid rgba(255,255,255,0.18);
+    border-bottom: 0.5px solid rgba(255,255,255,0.18);
     transform: rotate(45deg);
   }
 
@@ -1365,18 +1414,731 @@
     *, *::before, *::after { animation-duration: 0.001s !important; transition-duration: 0.001s !important; }
   }
 </style>
+<style id="nature-scene-style">
+/* ══════════════════════════════════════════════════════════════
+   LIVING NATURE BACKGROUND  —  time-of-day + live weather
+   morning · afternoon · evening · night   ·   rain / snow / storm
+   ══════════════════════════════════════════════════════════════ */
+
+@property --sky1 { syntax:'<color>'; inherits:true; initial-value:#04060d; }
+@property --sky2 { syntax:'<color>'; inherits:true; initial-value:#08111f; }
+@property --sky3 { syntax:'<color>'; inherits:true; initial-value:#0e2038; }
+@property --sky4 { syntax:'<color>'; inherits:true; initial-value:#16344f; }
+@property --mtf  { syntax:'<color>'; inherits:true; initial-value:#16293d; }
+@property --mtm  { syntax:'<color>'; inherits:true; initial-value:#0e1b2a; }
+@property --mtn  { syntax:'<color>'; inherits:true; initial-value:#08111c; }
+@property --tre  { syntax:'<color>'; inherits:true; initial-value:#04080e; }
+@property --grs  { syntax:'<color>'; inherits:true; initial-value:#03060a; }
+
+#nature-bg{
+  position:fixed; inset:0; z-index:0;
+  overflow:hidden; pointer-events:none;
+  --sky1:#04060d; --sky2:#08111f; --sky3:#0e2038; --sky4:#16344f;
+  --mtf:#16293d; --mtm:#0e1b2a; --mtn:#08111c; --tre:#04080e; --grs:#03060a;
+  --hglow:rgba(95,150,220,0.30);
+  --starA:1; --scrim:0.34; --sunOp:0; --moonOp:1;
+  --sunX:50%; --cloudA:0.55;
+  --cloudTint:rgba(150,175,215,0.40); --cloudTint2:rgba(58,78,116,0.42); --cloudEdge:rgba(180,205,245,0.22);
+  transition:--sky1 2s ease,--sky2 2s ease,--sky3 2s ease,--sky4 2s ease,
+             --mtf 2s ease,--mtm 2s ease,--mtn 2s ease,--tre 2s ease,--grs 2s ease;
+}
+
+/* ── time-of-day palettes ── */
+#nature-bg.ph-morning{
+  --sky1:#0a2748; --sky2:#1e5c88; --sky3:#66aabd; --sky4:#f2bc7c;
+  --hglow:rgba(255,190,120,0.40);
+  --mtf:#2c4c66; --mtm:#1b3349; --mtn:#122232; --tre:#0a1520; --grs:#07101a;
+  --starA:0.10; --scrim:0.46; --cloudA:0.92;
+  --cloudTint:rgba(255,236,208,0.88); --cloudTint2:rgba(198,178,186,0.70); --cloudEdge:rgba(255,214,168,0.55);
+}
+#nature-bg.ph-afternoon{
+  --sky1:#0c3765; --sky2:#1f6da6; --sky3:#5aabd0; --sky4:#a6d8e8;
+  --hglow:rgba(185,228,248,0.32);
+  --mtf:#31596f; --mtm:#1e3b52; --mtn:#13273a; --tre:#0b1824; --grs:#08131d;
+  --starA:0; --scrim:0.52; --cloudA:1;
+  --cloudTint:rgba(255,255,255,0.92); --cloudTint2:rgba(188,212,234,0.72); --cloudEdge:rgba(255,255,255,0.6);
+}
+#nature-bg.ph-evening{
+  --sky1:#150d2e; --sky2:#442251; --sky3:#a04159; --sky4:#ec7c46;
+  --hglow:rgba(255,140,70,0.44);
+  --mtf:#3b2542; --mtm:#251831; --mtn:#170f21; --tre:#0d0914; --grs:#0a0710;
+  --starA:0.38; --scrim:0.44; --cloudA:0.95;
+  --cloudTint:rgba(255,196,150,0.90); --cloudTint2:rgba(150,86,104,0.72); --cloudEdge:rgba(255,150,110,0.55);
+}
+/* first paint snaps to the current time of day instead of fading */
+#nature-bg.no-fade,
+#nature-bg.no-fade *{ transition:none !important; }
+
+#nature-bg.ph-night{
+  --sky1:#04060d; --sky2:#08111f; --sky3:#0e2038; --sky4:#16344f;
+  --hglow:rgba(95,150,220,0.28);
+  --mtf:#16293d; --mtm:#0e1b2a; --mtn:#08111c; --tre:#04080e; --grs:#03060a;
+  --starA:1; --scrim:0.32; --cloudA:0.72;
+  --cloudTint:rgba(146,172,214,0.42); --cloudTint2:rgba(46,64,98,0.45); --cloudEdge:rgba(168,196,240,0.24);
+}
+
+/* ── sky ── */
+.n-sky{
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom,
+    var(--sky1) 0%, var(--sky2) 33%, var(--sky3) 61%, var(--sky4) 83%, var(--sky4) 100%);
+}
+.n-hglow{
+  position:absolute; left:0; right:0; bottom:16%; height:46%;
+  background:radial-gradient(ellipse 62% 100% at var(--sunX) 100%, var(--hglow) 0%, transparent 72%);
+  filter:blur(4px);
+}
+
+/* ── sun & moon ── */
+#n-celestial{ position:absolute; inset:0; }
+.n-sun,.n-moon{
+  position:absolute; border-radius:50%;
+  transform:translate(-50%,-50%);
+  transition:opacity 2s ease;
+  will-change:left,top;
+}
+.n-sun{
+  width:132px; height:132px; opacity:var(--sunOp);
+  background:radial-gradient(circle,#fff9e6 0%,#ffd98a 34%,rgba(255,176,66,0.55) 58%,rgba(255,150,40,0) 74%);
+  box-shadow:0 0 160px 70px rgba(255,185,90,0.22);
+}
+.n-moon{
+  width:76px; height:76px; opacity:var(--moonOp);
+  background:radial-gradient(circle at 36% 31%,#ffffff 0%,#eef2ff 42%,#c2cee8 72%,#93a3c7 100%);
+  box-shadow:0 0 96px 28px rgba(180,205,255,0.20), inset -9px -7px 20px rgba(64,84,124,0.45);
+}
+.n-moon i{ position:absolute; border-radius:50%; background:rgba(118,138,176,0.34); }
+
+/* ── drifting clouds ── */
+.n-clouds{ position:absolute; inset:0; opacity:var(--cloudA); transition:opacity 2s ease; }
+.n-cloud{
+  position:absolute; left:0;
+  animation:nCloudDrift linear infinite;
+  will-change:transform;
+}
+.n-cloud b{
+  position:absolute; display:block; border-radius:50%;
+  background:radial-gradient(circle at 40% 30%,
+    var(--cloudEdge) 0%, var(--cloudTint) 42%, var(--cloudTint2) 100%);
+  filter:blur(3.5px);
+}
+/* far layer: smaller, slower, hazier — gives the sky depth */
+.n-cloud.far b{ filter:blur(6px); }
+.n-cloud.far  { opacity:0.55; }
+
+@keyframes nCloudDrift{
+  from{ transform:translateX(-42vw); }
+  to  { transform:translateX(142vw); }
+}
+#nature-bg.wx-overcast{ --cloudA:1; }
+#nature-bg.wx-overcast .n-cloud b{ filter:blur(5px); }
+
+/* ── landscape silhouettes ── */
+.n-layer{ position:absolute; left:0; bottom:0; width:100%; display:block; }
+.n-mtf  { height:44%; }
+.n-mtm  { height:31%; }
+.n-hill { height:19%; }
+.n-tree { height:23%; transform-origin:50% 100%; animation:nSway 11s ease-in-out infinite; }
+.n-grass{ height:8%;  transform-origin:50% 100%; animation:nSway 6.5s ease-in-out infinite reverse; }
+@keyframes nSway{
+  0%,100%{ transform:skewX(0deg); }
+  50%    { transform:skewX(0.45deg); }
+}
+
+/* ── particle canvases ── */
+.n-canvas{ position:absolute; inset:0; width:100%; height:100%; }
+#n-sky-canvas{ opacity:var(--starA); transition:opacity 2.5s ease; }
+
+/* ── readability scrim + vignette ── */
+.n-scrim{
+  position:absolute; inset:0;
+  opacity:var(--scrim); transition:opacity 2s ease;
+  background:
+    radial-gradient(ellipse 120% 90% at 50% 45%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%),
+    linear-gradient(165deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.42) 38%, rgba(0,0,0,0.26) 60%, rgba(0,0,0,0.80) 100%);
+}
+
+/* ── lightning wash over the whole scene ── */
+.n-flash{
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse 90% 70% at 50% 10%, rgba(205,225,255,0.75) 0%, rgba(160,195,255,0.18) 60%, transparent 85%);
+  opacity:0; mix-blend-mode:screen; transition:opacity .55s ease;
+}
+.n-flash.on{ opacity:.62; transition:opacity .04s linear; }
+
+/* ── let the scene breathe: soften the old colour orbs ── */
+.orb{ opacity:0.40; }
+
+/* weather chip becomes a scene switcher */
+#weather-widget{ cursor:pointer; }
+#weather-widget:active{ transform:translateY(-50%) scale(0.96); }
+#scene-badge{
+  font-size:9px; letter-spacing:.4px; text-transform:uppercase;
+  color:var(--text-tertiary); font-weight:600;
+}
+
+@media (max-width:820px){
+  .n-mtf{height:36%;} .n-mtm{height:26%;} .n-tree{height:19%;}
+  .n-sun{width:100px;height:100px;} .n-moon{width:60px;height:60px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .n-cloud,.n-tree,.n-grass{ animation:none !important; }
+}
+</style>
+<style id="nature-weather-style">
+/* ════ every weather effect now renders inside #nature-bg ════
+   #nature-bg has z-index:0 and .app-container has z-index:1,
+   so nothing here can ever paint over the dashboard UI.        */
+
+/* sky-level effects: keep them BEHIND the mountains via DOM order */
+#weather-sun-overlay,
+#weather-cloud-overlay,
+#n-storm,
+.n-storm-dark { position:absolute; inset:0; z-index:auto; }
+
+/* foreground-of-scene effects, still under the UI */
+.n-scrim                  { z-index:5; }
+#n-fx-canvas              { z-index:6; }
+#weather-canvas           { position:absolute; inset:0; width:100%; height:100%; z-index:6; }
+#weather-lightning-overlay{ position:absolute; inset:0; z-index:7; }
+#lightning-canvas         { position:absolute; inset:0; width:100%; height:100%; z-index:8; }
+.n-flash                  { z-index:9; }
+
+/* ── BLACK THUNDERCLOUDS ─────────────────────────────────────── */
+#n-storm{
+  height:62%; top:0; bottom:auto;
+  opacity:0; transition:opacity 2.4s ease;
+  overflow:hidden;
+}
+#nature-bg.wx-rain  #n-storm{ opacity:0.88; }
+#nature-bg.wx-snow  #n-storm{ opacity:0.75; }
+#nature-bg.wx-storm #n-storm{ opacity:1; }
+
+.n-scloud{
+  position:absolute; will-change:transform;
+  animation:nStormDrift linear infinite;
+}
+.n-scloud b{
+  position:absolute; display:block; border-radius:50%;
+  background:radial-gradient(circle at 42% 34%,
+    rgba(58,66,84,0.95) 0%, rgba(30,36,50,0.95) 48%, rgba(16,20,30,0.95) 100%);
+  filter:blur(5px);
+}
+#nature-bg.wx-storm .n-scloud b{
+  background:radial-gradient(circle at 42% 34%,
+    rgba(34,39,52,0.97) 0%, rgba(14,17,25,0.97) 48%, rgba(5,6,10,0.98) 100%);
+  filter:blur(4px);
+}
+@keyframes nStormDrift{
+  from{ transform:translateX(-48vw); }
+  to  { transform:translateX(148vw); }
+}
+
+/* dark wash that swallows the sky when a storm rolls in */
+.n-storm-dark{
+  opacity:0; transition:opacity 2.6s ease;
+  background:linear-gradient(to bottom,
+    rgba(3,5,9,0.88) 0%, rgba(6,9,15,0.62) 42%, rgba(9,12,20,0.28) 74%, transparent 100%);
+}
+#nature-bg.wx-rain  .n-storm-dark{ opacity:0.62; }
+#nature-bg.wx-snow  .n-storm-dark{ opacity:0.46; }
+#nature-bg.wx-storm .n-storm-dark{ opacity:1; }
+
+/* the old white puffs go grey/black under rain and storm */
+#nature-bg.wx-rain  .cloud-puff{ background:rgba(30,37,52,0.50); }
+#nature-bg.wx-storm .cloud-puff{ background:rgba(14,18,27,0.62); }
+#nature-bg.wx-rain  .n-cloud b{
+  background:radial-gradient(circle at 40% 30%,
+    rgba(74,84,104,0.75) 0%, rgba(40,48,66,0.80) 45%, rgba(22,28,40,0.82) 100%);
+}
+#nature-bg.wx-storm .n-cloud b{
+  background:radial-gradient(circle at 40% 30%,
+    rgba(44,50,66,0.85) 0%, rgba(22,27,38,0.88) 45%, rgba(10,13,20,0.90) 100%);
+}
+#nature-bg.wx-snow  .n-cloud b{
+  background:radial-gradient(circle at 40% 30%,
+    rgba(226,234,246,0.72) 0%, rgba(176,190,210,0.72) 45%, rgba(126,142,168,0.72) 100%);
+}
+
+/* no sun rays while it's pouring */
+#nature-bg.wx-rain #weather-sun-overlay,
+#nature-bg.wx-storm #weather-sun-overlay,
+#nature-bg.wx-snow #weather-sun-overlay{ opacity:0 !important; }
+
+/* ── THUNDER SWALLOWS THE SUN ────────────────────────────────────
+   The storm mass is opaque, so the sun disc, its bloom and the
+   horizon glow all fade out completely. Restores itself when the
+   weather clears.                                                */
+#nature-bg.wx-storm .n-sun{
+  opacity:0; box-shadow:none;
+  transition:opacity 1.6s ease, box-shadow 1.6s ease;
+}
+#nature-bg.wx-storm .n-moon{
+  opacity:0; box-shadow:none;
+  transition:opacity 1.6s ease, box-shadow 1.6s ease;
+}
+#nature-bg.wx-storm .n-hglow{ opacity:0.08; }
+
+/* heavy rain / snow: sun gone, moon barely showing through */
+#nature-bg.wx-rain .n-sun { opacity:0; box-shadow:none; }
+#nature-bg.wx-rain .n-moon{ opacity:0.14; box-shadow:none; }
+#nature-bg.wx-snow .n-sun { opacity:0; box-shadow:none; }
+#nature-bg.wx-snow .n-moon{ opacity:0.28; }
+#nature-bg.wx-rain .n-hglow{ opacity:0.22; }
+#nature-bg.wx-snow .n-hglow{ opacity:0.35; }
+
+.n-hglow{ transition:opacity 2.2s ease; }
+
+@media (max-width:820px){ #n-storm{ height:52%; } }
+@media (prefers-reduced-motion:reduce){ .n-scloud{ animation:none !important; } }
+</style>
+<style id="nature-realism-style">
+/* ════════ REALISTIC LANDSCAPE: colour, depth, water ════════ */
+@property --tree1  { syntax:'<color>'; inherits:true; initial-value:#08131c; }
+@property --tree1L { syntax:'<color>'; inherits:true; initial-value:#0d1e29; }
+@property --tree2  { syntax:'<color>'; inherits:true; initial-value:#12212e; }
+@property --tree2L { syntax:'<color>'; inherits:true; initial-value:#172b3a; }
+@property --tree3  { syntax:'<color>'; inherits:true; initial-value:#1c3040; }
+@property --water1 { syntax:'<color>'; inherits:true; initial-value:#0d2438; }
+@property --water2 { syntax:'<color>'; inherits:true; initial-value:#04101c; }
+@property --bank   { syntax:'<color>'; inherits:true; initial-value:#0b1a20; }
+@property --bankL  { syntax:'<color>'; inherits:true; initial-value:#12262d; }
+@property --mtSnow { syntax:'<color>'; inherits:true; initial-value:#b8cbe4; }
+
+#nature-bg{
+  --mtSnow:#b8cbe4; --haze:rgba(92,132,190,0.22);
+  --tree1:#08131c; --tree1L:#0d1e29;
+  --tree2:#12212e; --tree2L:#172b3a;
+  --tree3:#1c3040;
+  --bark:#0a1016; --bank:#0b1a20; --bankL:#12262d;
+  --water1:#0d2438; --water2:#04101c; --waterHi:rgba(180,205,255,0.38);
+  transition:
+    --sky1 2s ease, --sky2 2s ease, --sky3 2s ease, --sky4 2s ease,
+    --mtf 2s ease, --mtm 2s ease, --mtn 2s ease, --tre 2s ease, --grs 2s ease,
+    --tree1 2s ease, --tree1L 2s ease, --tree2 2s ease, --tree2L 2s ease,
+    --tree3 2s ease, --water1 2s ease, --water2 2s ease,
+    --bank 2s ease, --bankL 2s ease, --mtSnow 2s ease;
+}
+
+#nature-bg.ph-morning{
+  --mtf:#5b7f9c; --mtm:#3e5f7d; --mtSnow:#ffeacb; --haze:rgba(255,204,150,0.34);
+  --tree3:#5a7f84; --tree2:#33604f; --tree2L:#3d7259; --tree1:#1e4433; --tree1L:#2a563e;
+  --bark:#3a2a1c; --bank:#33512f; --bankL:#44673a; --grs:#2c4a2a;
+  --water1:#3d7d9c; --water2:#153f5c; --waterHi:rgba(255,220,170,0.55);
+  --scrim:0.42;
+}
+#nature-bg.ph-afternoon{
+  --mtf:#5e86a4; --mtm:#3d6688; --mtSnow:#f4faff; --haze:rgba(196,228,248,0.32);
+  --tree3:#59858c; --tree2:#2f6752; --tree2L:#387a5e; --tree1:#1a4a34; --tree1L:#245c40;
+  --bark:#38291d; --bank:#356034; --bankL:#48783f; --grs:#2e5730;
+  --water1:#2f86b4; --water2:#12496e; --waterHi:rgba(226,246,255,0.48);
+  --scrim:0.47;
+}
+#nature-bg.ph-evening{
+  --mtf:#6b4763; --mtm:#452c47; --mtSnow:#ffd6b0; --haze:rgba(255,146,86,0.34);
+  --tree3:#5a4062; --tree2:#38284a; --tree2L:#432f56; --tree1:#1e1430; --tree1L:#291b3d;
+  --bark:#2c1a22; --bank:#3a2540; --bankL:#4b3050; --grs:#2a1930;
+  --water1:#8a4552; --water2:#2b1436; --waterHi:rgba(255,158,96,0.58);
+  --scrim:0.40;
+}
+#nature-bg.ph-night{
+  --mtf:#22415c; --mtm:#152b40; --mtSnow:#c3d4ec; --haze:rgba(92,132,190,0.22);
+  --tree3:#1f3a4a; --tree2:#132833; --tree2L:#193240; --tree1:#08151d; --tree1L:#0d2029;
+  --bark:#0a1016; --bank:#0d2028; --bankL:#153039; --grs:#08161a;
+  --water1:#12304a; --water2:#040f1c; --waterHi:rgba(184,208,255,0.40);
+  --scrim:0.30;
+}
+
+/* ── vertical composition ─────────────────────────────────────
+   sky ▸ far range ▸ mid range ▸ far treeline ▸ LAKE ▸ bank ▸
+   near forest ▸ grass                                          */
+#n-mtf        { bottom:29%;   height:33%; }
+#n-mtm        { bottom:28%;   height:23%; }
+#n-forest-far { bottom:27.4%; height:7.5%; }
+.n-lake       { position:absolute; left:0; bottom:0; width:100%; height:29%;
+                overflow:hidden;
+                background:linear-gradient(to bottom, var(--water1) 0%, var(--water2) 82%, var(--water2) 100%); }
+#n-bank       { bottom:0;  height:14%; }
+#n-forest-near{ bottom:7%; height:33%; }
+#n-mtf, #n-mtm, #n-forest-far{ transform-origin:50% 100%; }
+#n-forest-near .n-tree-g{ transform-box:fill-box; transform-origin:50% 100%; }
+#n-grass-layer{ bottom:0;  height:9%; animation:none; }
+/* wildlife layer: below the grass so they stand IN the meadow, not on top of it */
+#n-animal-canvas{ position:absolute; inset:0; width:100%; height:100%; }
+
+/* ── aerial perspective: haze pooling between the ranges ── */
+.n-haze{ position:absolute; left:0; width:100%; pointer-events:none; }
+.n-haze-1{ bottom:29%;   height:15%; background:linear-gradient(to top, var(--haze), transparent); }
+.n-haze-2{ bottom:28%;   height:10%; background:linear-gradient(to top, var(--haze), transparent); }
+.n-haze-3{ bottom:27.2%; height:6%;  background:linear-gradient(to top, var(--haze), transparent); }
+
+/* ── water surface ── */
+.n-lake::before{                       /* bright shoreline edge */
+  content:''; position:absolute; left:0; right:0; top:0; height:2px;
+  background:var(--waterHi); opacity:.55; filter:blur(1px);
+}
+.n-lake-mirror{                        /* mountains reflected, flipped */
+  position:absolute; left:0; top:0; width:100%; height:64%;
+  transform:scaleY(-1); opacity:.30; filter:blur(1.6px);
+}
+.n-lake-shine{                         /* sun / moon glitter path */
+  position:absolute; top:0; bottom:0; width:130px; margin-left:-65px;
+  background:linear-gradient(to bottom, var(--waterHi) 0%, rgba(255,255,255,0) 92%);
+  filter:blur(11px); opacity:.85; transform-origin:50% 0;
+}
+#n-lake-canvas{ position:absolute; inset:0; width:100%; height:100%; }
+.n-lake-tint{
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.30) 100%);
+}
+/* storms flatten and darken the water */
+#nature-bg.wx-storm .n-lake-shine,
+#nature-bg.wx-rain  .n-lake-shine{ opacity:0; }
+#nature-bg.wx-storm .n-lake-tint { background:linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.62) 100%); }
+
+@media (max-width:820px){
+  #n-mtf{ bottom:26%; height:28%; }
+  #n-mtm{ bottom:25%; height:19%; }
+  #n-forest-far{ bottom:24.4%; height:6%; }
+  .n-lake{ height:26%; }
+  .n-haze-1{ bottom:26%; } .n-haze-2{ bottom:25%; } .n-haze-3{ bottom:24.2%; }
+  #n-bank{ height:12%; }
+  #n-forest-near{ bottom:6%; height:26%; }
+}
+</style>
+<style id="sidebar-arrow-profile-style">
+/* ═══════════ VISIBLE SIDEBAR ARROW ═══════════ */
+#sidebar-arrow{
+  position:fixed; left:8px; top:50%;
+  width:32px; height:58px;
+  margin-top:-29px;
+  z-index:202; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  border:0.5px solid var(--border);
+  border-radius:11px;
+  background:rgba(28,28,32,0.62);
+  backdrop-filter:blur(22px) saturate(180%);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);
+  box-shadow:0 6px 22px rgba(0,0,0,0.34);
+  color:var(--text-secondary);
+  transition:left .36s cubic-bezier(.4,0,.2,1), background .22s, color .22s,
+             box-shadow .22s, transform .18s;
+  padding:0;
+}
+#sidebar-arrow:hover{
+  background:rgba(46,46,52,0.82);
+  color:var(--text-primary);
+  box-shadow:0 8px 26px rgba(0,0,0,0.44);
+}
+#sidebar-arrow:active{ transform:scale(0.94); }
+#sidebar-arrow svg{ transition:transform .36s cubic-bezier(.4,0,.2,1); display:block; }
+
+body.sidebar-is-open #sidebar-arrow{ left:262px; }
+body.sidebar-is-open #sidebar-arrow svg{ transform:rotate(180deg); }
+
+/* gentle nudge so first-time users notice it */
+@keyframes sbArrowHint{
+  0%,100%{ transform:translateX(0); }
+  50%    { transform:translateX(5px); }
+}
+#sidebar-arrow.hint{ animation:sbArrowHint 1.5s ease-in-out 4; }
+#sidebar-arrow.pinned{ border-color:var(--accent); color:var(--accent); }
+
+@media (max-width:820px){
+  #sidebar-arrow{ width:28px; height:50px; margin-top:-25px; left:5px; }
+  body.sidebar-is-open #sidebar-arrow{ left:214px; }
+}
+@media (prefers-reduced-motion:reduce){ #sidebar-arrow.hint{ animation:none; } }
+
+/* ═══════════ PROFILE PHOTO ═══════════ */
+.profile-modal-avatar.has-photo{
+  background-size:cover; background-position:center; background-repeat:no-repeat;
+  color:transparent; font-size:0;
+}
+.user-chip-avatar.has-photo{
+  background-size:cover; background-position:center; background-repeat:no-repeat;
+  color:transparent; font-size:0;
+}
+
+.profile-avatar-wrap{
+  position:relative; width:68px; height:68px; margin:0 auto 14px;
+}
+.profile-avatar-wrap .profile-modal-avatar{ margin:0; }
+.profile-photo-badge{
+  position:absolute; right:-2px; bottom:-2px;
+  width:26px; height:26px; border-radius:50%;
+  border:2px solid var(--surface-solid, #1c1c1e);
+  background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; padding:0;
+  box-shadow:0 3px 10px rgba(0,0,0,0.42);
+  transition:transform .18s, filter .18s;
+}
+.profile-photo-badge:hover{ transform:scale(1.10); filter:brightness(1.12); }
+.profile-photo-badge:active{ transform:scale(0.94); }
+
+.profile-photo-actions{
+  display:flex; gap:8px; justify-content:center; margin-top:16px;
+}
+.profile-photo-actions button{
+  font:inherit; font-size:12px; font-weight:600;
+  padding:7px 14px; border-radius:9px; cursor:pointer;
+  border:0.5px solid var(--border);
+  background:var(--surface); color:var(--text-secondary);
+  transition:background .18s, color .18s, border-color .18s, transform .15s;
+}
+.profile-photo-actions button:hover{
+  background:var(--surface-hover, rgba(255,255,255,0.07));
+  color:var(--text-primary); border-color:var(--accent);
+}
+.profile-photo-actions button:active{ transform:scale(0.96); }
+.profile-photo-actions button[disabled]{ opacity:.45; cursor:default; transform:none; }
+.profile-photo-actions button.danger:hover{ border-color:#e0352b; color:#ff6b60; }
+
+.profile-photo-status{
+  margin-top:9px; font-size:11.5px; font-weight:500;
+  color:var(--text-tertiary); min-height:15px;
+}
+.profile-photo-status.ok{ color:#38c172; }
+.profile-photo-status.err{ color:#ff6b60; }
+</style>
+<style id="sidebar-glass-style">
+/* ═══════════ GLASS BOXES THROUGHOUT THE SIDEBAR ═══════════ */
+
+.nav-section{ padding:8px 12px 14px; }
+
+/* every nav row is now its own frosted panel */
+.nav-item{
+  padding:10px 12px;
+  margin-bottom:7px;
+  border-radius:13px;
+  background:var(--surface);
+  border:0.5px solid var(--border);
+  backdrop-filter:blur(22px) saturate(190%) brightness(1.08);
+  -webkit-backdrop-filter:blur(22px) saturate(190%) brightness(1.08);
+  box-shadow:0 2px 10px rgba(0,0,0,0.20),
+             inset 0 0.5px 0 rgba(255,255,255,0.14);
+  overflow:hidden;
+  transition:opacity .26s, transform .26s, background .18s, color .18s,
+             border-color .18s, box-shadow .18s;
+}
+.nav-item::before{
+  content:''; position:absolute; inset:0; z-index:0;
+  border-radius:inherit;
+  background:var(--glass-sheen);
+  pointer-events:none;
+}
+.nav-item > *{ position:relative; z-index:1; }
+
+/* hover: lifts, brightens, edge catches the light */
+.sidebar:hover .nav-item:hover{
+  background:rgba(255,255,255,0.10);
+  border-color:rgba(255,255,255,0.32);
+  color:var(--text-primary);
+  transform:translateX(4px) scale(1.012);
+  box-shadow:0 5px 18px rgba(0,0,0,0.30),
+             inset 0 0.5px 0 rgba(255,255,255,0.22);
+}
+.sidebar:hover .nav-item:active{ transform:translateX(4px) scale(0.975); }
+
+/* the current page */
+.nav-item.active{
+  background:linear-gradient(135deg, rgba(0,113,227,0.88) 0%, rgba(0,113,227,0.60) 100%);
+  border-color:rgba(132,186,255,0.55);
+  color:#fff;
+  box-shadow:0 4px 20px rgba(0,113,227,0.42),
+             inset 0 0.5px 0 rgba(255,255,255,0.38);
+}
+.sidebar:hover .nav-item.active:hover{
+  background:linear-gradient(135deg, rgba(10,126,240,0.94) 0%, rgba(0,113,227,0.68) 100%);
+  border-color:rgba(160,205,255,0.68);
+  color:#fff;
+}
+
+/* each emoji sits in its own little glass chip */
+.nav-item-icon{
+  width:27px; height:27px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  font-size:14px; line-height:1;
+  border-radius:9px;
+  background:rgba(255,255,255,0.07);
+  border:0.5px solid rgba(255,255,255,0.15);
+  box-shadow:inset 0 0.5px 0 rgba(255,255,255,0.18);
+  transition:background .18s, border-color .18s;
+}
+.sidebar:hover .nav-item:hover .nav-item-icon{
+  background:rgba(255,255,255,0.14);
+  border-color:rgba(255,255,255,0.28);
+}
+.nav-item.active .nav-item-icon{
+  background:rgba(255,255,255,0.22);
+  border-color:rgba(255,255,255,0.38);
+}
+
+/* brand card gets a crisper glass edge to match */
+.brand-card{
+  border:0.5px solid rgba(255,255,255,0.24);
+  border-radius:18px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.34),
+             inset 0 0.5px 0 rgba(255,255,255,0.24);
+}
+
+/* the sidebar panel itself */
+.sidebar.sidebar-open{
+  border-right:0.5px solid rgba(255,255,255,0.20);
+  box-shadow:6px 0 34px rgba(0,0,0,0.32),
+             inset -0.5px 0 0 rgba(255,255,255,0.10);
+}
+
+@media (prefers-reduced-motion:reduce){
+  .sidebar:hover .nav-item:hover{ transform:none; }
+}
+</style>
+<style id="terrain-shading-style">
+/* ════ lit + shaded rock faces and layered foliage tones ════ */
+@property --mtfL { syntax:'<color>'; inherits:true; initial-value:#2f5878; }
+@property --mtfD { syntax:'<color>'; inherits:true; initial-value:#142a3e; }
+@property --mtmL { syntax:'<color>'; inherits:true; initial-value:#1e3a52; }
+@property --mtmD { syntax:'<color>'; inherits:true; initial-value:#0c1a28; }
+@property --tree1D { syntax:'<color>'; inherits:true; initial-value:#040c14; }
+@property --tree2D { syntax:'<color>'; inherits:true; initial-value:#0b1720; }
+
+#nature-bg{
+  --mtfL:#2f5878; --mtfD:#142a3e; --mtmL:#1e3a52; --mtmD:#0c1a28;
+  --tree1D:#040c14; --tree2D:#0b1720; --tree3L:#2b4a5c;
+  --snowShade:rgba(120,150,190,0.55);
+}
+#nature-bg.ph-morning{
+  --mtfL:#83a8c2; --mtfD:#3a5771; --mtmL:#5b81a0; --mtmD:#28405a;
+  --tree1D:#12301f; --tree2D:#20463a; --tree3L:#7b9fa2;
+  --snowShade:rgba(206,170,150,0.5);
+}
+#nature-bg.ph-afternoon{
+  --mtfL:#8bb0cb; --mtfD:#3d6280; --mtmL:#5c88ab; --mtmD:#254662;
+  --tree1D:#0f3423; --tree2D:#1d4c3c; --tree3L:#7ea8ae;
+  --snowShade:rgba(168,196,224,0.5);
+}
+#nature-bg.ph-evening{
+  --mtfL:#9c6478; --mtfD:#432a44; --mtmL:#6b4260; --mtmD:#2c1a32;
+  --tree1D:#120a1e; --tree2D:#241738; --tree3L:#7a5a80;
+  --snowShade:rgba(196,120,96,0.5);
+}
+#nature-bg.ph-night{
+  --mtfL:#2f5878; --mtfD:#142a3e; --mtmL:#1e3a52; --mtmD:#0c1a28;
+  --tree1D:#040c14; --tree2D:#0b1720; --tree3L:#2b4a5c;
+  --snowShade:rgba(120,150,190,0.55);
+}
+
+#nature-bg{
+  transition:
+    --sky1 2s ease, --sky2 2s ease, --sky3 2s ease, --sky4 2s ease,
+    --mtf 2s ease, --mtm 2s ease, --mtn 2s ease, --tre 2s ease, --grs 2s ease,
+    --tree1 2s ease, --tree1L 2s ease, --tree2 2s ease, --tree2L 2s ease,
+    --tree3 2s ease, --water1 2s ease, --water2 2s ease,
+    --bank 2s ease, --bankL 2s ease, --mtSnow 2s ease,
+    --mtfL 2s ease, --mtfD 2s ease, --mtmL 2s ease, --mtmD 2s ease,
+    --tree1D 2s ease, --tree2D 2s ease;
+}
+
+/* the shaded slope groups; GSAP cross-fades them as the sun crosses the sky */
+.face-l, .face-r{ transition:none; }
+</style>
+<style id="touch-hover-fix">
+/* ═══ touch devices latch :hover after a tap, which left elements stuck
+   enlarged or shifted. Disable purely decorative hover transforms where
+   there is no real hovering pointer. ═══ */
+@media (hover: none), (pointer: coarse){
+  .card:hover,
+  .card:active                      { transform:none !important; }
+  .card:hover .card-img-box         { transform:none !important; }
+  .sidebar:hover .nav-item:hover    { transform:none !important; }
+  #cat-feedback-btn:hover,
+  #iris-btn:hover,
+  #wa-community-btn:hover           { transform:none !important; }
+  .profile-photo-badge:hover        { transform:none !important; }
+  .card-arrow:hover                 { transform:translateX(-50%) !important; }
+  #sidebar-arrow:active             { transform:none; }
+}
+</style>
 </head>
 <body>
+
+<!-- ═══ LIVING NATURE BACKGROUND ═══ -->
+<div id="nature-bg" class="ph-night">
+  <div class="n-sky"></div>
+  <div class="n-hglow"></div>
+
+  <canvas id="n-sky-canvas" class="n-canvas"></canvas>
+
+  <div id="n-celestial">
+    <div class="n-sun"  id="n-sun"></div>
+    <div class="n-moon" id="n-moon">
+      <i style="width:15px;height:15px;left:20%;top:24%;"></i>
+      <i style="width:9px;height:9px;left:56%;top:16%;"></i>
+      <i style="width:19px;height:19px;left:44%;top:54%;"></i>
+      <i style="width:7px;height:7px;left:24%;top:66%;"></i>
+      <i style="width:11px;height:11px;left:68%;top:70%;"></i>
+    </div>
+  </div>
+
+  <div class="n-clouds" id="n-clouds"></div>
+
+  <!-- live-weather sky effects (behind the mountains) -->
+  <div id="weather-sun-overlay">
+    <div class="sun-orb"></div>
+    <div class="sun-ray"></div>
+    <div class="sun-shimmer"></div>
+  </div>
+  <div id="weather-cloud-overlay"></div>
+  <div class="n-storm-dark"></div>
+  <div id="n-storm"></div>
+
+  <!-- ── atmosphere + mountain ranges ── -->
+  <div class="n-haze n-haze-1"></div>
+  <svg class="n-layer" id="n-mtf" viewBox="0 0 1440 420" preserveAspectRatio="none" aria-hidden="true"></svg>
+  <div class="n-haze n-haze-2"></div>
+  <svg class="n-layer" id="n-mtm" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true"></svg>
+  <svg class="n-layer" id="n-forest-far" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true"></svg>
+  <div class="n-haze n-haze-3"></div>
+
+  <!-- ── the lake ── -->
+  <div class="n-lake" id="n-lake">
+    <div class="n-lake-mirror" id="n-lake-mirror"></div>
+    <div class="n-lake-shine"  id="n-lake-shine"></div>
+    <canvas id="n-lake-canvas"></canvas>
+    <div class="n-lake-tint"></div>
+  </div>
+
+  <!-- ── near shore ── -->
+  <svg class="n-layer" id="n-bank" viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true"></svg>
+  <svg class="n-layer" id="n-forest-near" viewBox="0 0 1440 420" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+  <canvas id="n-fx-canvas" class="n-canvas"></canvas>
+  <canvas id="weather-canvas"></canvas>
+
+  <canvas id="n-animal-canvas"></canvas>
+  <svg class="n-layer" id="n-grass-layer" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+  <div class="n-scrim"></div>
+  <div id="weather-lightning-overlay"></div>
+  <canvas id="lightning-canvas"></canvas>
+  <div class="n-flash" id="n-flash"></div>
+</div>
+
 
 <div class="orb orb-blue"></div>
 <div class="orb orb-gray"></div>
 <div class="orb orb-red"></div>
 <div class="orb orb-violet"></div>
 
-<canvas id="constellation-canvas"></canvas>
-<div id="floating-icons"></div>
-
 <div id="sidebar-hover-trigger"></div>
+<button id="sidebar-arrow" type="button" aria-label="Open menu" title="Open menu (→)">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+</button>
 
 <div class="app-container">
 <aside class="sidebar" id="main-sidebar">
@@ -1431,16 +2193,7 @@
 
 <div class="main-container" id="main-container">
 
-  <!-- Weather overlays -->
-  <canvas id="weather-canvas"></canvas>
-  <canvas id="lightning-canvas"></canvas>
-  <div id="weather-lightning-overlay"></div>
-  <div id="weather-cloud-overlay"></div>
-  <div id="weather-sun-overlay">
-    <div class="sun-orb"></div>
-    <div class="sun-ray"></div>
-    <div class="sun-shimmer"></div>
-  </div>
+  <!-- Weather overlays now live inside #nature-bg (background layer) -->
 
   <header>
     <!-- Weather widget top-left -->
@@ -1493,10 +2246,26 @@
   <div class="profile-modal-overlay" id="profile-modal-overlay" onclick="if(event.target===this)closeProfileModal();">
     <div class="profile-modal">
       <button class="profile-modal-close" id="profile-modal-close" title="Close" onclick="closeProfileModal()">✕</button>
-      <div class="profile-modal-avatar" id="profile-modal-avatar">U</div>
+      <div class="profile-avatar-wrap">
+        <div class="profile-modal-avatar" id="profile-modal-avatar">U</div>
+        <button class="profile-photo-badge" id="profile-photo-badge" type="button" title="Change profile photo" aria-label="Change profile photo">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+        </button>
+      </div>
       <div class="profile-modal-name" id="profile-modal-name">User</div>
       <div class="profile-modal-email" id="profile-modal-email"></div>
       <div class="profile-modal-points" id="profile-modal-points">⭐ 0 / 5000 pts</div>
+
+      <input type="file" id="profile-photo-input" accept="image/*" hidden>
+      <div class="profile-photo-actions">
+        <button type="button" id="profile-photo-choose">Change photo</button>
+        <button type="button" id="profile-photo-remove" class="danger">Remove</button>
+      </div>
+      <div class="profile-photo-status" id="profile-photo-status"></div>
     </div>
   </div>
 
@@ -1841,6 +2610,8 @@ function openWhatsAppChannel() {
   let cachedTotalPoints = 0;
   let cachedDisplayName = 'User';
   let cachedEmail = '';
+  let cachedPhoto = '';
+  let userDocRef = null;
   let currentUid = null;
   let pointsTimer = null;
   let unsubscribePoints = null;
@@ -1878,8 +2649,121 @@ function openWhatsAppChannel() {
     }
   }
 
+  // ─── PROFILE PHOTO ───────────────────────────────────────────────
+  // Stored on the user's own Firestore doc (veeraUsers/{uid}.photoURL) as a
+  // small square JPEG data URL, so it follows the account across devices and
+  // nothing is kept in the browser.
+  function applyPhoto(url){
+    cachedPhoto = url || '';
+    const initial = (cachedDisplayName || 'U').trim().charAt(0).toUpperCase() || 'U';
+    ['user-chip-avatar','profile-modal-avatar'].forEach(function(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(url){
+        el.style.backgroundImage = 'url("' + url + '")';
+        el.textContent = '';
+        el.classList.add('has-photo');
+      } else {
+        el.style.backgroundImage = '';
+        el.textContent = initial;
+        el.classList.remove('has-photo');
+      }
+    });
+  }
+
+  // Centre-crop to a square and shrink, so the stored image stays tiny.
+  function squareResize(file, size, quality){
+    return new Promise(function(resolve, reject){
+      const reader = new FileReader();
+      reader.onerror = function(){ reject(new Error('Could not read that file')); };
+      reader.onload = function(ev){
+        const img = new Image();
+        img.onerror = function(){ reject(new Error('That file is not a valid image')); };
+        img.onload = function(){
+          const c = document.createElement('canvas');
+          c.width = size; c.height = size;
+          const ctx = c.getContext('2d');
+          const s = Math.min(img.width, img.height);
+          ctx.drawImage(img, (img.width - s)/2, (img.height - s)/2, s, s, 0, 0, size, size);
+          resolve(c.toDataURL('image/jpeg', quality));
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function photoStatus(msg, kind){
+    const el = document.getElementById('profile-photo-status');
+    if(!el) return;
+    el.textContent = msg || '';
+    el.className = 'profile-photo-status' + (kind ? ' ' + kind : '');
+  }
+
+  async function saveProfilePhoto(dataUrl){
+    if(!userDocRef) throw new Error('Not signed in yet');
+    await setDoc(userDocRef, { photoURL: dataUrl, photoUpdatedAt: serverTimestamp() }, { merge: true });
+  }
+
+  (function wireProfilePhoto(){
+    const input  = document.getElementById('profile-photo-input');
+    const choose = document.getElementById('profile-photo-choose');
+    const badge  = document.getElementById('profile-photo-badge');
+    const remove = document.getElementById('profile-photo-remove');
+    if(!input) return;
+
+    function pick(e){ if(e) e.stopPropagation(); photoStatus(''); input.click(); }
+    if(choose) choose.addEventListener('click', pick);
+    if(badge)  badge.addEventListener('click', pick);
+
+    input.addEventListener('change', async function(){
+      const file = input.files && input.files[0];
+      input.value = '';
+      if(!file) return;
+      if(!/^image\//.test(file.type)){ photoStatus('Please choose an image file', 'err'); return; }
+      if(file.size > 12 * 1024 * 1024){ photoStatus('That image is too large (max 12 MB)', 'err'); return; }
+
+      if(choose) choose.disabled = true;
+      photoStatus('Uploading…');
+      try{
+        let dataUrl = await squareResize(file, 256, 0.86);
+        if(dataUrl.length > 700000) dataUrl = await squareResize(file, 180, 0.7);
+        applyPhoto(dataUrl);              // instant preview
+        await saveProfilePhoto(dataUrl);  // then persist
+        photoStatus('Profile photo updated', 'ok');
+        setTimeout(function(){ photoStatus(''); }, 2600);
+      }catch(err){
+        console.error('Profile photo failed:', err);
+        applyPhoto(cachedPhoto);
+        photoStatus(err && err.message ? err.message : 'Could not save that photo', 'err');
+      }finally{
+        if(choose) choose.disabled = false;
+      }
+    });
+
+    if(remove){
+      remove.addEventListener('click', async function(e){
+        e.stopPropagation();
+        if(!cachedPhoto){ photoStatus('No photo to remove'); return; }
+        remove.disabled = true;
+        try{
+          applyPhoto('');
+          await saveProfilePhoto('');
+          photoStatus('Photo removed', 'ok');
+          setTimeout(function(){ photoStatus(''); }, 2600);
+        }catch(err){
+          console.error('Photo removal failed:', err);
+          photoStatus('Could not remove the photo', 'err');
+        }finally{
+          remove.disabled = false;
+        }
+      });
+    }
+  })();
+
   window.openProfileModal = function(){
-    document.getElementById('profile-modal-avatar').textContent = cachedDisplayName.trim().charAt(0).toUpperCase() || 'U';
+    applyPhoto(cachedPhoto);
+    photoStatus('');
     document.getElementById('profile-modal-name').textContent = cachedDisplayName;
     document.getElementById('profile-modal-email').textContent = cachedEmail;
     document.getElementById('profile-modal-overlay').classList.add('open');
@@ -2028,9 +2912,12 @@ function openWhatsAppChannel() {
     if (avatarEl) avatarEl.textContent = displayName.trim().charAt(0).toUpperCase() || 'U';
 
     const userRef = doc(db, 'veeraUsers', user.uid);
+    userDocRef = userRef;
+    applyPhoto('');
     unsubscribePoints = onSnapshot(userRef, (snap) => {
-      const total = snap.exists() ? (snap.data().totalPoints || 0) : 0;
-      renderPointsUI(total);
+      const data = snap.exists() ? snap.data() : {};
+      renderPointsUI(data.totalPoints || 0);
+      applyPhoto(data.photoURL || '');
     }, (err) => console.error('Points listener failed:', err));
 
     startTracking(user.uid);
@@ -2054,14 +2941,73 @@ function openWhatsAppChannel() {
 (function(){
   var trigger = document.getElementById('sidebar-hover-trigger');
   var sidebar = document.getElementById('main-sidebar');
-  if(!trigger||!sidebar) return;
-  var timer;
-  function show(){ clearTimeout(timer); sidebar.classList.add('sidebar-open'); }
-  function hide(){ timer=setTimeout(()=>sidebar.classList.remove('sidebar-open'),120); }
-  trigger.addEventListener('mouseenter', show);
-  sidebar.addEventListener('mouseenter', ()=>clearTimeout(timer));
-  sidebar.addEventListener('mouseleave', hide);
-  trigger.addEventListener('mouseleave', e=>{ if(!sidebar.contains(e.relatedTarget)) hide(); });
+  var arrow   = document.getElementById('sidebar-arrow');
+  if(!sidebar) return;
+  var timer, pinned = false;
+
+  function show(){
+    clearTimeout(timer);
+    sidebar.classList.add('sidebar-open');
+    document.body.classList.add('sidebar-is-open');
+    if(arrow){ arrow.setAttribute('aria-label','Close menu'); arrow.title = 'Close menu (←)'; }
+  }
+  function hide(force){
+    if(pinned && !force) return;
+    timer = setTimeout(function(){
+      if(pinned) return;
+      sidebar.classList.remove('sidebar-open');
+      document.body.classList.remove('sidebar-is-open');
+      if(arrow){ arrow.setAttribute('aria-label','Open menu'); arrow.title = 'Open menu (→)'; }
+    }, 120);
+  }
+  function unpin(){ pinned = false; if(arrow) arrow.classList.remove('pinned'); }
+  function pin(){ pinned = true; if(arrow) arrow.classList.add('pinned'); show(); }
+
+  // ── mouse: sliding into the left edge still opens it ──
+  if(trigger){
+    trigger.addEventListener('mouseenter', show);
+    trigger.addEventListener('mouseleave', function(e){
+      if(!sidebar.contains(e.relatedTarget)) hide();
+    });
+  }
+  sidebar.addEventListener('mouseenter', function(){ clearTimeout(timer); });
+  sidebar.addEventListener('mouseleave', function(){ hide(); });
+
+  // ── the arrow button: click to pin open / close ──
+  if(arrow){
+    arrow.addEventListener('click', function(e){
+      e.stopPropagation();
+      arrow.classList.remove('hint');
+      if(pinned || sidebar.classList.contains('sidebar-open')){
+        unpin(); hide(true);
+      } else {
+        pin();
+      }
+    });
+    arrow.addEventListener('mouseenter', function(){ clearTimeout(timer); if(!pinned) show(); });
+    arrow.addEventListener('mouseleave', function(e){
+      if(!pinned && !sidebar.contains(e.relatedTarget)) hide();
+    });
+    // one-time nudge so the arrow gets noticed
+    setTimeout(function(){ arrow.classList.add('hint'); }, 1800);
+    setTimeout(function(){ arrow.classList.remove('hint'); }, 12000);
+  }
+
+  // ── keyboard arrows ──
+  document.addEventListener('keydown', function(e){
+    var t = e.target, tag = (t && t.tagName || '').toLowerCase();
+    if(tag === 'input' || tag === 'textarea' || tag === 'select' || (t && t.isContentEditable)) return;
+    if(e.metaKey || e.ctrlKey || e.altKey) return;
+    if(e.key === 'ArrowRight'){ pin(); }
+    else if(e.key === 'ArrowLeft' || e.key === 'Escape'){ unpin(); hide(true); }
+  });
+
+  // clicking anywhere in the page closes a pinned sidebar
+  document.addEventListener('click', function(e){
+    if(!pinned) return;
+    if(sidebar.contains(e.target) || (arrow && arrow.contains(e.target))) return;
+    unpin(); hide(true);
+  });
 })();
 
 function showSidebarLoadingAndNavigate(href){
@@ -2513,7 +3459,7 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
       }
       stormLoop();
       startThunder();
-    } else if(mode === 'cloudy'){
+    } else if(mode === 'cloudy' || mode === 'snow'){
       buildClouds();
       document.getElementById('weather-cloud-overlay').classList.add('weather-active');
     } else if(mode === 'sunny'){
@@ -2524,6 +3470,8 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
   // ── WEATHER CODE → MODE ──
   function codeToMode(wmoCode, isDay){
     if(wmoCode >= 95 && wmoCode <= 99) return 'storm';  // thunderstorm
+    if(wmoCode >= 71 && wmoCode <= 77) return 'snow';   // snowfall
+    if(wmoCode === 85 || wmoCode === 86) return 'snow'; // snow showers
     if(wmoCode >= 51 && wmoCode <= 82) return 'rain';   // drizzle / rain showers
     if(wmoCode >= 1 && wmoCode <= 3) return 'cloudy';
     if(wmoCode === 45 || wmoCode === 48) return 'cloudy';
@@ -2558,7 +3506,7 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
 
   // ── FETCH WEATHER ──
   function fetchWeather(lat, lon){
-    var url = 'https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,weathercode,is_day&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto';
+    var url = 'https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,weathercode,is_day&daily=sunrise,sunset&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto';
     fetch(url)
       .then(function(r){ return r.json(); })
       .then(function(data){
@@ -2571,7 +3519,21 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
         document.getElementById('weather-temp').textContent = temp + '°C';
         document.getElementById('weather-desc').textContent = wmoDesc(code);
 
+        // feed the real local sunrise/sunset into the scene so morning /
+        // afternoon / evening / night line up with the actual sky outside
+        try {
+          if(window.NatureScene && data.daily && data.daily.sunrise && data.daily.sunset){
+            var toHour = function(s){
+              var m = /T(\d{2}):(\d{2})/.exec(String(s));
+              return m ? (parseInt(m[1],10) + parseInt(m[2],10)/60) : null;
+            };
+            window.NatureScene.setSunTimes(toHour(data.daily.sunrise[0]), toHour(data.daily.sunset[0]));
+          }
+        } catch(e){}
+
         var mode = codeToMode(code, isDay);
+        // drive the nature background (rain/snow actually falls in the scene)
+        try { if(window.NatureScene) window.NatureScene.setWeather(mode || 'clear'); } catch(e){}
         if(mode) setMode(mode);
       })
       .catch(function(){
@@ -2993,6 +3955,12 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
   gsap.defaults({ ease: 'power3.out' });
   document.body.classList.add('gsap-on'); // hands card transforms over to GSAP
 
+  // Touch devices synthesise mouseenter/mousemove on tap but never fire
+  // mouseleave, which left cards and buttons stuck mid-hover. Pointer-driven
+  // effects only run where there is a real hovering pointer.
+  var finePointer = !(window.matchMedia &&
+    window.matchMedia('(hover: hover) and (pointer: fine)').matches === false);
+
   // ══ 1. ENTRANCE CHOREOGRAPHY ══
   var tl = gsap.timeline();
   tl.from('header', { y: -60, opacity: 0, duration: 0.7 })
@@ -3010,40 +3978,59 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
 
   // ══ 2. 3D TILT CARDS (quickTo — buttery per-frame updates) ══
   document.querySelectorAll('.card').forEach(function(card){
+    if (!finePointer) return;                     // no hover state on touch
     gsap.set(card, { transformPerspective: 900, transformOrigin: 'center center' });
     var rx = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power2.out' });
     var ry = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power2.out' });
 
-    card.addEventListener('mousemove', function(e){
+    function rest(){
+      rx(0); ry(0);
+      gsap.to(card, { y: 0, scale: 1, duration: 0.55, ease: 'elastic.out(1, 0.6)', overwrite: 'auto' });
+    }
+
+    card.addEventListener('pointermove', function(e){
+      if (e.pointerType !== 'mouse') return;
       var r = card.getBoundingClientRect();
+      if (!r.width || !r.height) return;
       var px = (e.clientX - r.left) / r.width - 0.5;   // -0.5 … 0.5
       var py = (e.clientY - r.top) / r.height - 0.5;
-      rx(-py * 10);
-      ry(px * 12);
+      rx(Math.max(-10, Math.min(10, -py * 10)));
+      ry(Math.max(-12, Math.min(12, px * 12)));
     });
-    card.addEventListener('mouseenter', function(){
-      gsap.to(card, { y: -7, scale: 1.015, duration: 0.4, ease: 'power2.out' });
+    card.addEventListener('pointerenter', function(e){
+      if (e.pointerType !== 'mouse') return;
+      gsap.to(card, { y: -7, scale: 1.015, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
     });
-    card.addEventListener('mouseleave', function(){
-      rx(0); ry(0);
-      gsap.to(card, { y: 0, scale: 1, duration: 0.55, ease: 'elastic.out(1, 0.6)' });
-    });
+    // every way the pointer can leave, including ones that used to be missed
+    card.addEventListener('pointerleave', rest);
+    card.addEventListener('pointercancel', rest);
+    card.addEventListener('click', rest);          // settle before navigating away
+    card.addEventListener('blur', rest, true);
+  });
+  // a tab switch or window blur mid-hover also left cards stuck
+  window.addEventListener('blur', function(){
+    if (!finePointer) return;
+    gsap.to('.card', { rotationX: 0, rotationY: 0, y: 0, scale: 1, duration: 0.3, overwrite: 'auto' });
   });
 
   // ══ 3. MAGNETIC FLOATING BUTTONS ══
   ['wa-community-btn', 'cat-feedback-btn'].forEach(function(id){
     var btn = document.getElementById(id);
-    if (!btn) return;
+    if (!btn || !finePointer) return;              // otherwise a tap left them offset
     var mx = gsap.quickTo(btn, 'x', { duration: 0.35, ease: 'power2.out' });
     var my = gsap.quickTo(btn, 'y', { duration: 0.35, ease: 'power2.out' });
-    btn.addEventListener('mousemove', function(e){
+    function snapBack(){
+      gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.45)', overwrite: 'auto' });
+    }
+    btn.addEventListener('pointermove', function(e){
+      if (e.pointerType !== 'mouse') return;
       var r = btn.getBoundingClientRect();
       mx((e.clientX - (r.left + r.width / 2)) * 0.35);
       my((e.clientY - (r.top + r.height / 2)) * 0.35);
     });
-    btn.addEventListener('mouseleave', function(){
-      gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.45)' });
-    });
+    btn.addEventListener('pointerleave', snapBack);
+    btn.addEventListener('pointercancel', snapBack);
+    btn.addEventListener('click', snapBack);
   });
 
   // ══ 4. CLICK RIPPLES on header buttons & cards ══
@@ -3056,10 +4043,12 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
     ink.style.left = (e.clientX - r.left - size / 2) + 'px';
     ink.style.top = (e.clientY - r.top - size / 2) + 'px';
     host.appendChild(ink);
+    var cleared = false;
+    function drop(){ if (cleared) return; cleared = true; if (ink.parentNode) ink.remove(); }
     gsap.fromTo(ink, { scale: 0, opacity: 0.7 }, {
-      scale: 1, opacity: 0, duration: 0.65, ease: 'power2.out',
-      onComplete: function(){ ink.remove(); }
+      scale: 1, opacity: 0, duration: 0.65, ease: 'power2.out', onComplete: drop
     });
+    setTimeout(drop, 1200);      // never leave a ripple stuck on the card
   }
   document.querySelectorAll('.hbtn, .card').forEach(function(el){
     el.addEventListener('pointerdown', function(e){ spawnRipple(el, e); });
@@ -3068,7 +4057,7 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
   // ══ 5. HEADER BUTTON ICON WIGGLE on hover ══
   document.querySelectorAll('.hbtn').forEach(function(btn){
     var icon = btn.querySelector('svg');
-    if (!icon) return;
+    if (!icon || !finePointer) return;
     btn.addEventListener('mouseenter', function(){
       gsap.fromTo(icon, { rotation: 0 }, { rotation: 14, yoyo: true, repeat: 1, duration: 0.16, ease: 'power1.inOut' });
     });
@@ -3084,11 +4073,14 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
       depth: (i + 1) * 8
     });
   });
-  window.addEventListener('mousemove', function(e){
-    var nx = (e.clientX / window.innerWidth) - 0.5;
-    var ny = (e.clientY / window.innerHeight) - 0.5;
-    orbTweens.forEach(function(t){ t.x(nx * t.depth); t.y(ny * t.depth); });
-  });
+  if (finePointer){
+    window.addEventListener('pointermove', function(e){
+      if (e.pointerType !== 'mouse') return;
+      var nx = (e.clientX / window.innerWidth) - 0.5;
+      var ny = (e.clientY / window.innerHeight) - 0.5;
+      orbTweens.forEach(function(t){ t.x(nx * t.depth); t.y(ny * t.depth); });
+    });
+  }
 })();
 </script>
 
@@ -3141,286 +4133,1549 @@ document.getElementById('main-search').addEventListener('keydown',function(e){ i
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
 
   <script>
-  // ─── INTERACTIVE CONSTELLATION BACKGROUND ───
-  // Drifting stars that link to their neighbours and to the mouse cursor.
-  // Stars near the pointer get gently pulled toward it. GSAP fades the layer
-  // in; anime.js drives a one-time twinkle burst. Fails silently and respects
-  // reduced-motion.
-  (function(){
-    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) return;
+  </script>
 
-    var canvas = document.getElementById('constellation-canvas');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
 
-    var isDark = true; // theme is always dark/black now
-    // Star + line colours adapt to the theme
-    var STAR_RGB = isDark ? '255,255,255' : '0,80,160';
-    var LINE_RGB = isDark ? '120,170,255' : '0,113,227';
+  <script src="ai-agent-widget.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   NATURE SCENE ENGINE
+   · Sky, sun/moon arc and palette follow the real clock
+     (morning · afternoon · evening · night)
+   · Stars twinkle + shooting stars at night, birds by day
+   · Rain / snow fall through the scene when live weather says so
+   · Lightning washes the whole landscape
+   API:  NatureScene.setPhase('morning'|'afternoon'|'evening'|'night'|'auto')
+         NatureScene.setWeather('rain'|'storm'|'snow'|'cloudy'|'sunny'|'clear')
+   ═══════════════════════════════════════════════════════════════ */
+window.NatureScene = (function(){
+  var root  = document.getElementById('nature-bg');
+  if(!root) return { setPhase:function(){}, setWeather:function(){} };
 
-    var DPR = Math.min(window.devicePixelRatio || 1, 2);
-    var W = 0, H = 0;
-    var stars = [];
-    var LINK_DIST = 130;      // max distance stars link to each other
-    var MOUSE_DIST = 180;     // max distance a star links to the mouse
-    var PULL_DIST = 160;      // stars within this range drift toward the mouse
+  var skyC  = document.getElementById('n-sky-canvas');
+  var fxC   = document.getElementById('n-fx-canvas');
+  var sctx  = skyC.getContext('2d');
+  var fctx  = fxC.getContext('2d');
+  var sunEl = document.getElementById('n-sun');
+  var moonEl= document.getElementById('n-moon');
+  var flashEl = document.getElementById('n-flash');
 
-    var mouse = { x: -9999, y: -9999, active: false };
+  var W = 1, H = 1, DPR = 1;
+  var phase = 'night', forcedPhase = null;
+  var precip = null;            // 'rain' | 'snow' | null
+  var weather = 'wx-clear';     // current weather class
+  var heavy  = false;
+  var overcast = false;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    function resize(){
-      W = window.innerWidth;
-      H = window.innerHeight;
-      canvas.width = W * DPR;
-      canvas.height = H * DPR;
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      buildStars();
+  var lakeC = null, lctx = null, LW = 1, LH = 1;
+  var lastFaceL = -1, lastFaceR = -1, lastGlow = -1;
+  var animC = null, actx = null;
+  var ripples = [], celestialX = 50;
+  var stars = [], shooting = null, shootTimer = 0;
+  var drops = [], flakes = [], flies = [], flocks = [], animals = [];
+  var raf = null, lastT = 0;
+
+  /* ───────────────────────── sizing ───────────────────────── */
+  function sizeCanvas(c, ctx){
+    c.width  = Math.floor(W * DPR);
+    c.height = Math.floor(H * DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  function resize(){
+    W = window.innerWidth; H = window.innerHeight;
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    sizeCanvas(skyC, sctx);
+    sizeCanvas(fxC, fctx);
+    animC = document.getElementById('n-animal-canvas');
+    if(animC){ actx = animC.getContext('2d'); sizeCanvas(animC, actx); }
+    lakeC = document.getElementById('n-lake-canvas');
+    if(lakeC){
+      lctx = lakeC.getContext('2d');
+      var box = document.getElementById('n-lake');
+      LW = box ? box.offsetWidth  : W;
+      LH = box ? box.offsetHeight : H*0.29;
+      if(!LW) LW = W; if(!LH) LH = Math.round(H*0.29);
+      lakeC.width  = Math.floor(LW * DPR);
+      lakeC.height = Math.floor(LH * DPR);
+      lctx.setTransform(DPR,0,0,DPR,0,0);
+    }
+    ripples = [];
+    buildStars();
+    buildPrecip();
+    buildFlies();
+    buildAnimals();
+  }
+
+  /* ─────────────────── landscape generation ─────────────────── */
+  function rnd(a,b){ return a + Math.random()*(b-a); }
+
+  /* ══════════════════ MOUNTAIN RANGES ══════════════════
+     Each range is a set of overlapping peaks. Every peak is built from an
+     apex with two fractal-noised slopes running down to the base, split by
+     a spine so one face catches the light and the other falls into shadow —
+     which is what actually makes a mountain read as a mountain.          */
+
+  // Smooth multi-octave wobble, pinned to zero at both ends of the slope.
+  function slopeNoise(t, sA, sB, amp){
+    var env = Math.sin(Math.PI * Math.min(1, Math.max(0, t)));
+    return env * amp * (
+      Math.sin(t*4.7  + sA) * 0.52 +
+      Math.sin(t*11.3 + sB) * 0.27 +
+      Math.sin(t*26.9 + sA*2.1) * 0.13 +
+      Math.sin(t*57.1 + sB*1.7) * 0.08
+    );
+  }
+
+  function buildPeak(px, apexY, halfW, baseY, rough, res){
+    var left = [], right = [], i;
+    var sA = Math.random()*6.28, sB = Math.random()*6.28;
+    var sC = Math.random()*6.28, sD = Math.random()*6.28;
+    var drop = baseY - apexY;
+    for(i=0;i<=res;i++){
+      var t = i/res;
+      var y = apexY + drop*t;
+      var lx = px - halfW*t + slopeNoise(t, sA, sB, rough);
+      var rx = px + halfW*t - slopeNoise(t, sC, sD, rough);
+      left.push([lx, y]);
+      right.push([rx, y]);
+    }
+    return { px:px, apexY:apexY, baseY:baseY, left:left, right:right, res:res, drop:drop };
+  }
+
+  function pathOf(pts, reverse){
+    var s = '', i;
+    if(reverse){ for(i=pts.length-1;i>=0;i--) s += ' L'+pts[i][0].toFixed(1)+','+pts[i][1].toFixed(1); }
+    else       { for(i=0;i<pts.length;i++)    s += ' L'+pts[i][0].toFixed(1)+','+pts[i][1].toFixed(1); }
+    return s;
+  }
+
+  function peakSilhouette(pk){
+    return 'M'+pk.left[pk.res][0].toFixed(1)+','+pk.baseY +
+           pathOf(pk.left, true) + pathOf(pk.right, false) + ' Z ';
+  }
+
+  // One half of the peak, split down the spine from the apex.
+  function peakFace(pk, side){
+    var edge = side > 0 ? pk.right : pk.left;
+    return 'M'+pk.px.toFixed(1)+','+pk.apexY.toFixed(1) +
+           pathOf(edge, false) +
+           ' L'+pk.px.toFixed(1)+','+pk.baseY + ' Z ';
+  }
+
+  // Snow above the snow line, with a ragged melt edge and drips.
+  function peakSnow(pk, snowY){
+    if(pk.apexY >= snowY) return '';
+    var t = (snowY - pk.apexY) / pk.drop;
+    if(t <= 0.02) return '';
+    var k = Math.min(pk.res, Math.max(1, Math.round(t * pk.res)));
+    var L = pk.left.slice(0, k+1), R = pk.right.slice(0, k+1);
+    var d = 'M'+L[k][0].toFixed(1)+','+L[k][1].toFixed(1) +
+            pathOf(L, true) + pathOf(R, false);
+    var steps = 7, i;
+    for(i=steps;i>=0;i--){
+      var f  = i/steps;
+      var xx = L[k][0] + (R[k][0]-L[k][0])*f;
+      var yy = L[k][1] + (i % 2 ? rnd(6, 26) : rnd(-10, 3));
+      d += ' L'+xx.toFixed(1)+','+yy.toFixed(1);
+    }
+    return d + ' Z ';
+  }
+
+  // Fingers of snow reaching down the gullies below the cap.
+  function peakStreaks(pk, snowY){
+    if(pk.apexY >= snowY) return '';
+    var t = (snowY - pk.apexY) / pk.drop;
+    if(t <= 0.05) return '';
+    var k = Math.min(pk.res - 2, Math.max(1, Math.round(t * pk.res)));
+    var d = '', i;
+    for(i=0;i<3;i++){
+      var side = Math.random() < 0.5 ? pk.left : pk.right;
+      var f    = 0.18 + Math.random()*0.55;                 // how far toward the spine
+      var kEnd = Math.min(pk.res, k + Math.round(pk.res * rnd(0.10, 0.30)));
+      var a = side[k], b = side[kEnd];
+      var w = rnd(4, 12);
+      var ax = a[0] + (pk.px - a[0])*f;
+      var bx = b[0] + (pk.px - b[0])*f;
+      d += 'M'+(ax-w).toFixed(1)+','+a[1].toFixed(1)+
+           ' L'+(ax+w).toFixed(1)+','+a[1].toFixed(1)+
+           ' L'+(bx+w*0.22).toFixed(1)+','+b[1].toFixed(1)+
+           ' L'+(bx-w*0.22).toFixed(1)+','+b[1].toFixed(1)+' Z ';
+    }
+    return d;
+  }
+
+  // Just the upper edges — used for the crest highlight that draws itself.
+  function peakCrest(pk){
+    var top = Math.max(2, Math.round(pk.res*0.42));
+    return 'M'+pk.left[top][0].toFixed(1)+','+pk.left[top][1].toFixed(1) +
+           pathOf(pk.left.slice(0, top+1), true) +
+           pathOf(pk.right.slice(0, top+1), false) + ' ';
+  }
+
+  function makeRange(vw, vh, cfg){
+    var peaks = [], i;
+    var n = cfg.count;
+    for(i=0;i<n;i++){
+      // spread the apexes with jitter so they never sit on a grid
+      var px     = ((i + 0.5)/n) * vw + rnd(-vw/(n*2.4), vw/(n*2.4));
+      var apexY  = rnd(cfg.hi, cfg.lo);
+      var halfW  = rnd(cfg.wMin, cfg.wMax);
+      peaks.push(buildPeak(px, apexY, halfW, vh + cfg.sink, cfg.rough, 26));
+    }
+    // taller peaks sit further back
+    peaks.sort(function(a,b){ return a.apexY - b.apexY; });
+    return peaks;
+  }
+
+  function renderRange(el, vw, vh, tag, cfg){
+    // a paler, lower range behind the main massif
+    var back = makeRange(vw, vh, {
+      count: cfg.count + 3, hi: cfg.hi*1.35, lo: cfg.lo*1.05,
+      wMin: cfg.wMin*0.7, wMax: cfg.wMax*0.85, rough: cfg.rough*0.8, sink: cfg.sink
+    });
+    var main = makeRange(vw, vh, cfg);
+
+    var backD = '', silD = '', faceL = '', faceR = '', snowD = '', streakD = '', crestD = '';
+    for(var i=0;i<back.length;i++) backD += peakSilhouette(back[i]);
+    for(i=0;i<main.length;i++){
+      silD   += peakSilhouette(main[i]);
+      faceL  += peakFace(main[i], -1);
+      faceR  += peakFace(main[i],  1);
+      snowD  += peakSnow(main[i], cfg.snowY);
+      streakD+= peakStreaks(main[i], cfg.snowY);
+      crestD += peakCrest(main[i]);
     }
 
-    function buildStars(){
-      // density scales with viewport area, capped for performance
-      var count = Math.min(110, Math.round((W * H) / 14000));
-      stars = [];
-      for (var i = 0; i < count; i++){
-        stars.push({
-          x: Math.random() * W,
-          y: Math.random() * H,
-          vx: (Math.random() - 0.5) * 0.25,
-          vy: (Math.random() - 0.5) * 0.25,
-          r: Math.random() * 1.6 + 0.7,
-          tw: Math.random() * Math.PI * 2   // twinkle phase
-        });
+    var clip = 'nClip'+tag;
+    // soft-edged by gradient rather than a filter — filters re-rasterise on
+    // every animation frame, gradients don't
+    var shadows = '<g class="mt-cshadow" opacity="0.34">';
+    for(i=0;i<5;i++){
+      shadows += '<ellipse cx="'+(i*350 + rnd(-70,70)).toFixed(0)+'" cy="'+rnd(vh*0.25, vh*0.82).toFixed(0)+
+                 '" rx="'+rnd(170,300).toFixed(0)+'" ry="'+rnd(50,105).toFixed(0)+
+                 '" fill="url(#nCld'+tag+')"/>';
+    }
+    shadows += '</g>';
+
+    el.innerHTML =
+      '<defs>'+
+        '<clipPath id="'+clip+'"><path d="'+silD+'" fill-rule="nonzero"/></clipPath>'+
+        '<linearGradient id="nG'+tag+'" x1="0" y1="0" x2="0" y2="1">'+
+          '<stop offset="0%"   stop-color="var(--'+tag+'L)"/>'+
+          '<stop offset="48%"  stop-color="var(--'+tag+')"/>'+
+          '<stop offset="100%" stop-color="var(--'+tag+'D)"/>'+
+        '</linearGradient>'+
+        '<linearGradient id="nGlow'+tag+'" x1="0" y1="0" x2="0" y2="1">'+
+          '<stop offset="0%" stop-color="var(--hglow)"/>'+
+          '<stop offset="100%" stop-color="rgba(0,0,0,0)"/>'+
+        '</linearGradient>'+
+        '<radialGradient id="nCld'+tag+'">'+
+          '<stop offset="0%"   stop-color="var(--'+tag+'D)" stop-opacity="1"/>'+
+          '<stop offset="55%"  stop-color="var(--'+tag+'D)" stop-opacity="0.72"/>'+
+          '<stop offset="100%" stop-color="var(--'+tag+'D)" stop-opacity="0"/>'+
+        '</radialGradient>'+
+        '<filter id="nSoft'+tag+'" x="-10%" y="-10%" width="120%" height="120%">'+
+          '<feGaussianBlur stdDeviation="5"/></filter>'+
+        '<clipPath id="nShade'+tag+'"><path d="'+faceR+'"/></clipPath>'+
+      '</defs>'+
+      '<path d="'+backD+'" fill="var(--'+tag+'L)" opacity="0.34"/>'+
+      '<path d="'+silD+'" fill="url(#nG'+tag+')"/>'+
+      '<g clip-path="url(#'+clip+')">'+
+        '<g filter="url(#nSoft'+tag+')">'+
+          '<path class="face-l" d="'+faceL+'" fill="var(--'+tag+'D)" opacity="0.14"/>'+
+          '<path class="face-r" d="'+faceR+'" fill="var(--'+tag+'D)" opacity="0.52"/>'+
+        '</g>'+
+        shadows+
+        '<path d="'+streakD+'" fill="var(--mtSnow)" opacity="'+(cfg.snowOp*0.55)+'"/>'+
+        '<path d="'+snowD+'" fill="var(--mtSnow)" opacity="'+cfg.snowOp+'"/>'+
+        '<g clip-path="url(#nShade'+tag+')">'+
+          '<path d="'+snowD+'" fill="var(--snowShade)" opacity="'+(cfg.snowOp*0.5)+'"/>'+
+          '<path d="'+streakD+'" fill="var(--snowShade)" opacity="'+(cfg.snowOp*0.4)+'"/>'+
+        '</g>'+
+        '<rect class="mt-alpenglow" x="0" y="0" width="'+vw+'" height="'+(vh*0.6)+
+             '" fill="url(#nGlow'+tag+')" opacity="0"/>'+
+      '</g>'+
+      '<path class="mt-crest" d="'+crestD+'" fill="none" stroke="var(--'+tag+'L)" '+
+            'stroke-width="1.7" stroke-linejoin="round" opacity="0.5"/>';
+
+    return { dMain: silD, faceR: faceR };
+  }
+
+  function buildMountains(){
+    var far = document.getElementById('n-mtf');
+    var mid = document.getElementById('n-mtm');
+    var midR = null;
+    if(far){
+      renderRange(far, 1440, 420, 'mtf', {
+        count: 9, hi: 24, lo: 168, wMin: 130, wMax: 320,
+        rough: 15, sink: 34, snowY: 64, snowOp: 0.9
+      });
+    }
+    if(mid){
+      midR = renderRange(mid, 1440, 320, 'mtm', {
+        count: 11, hi: 58, lo: 182, wMin: 95, wMax: 235,
+        rough: 12, sink: 28, snowY: 82, snowOp: 0.5
+      });
+      var mir = document.getElementById('n-lake-mirror');
+      if(mir && midR){
+        mir.innerHTML = '<svg viewBox="0 0 1440 320" preserveAspectRatio="none" '+
+          'style="width:100%;height:100%;display:block">'+
+          '<path d="'+midR.dMain+'" fill="var(--mtm)"/>'+
+          '<path d="'+midR.faceR+'" fill="var(--mtmD)" opacity="0.42"/></svg>';
       }
     }
+  }
 
-    window.addEventListener('mousemove', function(e){
-      mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true;
+  /* ── GSAP: cloud shadows crawling over the rock, and alpenglow ── */
+  function animateRanges(){
+    if(!window.gsap || reduced) return;
+    var shad = document.querySelectorAll('.mt-cshadow');
+    for(var i=0;i<shad.length;i++){
+      gsap.fromTo(shad[i], { x: -520 },
+        { x: 1960, duration: 110 + i*38, repeat: -1, ease: 'none', delay: -i*45 });
+    }
+    // a slow breathing of the shadow density, so the sky above feels alive
+    gsap.to('.mt-cshadow', {
+      opacity: 0.14, duration: 16, repeat: -1, yoyo: true, ease: 'sine.inOut', stagger: 4
     });
-    window.addEventListener('mouseleave', function(){ mouse.active = false; });
-    // touch support
-    window.addEventListener('touchmove', function(e){
-      if (e.touches && e.touches[0]){
-        mouse.x = e.touches[0].clientX;
-        mouse.y = e.touches[0].clientY;
-        mouse.active = true;
+  }
+
+  function alpenglow(){
+    if(!window.gsap) return;
+    var strength = (phase === 'evening') ? 0.85 : (phase === 'morning') ? 0.62 : 0;
+    if(strength === lastGlow) return;
+    lastGlow = strength;
+    gsap.to('.mt-alpenglow', { opacity: strength, duration: 4, ease: 'sine.inOut', overwrite: 'auto' });
+  }
+
+  /* ── anime.js: the ranges rise, then the crest line draws itself ── */
+  function revealRanges(){
+    if(!window.anime || reduced) return;
+    var tl = anime.timeline({ easing: 'easeOutQuart' });
+    tl.add({
+      targets: ['#n-mtf', '#n-mtm'],
+      translateY: [42, 0],
+      scaleY: [1.14, 1],
+      opacity: [0, 1],
+      duration: 1900,
+      delay: anime.stagger(220)
+    });
+    var crests = document.querySelectorAll('.mt-crest');
+    for(var i=0;i<crests.length;i++){
+      var len = 4200;
+      try { len = crests[i].getTotalLength ? crests[i].getTotalLength() : 4200; } catch(e){}
+      crests[i].style.strokeDasharray  = len;
+      crests[i].style.strokeDashoffset = len;
+    }
+    tl.add({
+      targets: '.mt-crest',
+      strokeDashoffset: [anime.setDashoffset, 0],
+      duration: 2400,
+      delay: anime.stagger(300),
+      easing: 'easeInOutSine'
+    }, '-=1100');
+    tl.add({
+      targets: '.mt-cshadow',
+      opacity: [0, 0.30],
+      duration: 2600,
+      easing: 'linear'
+    }, '-=1600');
+  }
+
+  /* ── trees: layered boughs, three tones, lit from one side ──── */
+
+  // A single conifer bough — a skirt with a ragged lower edge.
+  function bough(x, ty, tw, th, notches){
+    var d = 'M'+x.toFixed(1)+','+ty.toFixed(1);
+    var k, n = notches || 4;
+    // right side down
+    d += ' L'+(x+tw/2).toFixed(1)+','+(ty+th).toFixed(1);
+    // ragged underside back to the left
+    for(k=n-1;k>=0;k--){
+      var xx = (x+tw/2) + (-tw)*((n-k)/n);
+      var yy = ty + th - (k % 2 ? th*0.20 : 0) - Math.random()*th*0.07;
+      d += ' L'+xx.toFixed(1)+','+yy.toFixed(1);
+    }
+    d += ' L'+(x-tw/2).toFixed(1)+','+(ty+th).toFixed(1)+' Z ';
+    return d;
+  }
+
+  function pine(x, base, hgt, wid, cD, c, cL, simple){
+    var s = '', k;
+    var tiers = simple ? 4 : 5;
+    // tapered trunk
+    var tw0 = wid*0.075, tw1 = wid*0.042;
+    s += '<path d="M'+(x-tw0).toFixed(1)+','+base+
+         ' L'+(x-tw1).toFixed(1)+','+(base-hgt*0.42).toFixed(1)+
+         ' L'+(x+tw1).toFixed(1)+','+(base-hgt*0.42).toFixed(1)+
+         ' L'+(x+tw0).toFixed(1)+','+base+' Z" fill="var(--bark)"/>';
+    for(k=0;k<tiers;k++){
+      var ty = base - hgt + hgt*(simple ? 0.20 : 0.165)*k;
+      var tw = wid*(0.34 + 0.165*k);
+      var th = hgt*0.30;
+      if(simple){
+        // distant trees are pure silhouette — aerial haze flattens them anyway
+        s += '<path d="'+bough(x, ty, tw, th, 3)+'" fill="'+c+'"/>';
+        continue;
       }
-    }, { passive: true });
-    window.addEventListener('touchend', function(){ mouse.active = false; });
+      // shaded full bough
+      s += '<path d="'+bough(x, ty, tw, th, 4)+'" fill="'+cD+'"/>';
+      // mid tone, pulled toward the light
+      s += '<path d="'+bough(x - tw*0.09, ty + th*0.06, tw*0.80, th*0.92, 4)+'" fill="'+c+'"/>';
+      // sunlit edge
+      s += '<path d="'+bough(x - tw*0.20, ty + th*0.10, tw*0.42, th*0.80, 3)+'" fill="'+cL+'"/>';
+    }
+    return s;
+  }
 
-    var resizeTimer;
-    window.addEventListener('resize', function(){
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(resize, 150);
-    });
+  function broadleaf(x, base, hgt, wid, cD, c, cL){
+    var s = '', k;
+    // curved, tapering trunk with a fork
+    s += '<path d="M'+(x-wid*0.06)+','+base+
+         ' Q'+(x-wid*0.03)+','+(base-hgt*0.28)+' '+(x-wid*0.035)+','+(base-hgt*0.52)+
+         ' L'+(x+wid*0.035)+','+(base-hgt*0.52)+
+         ' Q'+(x+wid*0.03)+','+(base-hgt*0.28)+' '+(x+wid*0.06)+','+base+
+         ' Z" fill="var(--bark)"/>';
+    s += '<path d="M'+(x-wid*0.02)+','+(base-hgt*0.45)+
+         ' L'+(x-wid*0.17)+','+(base-hgt*0.66)+
+         ' L'+(x-wid*0.11)+','+(base-hgt*0.63)+' Z" fill="var(--bark)"/>';
+    s += '<path d="M'+(x+wid*0.02)+','+(base-hgt*0.45)+
+         ' L'+(x+wid*0.18)+','+(base-hgt*0.64)+
+         ' L'+(x+wid*0.11)+','+(base-hgt*0.62)+' Z" fill="var(--bark)"/>';
 
-    resize();
+    // canopy: shaded mass, mid tone, then sunlit crown
+    function cluster(cx, cy, rad, spread, count, fill, drop){
+      var out = '';
+      for(var i=0;i<count;i++){
+        var a  = (i/count)*6.2832 + Math.random()*0.5;
+        var px = cx + Math.cos(a)*spread + rnd(-rad*0.2, rad*0.2);
+        var py = cy + Math.sin(a)*spread*0.62 + rnd(-rad*0.15, rad*0.15) + drop;
+        var r  = rad*rnd(0.72, 1.12);
+        out += '<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+fill+'"/>';
+      }
+      return out;
+    }
+    var cy = base - hgt*0.70;
+    s += cluster(x, cy, wid*0.26, wid*0.30, 8, cD, hgt*0.03);
+    s += cluster(x - wid*0.03, cy - hgt*0.02, wid*0.22, wid*0.24, 7, c, 0);
+    s += cluster(x - wid*0.11, cy - hgt*0.07, wid*0.15, wid*0.15, 5, cL, 0);
+    return s;
+  }
 
-    // GSAP fade-in of the whole layer (GSAP is already loaded higher up)
-    if (window.gsap){
-      gsap.to(canvas, { opacity: 1, duration: 1.4, ease: 'power2.out', delay: 0.3 });
+  function buildForests(){
+    // distant treeline — small, hazy, flattened by the aerial perspective
+    var far = document.getElementById('n-forest-far');
+    if(far){
+      var s = '', i, n = 120;
+      for(i=0;i<n;i++){
+        var x = (i/(n-1))*1460 - 10 + rnd(-9, 9);
+        var hgt = rnd(52, 146), wid = hgt*rnd(0.32, 0.46);
+        s += pine(x, 160, hgt, wid, 'var(--tree3)', 'var(--tree3)', 'var(--tree3L)', true);
+      }
+      far.innerHTML = s;
+    }
+
+    // near forest — full three-tone shading, clustered to the edges
+    var near = document.getElementById('n-forest-near');
+    if(near){
+      var g = '', j, m = 30;
+      for(j=0;j<m;j++){
+        var t  = Math.pow(Math.random(), 1.7);
+        var x2 = (j % 2 === 0) ? t*560 - 30 : 1470 - t*560;
+        var hh = rnd(150, 400) * (0.55 + t*0.6);
+        var ww = hh * rnd(0.36, 0.52);
+        var body = (Math.random() < 0.58)
+          ? pine(x2, 420, hh, ww, 'var(--tree1D)', 'var(--tree1)', 'var(--tree1L)')
+          : broadleaf(x2, 420, hh, ww, 'var(--tree1D)', 'var(--tree1)', 'var(--tree1L)');
+        g += '<g class="n-tree-g" style="transform-box:fill-box;transform-origin:50% 100%">'+body+'</g>';
+      }
+      for(j=0;j<10;j++){
+        var x3 = rnd(380, 1060);
+        var h3 = rnd(90, 190), w3 = h3*rnd(0.36, 0.5);
+        g += '<g class="n-tree-g" style="transform-box:fill-box;transform-origin:50% 100%">'+
+             pine(x3, 420, h3, w3, 'var(--tree2D)', 'var(--tree2)', 'var(--tree2L)')+'</g>';
+      }
+      near.innerHTML = g;
+    }
+  }
+
+  /* ── shoreline bank ───────────────────────────────────────── */
+  function buildBank(){
+    var svg = document.getElementById('n-bank');
+    if(!svg) return;
+    function shore(baseY, amp){
+      var d = 'M0,220 L0,'+baseY, x;
+      for(x=120; x<=1440; x+=120){
+        d += ' Q'+(x-60)+','+(baseY + rnd(-amp,amp))+' '+x+','+(baseY + rnd(-amp*0.6,amp*0.6));
+      }
+      return d + ' L1440,220 Z';
+    }
+    svg.innerHTML = '<path d="'+shore(96, 26)+'" fill="var(--bankL)"/>'+
+                    '<path d="'+shore(132, 20)+'" fill="var(--bank)"/>';
+  }
+
+  function buildGrass(){
+    var svg = document.getElementById('n-grass-layer');
+    if(!svg) return;
+    var d = '', G = 120, i, x, hgt, lean;
+    var n = 320;
+    for(i=0;i<n;i++){
+      x = Math.random()*1450 - 5;
+      hgt = 34 + Math.random()*82;
+      lean = (Math.random()-0.5) * 34;
+      d += 'M'+x.toFixed(1)+','+G+' Q'+(x+lean*0.35).toFixed(1)+','+(G-hgt*0.55).toFixed(1)+' '+
+           (x+lean).toFixed(1)+','+(G-hgt).toFixed(1)+' L'+(x+2.6).toFixed(1)+','+G+' Z ';
+    }
+    svg.innerHTML = '<path fill="var(--grs)" d="'+d+'"/>';
+  }
+
+  // A single puffy cumulus: overlapping lobes on a flat base.
+  function cloudLobes(cw, ch){
+    var s = '', k;
+    var lobes = 4 + Math.floor(Math.random()*4);
+    for(k=0;k<lobes;k++){
+      var bw = ch * (0.80 + Math.random()*0.85);
+      var bx = (cw - bw) * (lobes === 1 ? 0.5 : k/(lobes-1)) + (Math.random()-0.5)*26;
+      var by = ch - bw*0.70 - Math.random()*ch*0.26;
+      s += '<b style="width:'+bw+'px;height:'+bw+'px;left:'+bx+'px;top:'+by+'px;"></b>';
+    }
+    // flat underside
+    s += '<b style="width:'+cw+'px;height:'+(ch*0.46)+'px;left:0;top:'+(ch*0.54)+
+         'px;border-radius:'+(ch*0.30)+'px;"></b>';
+    return s;
+  }
+
+  function buildClouds(){
+    var box = document.getElementById('n-clouds');
+    if(!box) return;
+    var html = '', i, cw, ch, top, dur, delay, op, far;
+    var n = 20;
+    for(i=0;i<n;i++){
+      far  = (i % 5 < 2);                              // ~40% pushed to the back
+      cw   = far ? 74 + Math.random()*86 : 132 + Math.random()*178;
+      ch   = cw * (0.32 + Math.random()*0.16);
+      top  = far ? Math.random()*28 : 3 + Math.random()*40;
+      dur  = far ? 160 + Math.random()*140 : 68 + Math.random()*95;   // back layer drifts slower
+      delay= -Math.random()*(dur);                     // spread across the sky at load
+      op   = (far ? 0.42 : 0.62) + Math.random()*0.34;
+      html += '<div class="n-cloud'+(far?' far':'')+'" style="width:'+cw+'px;height:'+ch+
+              'px;top:'+top+'%;animation-duration:'+dur+'s;animation-delay:'+delay+
+              's;opacity:'+op+';">'+cloudLobes(cw, ch)+'</div>';
+    }
+    box.innerHTML = html;
+  }
+
+  /* ───────────────────────── stars ───────────────────────── */
+  function buildStars(){
+    stars = [];
+    var n = Math.round(Math.min(420, Math.max(180, (W*H)/4600)));
+    for(var i=0;i<n;i++){
+      // roughly 1 star in 12 is a bright "hero" star
+      var hero = Math.random() < 0.085;
+      stars.push({
+        x: Math.random()*W,
+        y: Math.random()*H*0.78,
+        r: hero ? (Math.random()*1.1 + 1.45) : (Math.random()*1.0 + 0.30),
+        b: hero ? (Math.random()*0.25 + 0.75) : (Math.random()*0.5 + 0.40),
+        sp: Math.random()*1.9 + 0.5,
+        ph: Math.random()*Math.PI*2,
+        warm: Math.random() < 0.22
+      });
+    }
+  }
+
+  function drawStars(t){
+    sctx.clearRect(0,0,W,H);
+    if(phase === 'afternoon') return;
+    var i, s, a;
+    for(i=0;i<stars.length;i++){
+      s = stars[i];
+      a = s.b * (0.62 + 0.38*Math.sin(t*0.001*s.sp + s.ph));
+      sctx.beginPath();
+      sctx.arc(s.x, s.y, s.r, 0, 6.2832);
+      sctx.fillStyle = s.warm ? 'rgba(255,226,190,'+a+')' : 'rgba(226,238,255,'+a+')';
+      sctx.fill();
+      if(s.r > 1.05){
+        sctx.beginPath();
+        sctx.arc(s.x, s.y, s.r*3.6, 0, 6.2832);
+        sctx.fillStyle = 'rgba(190,215,255,'+(a*0.14)+')';
+        sctx.fill();
+      }
+    }
+    // milky haze
+    var g = sctx.createLinearGradient(0, 0, W*0.7, H*0.6);
+    g.addColorStop(0,'rgba(120,150,220,0)');
+    g.addColorStop(0.5,'rgba(150,175,235,0.065)');
+    g.addColorStop(1,'rgba(120,150,220,0)');
+    sctx.fillStyle = g;
+    sctx.fillRect(0,0,W,H*0.7);
+
+    // shooting star
+    if(!shooting){
+      shootTimer -= 16;
+      if(shootTimer <= 0 && (phase === 'night' || phase === 'evening') && !precip){
+        shooting = {
+          x: Math.random()*W*0.7, y: Math.random()*H*0.32,
+          vx: 7 + Math.random()*5, vy: 2.4 + Math.random()*2, life: 1
+        };
+        shootTimer = 5000 + Math.random()*13000;
+      }
     } else {
-      canvas.style.opacity = 1;
+      var sh = shooting;
+      sctx.beginPath();
+      sctx.moveTo(sh.x, sh.y);
+      sctx.lineTo(sh.x - sh.vx*13, sh.y - sh.vy*13);
+      var sg = sctx.createLinearGradient(sh.x, sh.y, sh.x - sh.vx*13, sh.y - sh.vy*13);
+      sg.addColorStop(0,'rgba(255,255,255,'+(0.9*sh.life)+')');
+      sg.addColorStop(1,'rgba(255,255,255,0)');
+      sctx.strokeStyle = sg; sctx.lineWidth = 1.8; sctx.lineCap = 'round';
+      sctx.stroke();
+      sh.x += sh.vx; sh.y += sh.vy; sh.life -= 0.016;
+      if(sh.life <= 0 || sh.x > W || sh.y > H*0.6) shooting = null;
+    }
+  }
+
+  /* ───────────────────── precipitation ───────────────────── */
+  function newDrop(spread){
+    return {
+      x: Math.random()*(W+180) - 90,
+      y: spread ? Math.random()*H : Math.random()*-H*0.5,
+      len: 9 + Math.random()*17,
+      sp: 6 + Math.random()*7,
+      op: 0.14 + Math.random()*0.3,
+      w: 0.5 + Math.random()*0.9,
+      wind: 0.9 + Math.random()*1.6
+    };
+  }
+  function newFlake(spread){
+    return {
+      x: Math.random()*W,
+      y: spread ? Math.random()*H : Math.random()*-H*0.5,
+      r: 0.9 + Math.random()*2.4,
+      sp: 0.5 + Math.random()*1.3,
+      dr: (Math.random()-0.5)*0.7,
+      op: 0.3 + Math.random()*0.55,
+      ph: Math.random()*6.28
+    };
+  }
+  function buildPrecip(){
+    var nD = Math.round(Math.min(190, Math.max(60, W/8)));
+    var nF = Math.round(Math.min(170, Math.max(50, W/9)));
+    drops = []; flakes = [];
+    for(var i=0;i<nD;i++) drops.push(newDrop(true));
+    for(var j=0;j<nF;j++) flakes.push(newFlake(true));
+  }
+
+  function drawRain(dt){
+    var n = heavy ? drops.length : Math.floor(drops.length*0.66);
+    var i, d, m = heavy ? 1.25 : 1;
+    fctx.lineCap = 'round';
+    for(i=0;i<n;i++){
+      d = drops[i];
+      fctx.beginPath();
+      fctx.moveTo(d.x, d.y);
+      fctx.lineTo(d.x + d.wind*1.7, d.y + d.len*m);
+      fctx.strokeStyle = 'rgba(178,208,248,'+d.op+')';
+      fctx.lineWidth = d.w;
+      fctx.stroke();
+      d.y += d.sp * m * dt;
+      d.x += d.wind * 0.5 * dt;
+      if(d.y > H + 24){ drops[i] = newDrop(false); }
+    }
+  }
+
+  function drawSnow(t, dt){
+    var i, f;
+    for(i=0;i<flakes.length;i++){
+      f = flakes[i];
+      fctx.beginPath();
+      fctx.arc(f.x + Math.sin(t*0.0008 + f.ph)*14, f.y, f.r, 0, 6.2832);
+      fctx.fillStyle = 'rgba(238,246,255,'+f.op+')';
+      fctx.fill();
+      f.y += f.sp * dt;
+      f.x += f.dr * dt;
+      if(f.y > H + 8){ flakes[i] = newFlake(false); }
+    }
+  }
+
+  /* ───────────────────── the lake ───────────────────── */
+  function drawLake(t, dt){
+    if(!lctx) return;
+    lctx.clearRect(0,0,LW,LH);
+
+    // horizontal glitter, densest along the reflection path
+    var cx = LW * (celestialX/100);
+    var calm = (precip ? 0.35 : 1);
+    var i, n = 30;
+    for(i=0;i<n;i++){
+      var p  = i/n;
+      var y  = p*LH;
+      var amp = (18 + p*130) * calm;
+      var x  = cx + Math.sin(t*0.00042 + i*0.87)*amp + Math.sin(t*0.0012 + i*2.3)*amp*0.35;
+      var wd = (26 + p*210) * (0.6 + Math.random()*0.5);
+      var a  = (0.055 + (1-p)*0.10) * calm;
+      lctx.fillStyle = 'rgba(255,255,255,'+a+')';
+      lctx.fillRect(x - wd/2, y, wd, 1 + p*1.8);
     }
 
-    // anime.js one-time twinkle burst: briefly pulse every star's radius
-    if (window.anime){
+    // broad slow swell across the whole surface
+    for(i=0;i<7;i++){
+      var yy = (i/7)*LH + Math.sin(t*0.0006 + i)*3;
+      lctx.fillStyle = 'rgba(255,255,255,0.028)';
+      lctx.fillRect(0, yy, LW, 1.4);
+    }
+
+    // rain dimpling the water
+    if(precip === 'rain'){
+      var spawn = heavy ? 3 : 2;
+      for(i=0;i<spawn;i++){
+        if(Math.random() < 0.55){
+          ripples.push({ x:Math.random()*LW, y:Math.random()*LH, r:1,
+                         max: 8 + Math.random()*22, life:1 });
+        }
+      }
+    }
+    for(i=ripples.length-1;i>=0;i--){
+      var rp = ripples[i];
+      rp.r += 0.42*dt; rp.life -= 0.016*dt;
+      if(rp.life <= 0 || rp.r > rp.max){ ripples.splice(i,1); continue; }
+      lctx.beginPath();
+      lctx.ellipse(rp.x, rp.y, rp.r, rp.r*0.32, 0, 0, 6.2832);
+      lctx.strokeStyle = 'rgba(206,228,255,'+(rp.life*0.30)+')';
+      lctx.lineWidth = 1;
+      lctx.stroke();
+    }
+  }
+
+  /* ───────────────────── fireflies ───────────────────── */
+  function buildFlies(){
+    flies = [];
+    var n = Math.round(Math.min(30, Math.max(10, W/60)));
+    for(var i=0;i<n;i++){
+      flies.push({
+        x: Math.random()*W,
+        y: H*0.52 + Math.random()*H*0.44,
+        vx:(Math.random()-0.5)*0.35,
+        vy:(Math.random()-0.5)*0.28,
+        ph: Math.random()*6.28,
+        sp: 0.7 + Math.random()*1.5,
+        r: 1.2 + Math.random()*1.4
+      });
+    }
+  }
+  function drawFlies(t, dt){
+    var i, f, a;
+    for(i=0;i<flies.length;i++){
+      f = flies[i];
+      a = Math.max(0, Math.sin(t*0.0012*f.sp + f.ph)) * 0.85;
+      if(a > 0.02){
+        fctx.beginPath();
+        fctx.arc(f.x, f.y, f.r*3.4, 0, 6.2832);
+        fctx.fillStyle = 'rgba(210,255,140,'+(a*0.12)+')';
+        fctx.fill();
+        fctx.beginPath();
+        fctx.arc(f.x, f.y, f.r, 0, 6.2832);
+        fctx.fillStyle = 'rgba(226,255,168,'+a+')';
+        fctx.fill();
+      }
+      f.vx += (Math.random()-0.5)*0.05;
+      f.vy += (Math.random()-0.5)*0.04;
+      f.vx = Math.max(-0.7, Math.min(0.7, f.vx));
+      f.vy = Math.max(-0.5, Math.min(0.5, f.vy));
+      f.x += f.vx * dt; f.y += f.vy * dt;
+      if(f.x < -20) f.x = W+20; if(f.x > W+20) f.x = -20;
+      if(f.y < H*0.48) f.vy = Math.abs(f.vy);
+      if(f.y > H*0.97) f.vy = -Math.abs(f.vy);
+    }
+  }
+
+  /* ═══════════════ LAND ANIMALS ═══════════════
+     Deer, foxes and rabbits live on the meadow. GSAP drives their gait,
+     grazing and wandering; anime.js handles falling asleep, breathing and
+     the drifting z's. They bed down at night and wake at first light.     */
+
+  var PALETTE = {
+    deer:   { base:[124, 84, 52], light:[164,118, 78], dark:[ 74, 48, 28], trim:[236,228,214] },
+    fox:    { base:[186, 86, 30], light:[221,124, 52], dark:[ 84, 40, 16], trim:[240,234,224] },
+    rabbit: { base:[132,118, 98], light:[168,154,132], dark:[ 78, 68, 54], trim:[236,230,220] }
+  };
+
+  function lightFor(){
+    return phase === 'afternoon' ? 1
+         : phase === 'morning'   ? 0.94
+         : phase === 'evening'   ? 0.60
+         :                         0.30;
+  }
+  function shade(rgb, lift, alpha){
+    return 'rgba(' + Math.round(rgb[0]*lift) + ',' + Math.round(rgb[1]*lift) + ',' +
+           Math.round(rgb[2]*lift) + ',' + alpha + ')';
+  }
+
+  function buildAnimals(){
+    if(window.gsap){ for(var k=0;k<animals.length;k++) gsap.killTweensOf(animals[k]); }
+    animals = [];
+    var kinds = ['deer','rabbit','fox','deer','rabbit','deer','rabbit','fox','deer'];
+    var n = Math.round(Math.min(9, Math.max(4, W/200)));
+    for(var i=0;i<n;i++){
+      var kind = kinds[i % kinds.length];
+      var depth = 0.72 + Math.random()*0.62;          // near/far variation
+      var a = {
+        kind: kind,
+        x: 60 + Math.random()*(W-120),
+        y: H*(0.926 + Math.random()*0.042),           // standing on the meadow
+        dir: Math.random() < 0.5 ? 1 : -1,
+        size: (kind === 'deer' ? 42 : kind === 'fox' ? 27 : 17) * depth,
+        speed: (kind === 'rabbit' ? 26 : kind === 'deer' ? 19 : 23) * depth,
+        state: 'graze',
+        gait: Math.random(), headDown: 1, ear: 0, tail: 0,
+        sleep: 0, breath: 0, zz: Math.random(),
+        ph: Math.random()*6.2832
+      };
+      animals.push(a);
+    }
+    animals.sort(function(p,q){ return p.y - q.y; });   // far ones drawn first
+    for(i=0;i<animals.length;i++) startAnimal(animals[i]);
+  }
+
+  /* ── GSAP: gait, wandering and grazing ── */
+  function startAnimal(a){
+    if(!window.gsap) return;
+    gsap.killTweensOf(a);
+
+    // continuous stride cycle
+    gsap.to(a, { gait: '+=1', duration: a.kind === 'rabbit' ? 0.62 : 0.92,
+                 repeat: -1, ease: 'none' });
+
+    function twitch(){
+      gsap.to(a, { ear: 1, duration: 0.09, yoyo: true, repeat: 1, ease: 'power2.out' });
+      gsap.to(a, { tail: 1, duration: 0.22, yoyo: true, repeat: 1, ease: 'sine.inOut', delay: 0.2 });
+      gsap.delayedCall(2 + Math.random()*7, twitch);
+    }
+
+    function graze(){
+      if(a.sleep > 0.4) return;
+      a.state = 'graze';
+      gsap.to(a, { headDown: 1, duration: 0.85, ease: 'power2.inOut' });
+      gsap.delayedCall(2.5 + Math.random()*7, walk);
+    }
+
+    function walk(){
+      if(a.sleep > 0.4) return;
+      a.state = 'walk';
+      gsap.to(a, { headDown: 0, duration: 0.6, ease: 'power2.inOut' });
+
+      var span = 70 + Math.random()*300;
+      var dir  = Math.random() < 0.5 ? 1 : -1;
+      var target = a.x + span*dir;
+      // turn around rather than wander off the edge
+      if(target < 40){ target = a.x + span; dir = 1; }
+      if(target > W-40){ target = a.x - span; dir = -1; }
+      target = Math.max(40, Math.min(W-40, target));
+      a.dir = target >= a.x ? 1 : -1;
+
+      var dur = Math.abs(target - a.x) / a.speed;
+      gsap.to(a, { x: target, duration: Math.max(1.2, dur), ease: 'none', onComplete: graze });
+    }
+
+    gsap.delayedCall(Math.random()*3, twitch);
+    gsap.delayedCall(Math.random()*4, Math.random() < 0.55 ? graze : walk);
+    a.__wake = function(){ startAnimal(a); };
+  }
+
+  /* ── anime.js: bedding down, breathing, dreaming ── */
+  function settleAnimals(toSleep){
+    for(var i=0;i<animals.length;i++){
+      (function(a){
+        if(toSleep && window.gsap) gsap.killTweensOf(a);
+        if(window.anime){
+          anime.remove(a);
+          anime({ targets: a, sleep: toSleep ? 1 : 0,
+                  duration: 2200 + Math.random()*2600,
+                  easing: 'easeInOutQuad',
+                  complete: function(){ if(!toSleep && a.__wake) a.__wake(); } });
+          if(toSleep){
+            anime({ targets: a, breath: 1, duration: 2400 + Math.random()*900,
+                    direction: 'alternate', loop: true, easing: 'easeInOutSine' });
+            anime({ targets: a, zz: 1, duration: 3200, loop: true, easing: 'linear' });
+          }
+        } else {
+          a.sleep = toSleep ? 1 : 0;
+          if(!toSleep && a.__wake) a.__wake();
+        }
+      })(animals[i]);
+    }
+  }
+
+  /* ── anatomy ─────────────────────────────────────────────────────
+     Everything is drawn feet-on-the-ground at y = 0, facing +x, in a
+     40-unit-tall space, then scaled to the animal's size.            */
+  function leg(ctx, hipX, hipY, knee, footX, len){
+    ctx.beginPath();
+    ctx.moveTo(hipX, hipY);
+    ctx.quadraticCurveTo(hipX + knee, hipY + (len-hipY)*0.52, footX, 0);
+    ctx.stroke();
+  }
+
+  function drawDeer(ctx, a, C, L){
+    var g = Math.sin(a.gait * 6.2832), g2 = Math.sin(a.gait * 6.2832 + 2.1);
+    var moving = a.state === 'walk' ? 1 : 0;
+    var hd = a.headDown;
+
+    // legs (back pair first, darker)
+    ctx.strokeStyle = shade(C.dark, L, 0.95); ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+    leg(ctx, -9, -19,  1.6, -9 + g*5*moving, 0);
+    leg(ctx,  8, -19, -1.6,  8 + g2*5*moving, 0);
+    ctx.strokeStyle = shade(C.base, L, 0.95); ctx.lineWidth = 2.6;
+    leg(ctx, -7, -20,  1.4, -7 - g*5*moving, 0);
+    leg(ctx, 10, -20, -1.4, 10 - g2*5*moving, 0);
+
+    // barrel body
+    ctx.fillStyle = shade(C.base, L, 0.97);
+    ctx.beginPath();
+    ctx.moveTo(-13,-23);
+    ctx.quadraticCurveTo(-14,-31, -3,-31.5);
+    ctx.quadraticCurveTo(7,-32, 12,-28);
+    ctx.quadraticCurveTo(15,-25, 13,-20);
+    ctx.quadraticCurveTo(4,-16.5, -6,-17.5);
+    ctx.quadraticCurveTo(-13,-18.5, -13,-23);
+    ctx.closePath(); ctx.fill();
+
+    // lighter belly
+    ctx.fillStyle = shade(C.light, L, 0.55);
+    ctx.beginPath();
+    ctx.ellipse(1,-18.6, 8, 2.2, 0, 0, 6.2832); ctx.fill();
+
+    // tail
+    ctx.fillStyle = shade(C.trim, L, 0.75);
+    ctx.save(); ctx.translate(-13,-26); ctx.rotate(a.tail*0.6 - 0.2);
+    ctx.beginPath(); ctx.ellipse(-1.5,1.5, 2.2, 3.4, 0, 0, 6.2832); ctx.fill();
+    ctx.restore();
+
+    // neck + head (drops to graze)
+    var nx = 11 + hd*4, ny = -28 + hd*15;
+    ctx.strokeStyle = shade(C.base, L, 0.97);
+    ctx.lineWidth = 5.4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(8,-27); ctx.lineTo(nx, ny); ctx.stroke();
+
+    var bob = Math.sin(a.gait*6.2832)*0.8*moving;
+    ctx.save(); ctx.translate(nx, ny + bob); ctx.rotate(hd*0.75);
+    ctx.fillStyle = shade(C.base, L, 0.97);
+    ctx.beginPath(); ctx.ellipse(1.5,-1, 4.4, 3.1, 0.18, 0, 6.2832); ctx.fill();   // skull
+    ctx.beginPath();                                                               // muzzle
+    ctx.moveTo(4,-2.2); ctx.quadraticCurveTo(9,-1.2, 8.6,1.4);
+    ctx.quadraticCurveTo(6,2.2, 3.6,1); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = shade(C.dark, L, 0.9);
+    ctx.beginPath(); ctx.arc(8.4, 0.4, 0.9, 0, 6.2832); ctx.fill();                // nose
+    // ears
+    ctx.fillStyle = shade(C.dark, L, 0.92);
+    ctx.save(); ctx.rotate(-a.ear*0.5);
+    ctx.beginPath(); ctx.ellipse(-1.5,-4.4, 1.5, 3.1, -0.5, 0, 6.2832); ctx.fill();
+    ctx.restore();
+    ctx.beginPath(); ctx.ellipse(1.2,-4.6, 1.4, 2.9, 0.35, 0, 6.2832); ctx.fill();
+    // antlers
+    ctx.strokeStyle = shade(C.trim, L, 0.62); ctx.lineWidth = 1.15;
+    ctx.beginPath();
+    ctx.moveTo(0.5,-4.5); ctx.quadraticCurveTo(0,-10, 3,-13.5);
+    ctx.moveTo(1.2,-8.5); ctx.lineTo(-2.6,-11.5);
+    ctx.moveTo(2.2,-11); ctx.lineTo(6,-12.5);
+    ctx.moveTo(2.6,-4.6); ctx.quadraticCurveTo(4.6,-9.5, 7.4,-11);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawFox(ctx, a, C, L){
+    var g = Math.sin(a.gait * 6.2832), g2 = Math.sin(a.gait * 6.2832 + 2.4);
+    var moving = a.state === 'walk' ? 1 : 0;
+    var hd = a.headDown;
+
+    ctx.strokeStyle = shade(C.dark, L, 0.95); ctx.lineWidth = 2.1; ctx.lineCap = 'round';
+    leg(ctx, -7, -12,  1.2, -7 + g*3.6*moving, 0);
+    leg(ctx,  7, -12, -1.2,  7 + g2*3.6*moving, 0);
+    leg(ctx, -5, -12.5, 1.1, -5 - g*3.6*moving, 0);
+    leg(ctx,  9, -12.5,-1.1,  9 - g2*3.6*moving, 0);
+
+    // bushy tail, swings as it moves
+    ctx.save(); ctx.translate(-9,-14); ctx.rotate(-0.35 + a.tail*0.4 + Math.sin(a.gait*6.2832)*0.12*moving);
+    ctx.fillStyle = shade(C.base, L, 0.96);
+    ctx.beginPath();
+    ctx.moveTo(0,2);
+    ctx.quadraticCurveTo(-12,-1, -14,-9);
+    ctx.quadraticCurveTo(-8,-6, -1,-3);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = shade(C.trim, L, 0.8);
+    ctx.beginPath(); ctx.ellipse(-13.2,-8, 2.4, 2.8, -0.5, 0, 6.2832); ctx.fill();
+    ctx.restore();
+
+    // body
+    ctx.fillStyle = shade(C.base, L, 0.97);
+    ctx.beginPath();
+    ctx.moveTo(-10,-15);
+    ctx.quadraticCurveTo(-10,-20, -1,-20.5);
+    ctx.quadraticCurveTo(7,-21, 11,-18);
+    ctx.quadraticCurveTo(12.5,-16, 10,-13);
+    ctx.quadraticCurveTo(2,-10.5, -6,-11.5);
+    ctx.quadraticCurveTo(-10,-12, -10,-15);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = shade(C.trim, L, 0.42);
+    ctx.beginPath(); ctx.ellipse(1,-12.2, 6.5, 1.6, 0, 0, 6.2832); ctx.fill();
+
+    // head
+    var nx = 10 + hd*2.5, ny = -19 + hd*8.5;
+    ctx.save(); ctx.translate(nx, ny); ctx.rotate(hd*0.6);
+    ctx.fillStyle = shade(C.base, L, 0.97);
+    ctx.beginPath(); ctx.ellipse(0,0, 4.2, 3.4, 0, 0, 6.2832); ctx.fill();
+    ctx.beginPath();                                                        // sharp snout
+    ctx.moveTo(2.5,-1.4); ctx.lineTo(8.6,0.8); ctx.lineTo(2.5,2.4);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = shade(C.dark, L, 0.95);
+    ctx.beginPath(); ctx.arc(8.3, 0.9, 0.85, 0, 6.2832); ctx.fill();
+    ctx.save(); ctx.rotate(-a.ear*0.42);                                    // pricked ears
+    ctx.beginPath(); ctx.moveTo(-2.6,-2.6); ctx.lineTo(-1.6,-7.6); ctx.lineTo(1.4,-3.2);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+    ctx.beginPath(); ctx.moveTo(0.6,-2.8); ctx.lineTo(2.6,-7.2); ctx.lineTo(4.2,-2.4);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawRabbit(ctx, a, C, L){
+    var moving = a.state === 'walk' ? 1 : 0;
+    var cyc = Math.max(0, Math.sin(a.gait * 6.2832));
+    var hop = cyc * 6 * moving;
+    var lean = cyc * 0.22 * moving;
+    var hd = a.headDown;
+
+    ctx.save(); ctx.translate(0, -hop); ctx.rotate(-lean);
+
+    ctx.strokeStyle = shade(C.dark, L, 0.95); ctx.lineWidth = 1.7; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(3,-4); ctx.lineTo(4.5 + cyc*2*moving, 0); ctx.stroke();
+
+    ctx.fillStyle = shade(C.dark, L, 0.96);                                  // haunch
+    ctx.beginPath(); ctx.ellipse(-4,-6.5, 5, 4.6, -0.25, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = shade(C.base, L, 0.97);                                  // body
+    ctx.beginPath();
+    ctx.moveTo(-8,-7);
+    ctx.quadraticCurveTo(-8,-12.5, -1,-13);
+    ctx.quadraticCurveTo(6,-13, 7.5,-9);
+    ctx.quadraticCurveTo(8,-6, 4,-4.6);
+    ctx.quadraticCurveTo(-3,-3.6, -8,-7);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = shade(C.trim, L, 0.85);                                  // cotton tail
+    ctx.beginPath(); ctx.arc(-8.2,-8.4, 2.4, 0, 6.2832); ctx.fill();
+
+    var nx = 7 + hd*1.5, ny = -12 + hd*6.5;
+    ctx.save(); ctx.translate(nx, ny); ctx.rotate(hd*0.55);
+    ctx.fillStyle = shade(C.base, L, 0.97);
+    ctx.beginPath(); ctx.ellipse(0,0, 3.4, 3, 0, 0, 6.2832); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(2.8,1.1, 1.9, 1.5, 0.2, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = shade(C.dark, L, 0.9);
+    ctx.beginPath(); ctx.arc(4.2, 1.2, 0.7, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = shade(C.base, L, 0.96);                                  // long ears
+    ctx.save(); ctx.rotate(-0.16 - a.ear*0.45);
+    ctx.beginPath(); ctx.ellipse(-0.6,-6.4, 1.5, 5, 0.06, 0, 6.2832); ctx.fill();
+    ctx.restore();
+    ctx.save(); ctx.rotate(0.2 + a.ear*0.2);
+    ctx.beginPath(); ctx.ellipse(2.2,-6.2, 1.4, 4.7, 0.1, 0, 6.2832); ctx.fill();
+    ctx.restore();
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  function drawSleeping(ctx, a, C, L){
+    var br = 1 + a.breath*0.07;
+    var w  = a.kind === 'deer' ? 14 : a.kind === 'fox' ? 11.5 : 7.8;
+    var hgt = (a.kind === 'deer' ? 7.5 : a.kind === 'fox' ? 5.8 : 4.6) * br;
+
+    ctx.fillStyle = shade(C.dark, L*0.85, 0.96);                             // folded legs
+    ctx.beginPath(); ctx.ellipse(-w*0.15, -hgt*0.42, w*0.85, hgt*0.42, 0, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = shade(C.base, L*0.9, 0.97);                              // curled body
+    ctx.beginPath(); ctx.ellipse(0, -hgt, w, hgt, 0, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = shade(C.base, L*0.95, 0.97);                             // tucked head
+    ctx.beginPath(); ctx.ellipse(w*0.76, -hgt*0.82, hgt*0.78, hgt*0.66, 0, 0, 6.2832); ctx.fill();
+
+    if(a.kind === 'fox'){
+      ctx.fillStyle = shade(C.base, L, 0.9);                                 // tail over the nose
+      ctx.beginPath(); ctx.ellipse(w*0.34, -hgt*0.34, w*0.72, hgt*0.44, -0.22, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = shade(C.trim, L, 0.7);
+      ctx.beginPath(); ctx.ellipse(w*1.02, -hgt*0.3, hgt*0.32, hgt*0.3, 0, 0, 6.2832); ctx.fill();
+    }
+    if(a.kind === 'deer'){
+      ctx.strokeStyle = shade(C.trim, L*0.8, 0.5); ctx.lineWidth = 1;        // antlers laid back
+      ctx.beginPath();
+      ctx.moveTo(w*0.78,-hgt*1.4); ctx.quadraticCurveTo(w*1.3,-hgt*2.1, w*1.7,-hgt*1.7);
+      ctx.stroke();
+    }
+    if(a.kind === 'rabbit'){
+      ctx.fillStyle = shade(C.base, L*0.9, 0.9);                             // ears laid flat
+      ctx.beginPath(); ctx.ellipse(w*1.15,-hgt*1.15, hgt*0.85, hgt*0.28, -0.2, 0, 6.2832); ctx.fill();
+    }
+  }
+
+  function drawZs(ctx, a){
+    ctx.font = 'italic 700 9px -apple-system,system-ui,sans-serif';
+    ctx.textAlign = 'center';
+    for(var k=0;k<2;k++){
+      var p = (a.zz + k*0.5) % 1;
+      var al = Math.sin(p*Math.PI) * 0.5 * a.sleep;
+      if(al <= 0.02) continue;
+      ctx.fillStyle = 'rgba(212,228,255,' + al + ')';
+      ctx.fillText('z', 13 + p*10, -20 - p*18);
+    }
+  }
+
+  // fallback when the animation libraries are unavailable
+  function stepFallback(a, dt, sleepy){
+    a.sleep += (sleepy - a.sleep) * 0.012 * dt;
+    if(a.sleep > 0.5){ a.breath = (Math.sin(Date.now()*0.0016 + a.ph) + 1)/2; return; }
+    a.gait += dt * 0.017;
+    a.timerF = (a.timerF || 0) - dt;
+    if(a.timerF <= 0){
+      a.state = a.state === 'walk' ? 'graze' : 'walk';
+      a.headDown = a.state === 'graze' ? 1 : 0;
+      a.timerF = 120 + Math.random()*300;
+      if(Math.random() < 0.45) a.dir *= -1;
+    }
+    if(a.state === 'walk'){
+      a.x += a.dir * a.speed * 0.016 * dt;
+      if(a.x < 40){ a.x = 40; a.dir = 1; }
+      if(a.x > W-40){ a.x = W-40; a.dir = -1; }
+    }
+  }
+
+  function drawAnimals(t, dt){
+    if(!actx) return;
+    actx.clearRect(0,0,W,H);
+    if(!animals.length) return;
+
+    var hidden = (weather === 'wx-storm');
+    var L = lightFor();
+    var useLibs = !!(window.gsap && window.anime);
+
+    for(var i=0;i<animals.length;i++){
+      var a = animals[i];
+      if(!useLibs) stepFallback(a, dt, phase === 'night' ? 1 : 0);
+      if(hidden) continue;
+
+      var awake = 1 - a.sleep;
+      var scale = a.size / 40;
+      var C = PALETTE[a.kind];
+
+      // contact shadow keeps them planted on the ground
+      actx.save();
+      actx.translate(a.x, a.y);
+      actx.fillStyle = 'rgba(0,0,0,' + (0.26 * (0.5 + L*0.5)) + ')';
+      actx.beginPath();
+      actx.ellipse(0, 0, a.size*0.36, a.size*0.055, 0, 0, 6.2832);
+      actx.fill();
+      actx.restore();
+
+      if(awake > 0.03){
+        actx.save();
+        actx.translate(a.x, a.y);
+        actx.scale(a.dir * scale, scale);
+        actx.globalAlpha = awake;
+        if(a.kind === 'deer')      drawDeer(actx, a, C, L);
+        else if(a.kind === 'fox')  drawFox(actx, a, C, L);
+        else                       drawRabbit(actx, a, C, L);
+        actx.restore();
+      }
+      if(a.sleep > 0.03){
+        actx.save();
+        actx.translate(a.x, a.y);
+        actx.scale(a.dir * scale, scale);
+        actx.globalAlpha = a.sleep;
+        drawSleeping(actx, a, C, L);
+        if(a.sleep > 0.5) drawZs(actx, a);
+        actx.restore();
+      }
+    }
+  }
+
+  /* ───────────────────── birds (daytime) ───────────────────── */
+  var MAX_FLOCKS = 6;
+  function maybeSpawnFlock(){
+    if(flocks.length >= MAX_FLOCKS || precip) return;
+    if(phase !== 'morning' && phase !== 'afternoon' && phase !== 'evening') return;
+    if(Math.random() > 0.0048) return;
+    var dir = Math.random() < 0.5 ? 1 : -1;
+    var n = 5 + Math.floor(Math.random()*8);          // 5-12 birds per flock
+    var baseY = H*0.10 + Math.random()*H*0.34;
+    var scale = 0.65 + Math.random()*0.75;            // near and far flocks
+    var birds = [], i;
+    for(i=0;i<n;i++){
+      // rough V formation with a little scatter
+      var row = Math.floor(i/2), side = (i%2 ? 1 : -1);
+      birds.push({
+        ox: (row*-27*dir) - Math.random()*12,
+        oy: side*row*8 + (Math.random()-0.5)*7
+      });
+    }
+    flocks.push({
+      x: dir>0 ? -90 : W+90, y: baseY, dir:dir,
+      sp: (0.8 + Math.random()*1.1) * scale,
+      sc: scale, birds:birds, ph:Math.random()*6.28
+    });
+  }
+  function drawFlocks(t, dt){
+    for(var i=flocks.length-1;i>=0;i--){
+      var fl = flocks[i];
+      fl.x += fl.sp * fl.dir * dt;
+      var sc = fl.sc || 1;
+      fctx.strokeStyle = 'rgba(16,24,38,'+(0.40 + sc*0.30)+')';
+      fctx.lineWidth = 1.3*sc; fctx.lineCap='round';
+      for(var b=0;b<fl.birds.length;b++){
+        var bd = fl.birds[b];
+        var bx = fl.x + bd.ox*sc, by = fl.y + bd.oy*sc + Math.sin(t*0.001 + b)*3;
+        var flap = Math.sin(t*0.012 + fl.ph + b*0.6) * 3.4 * sc;
+        var wing = 6*sc;
+        fctx.beginPath();
+        fctx.moveTo(bx-wing, by+flap);
+        fctx.quadraticCurveTo(bx-wing*0.42, by-2.2*sc, bx, by);
+        fctx.quadraticCurveTo(bx+wing*0.42, by-2.2*sc, bx+wing, by+flap);
+        fctx.stroke();
+      }
+      if(fl.x < -220 || fl.x > W+220) flocks.splice(i,1);
+    }
+  }
+
+  /* ───────────── clock → phase, sun & moon arc ───────────── */
+  // Defaults are a sensible mid-latitude day; replaced by the real local
+  // sunrise/sunset as soon as the weather lookup returns.
+  var SUNRISE = 6.0, SUNSET = 18.6;
+
+  function phaseFor(hr){
+    var dawn     = SUNRISE - 0.6;                          // sky starts colouring
+    var mornEnd  = Math.min(SUNRISE + 5, SUNSET - 2);      // full daylight
+    var eveStart = Math.max(SUNSET - 2, mornEnd);          // golden hour
+    var eveEnd   = SUNSET + 0.9;                           // dusk fades out
+    if(hr >= dawn     && hr < mornEnd ) return 'morning';
+    if(hr >= mornEnd  && hr < eveStart) return 'afternoon';
+    if(hr >= eveStart && hr < eveEnd  ) return 'evening';
+    return 'night';
+  }
+
+  var PHASES = ['morning','afternoon','evening','night'];
+  var firstPaint = true;
+  function applyPhase(p){
+    if(PHASES.indexOf(p) === -1) p = 'night';
+    if(p === phase && root.classList.contains('ph-'+p)) return;
+    phase = p;
+    // on load, snap straight to the right time of day instead of fading in
+    if(firstPaint){
+      firstPaint = false;
+      root.classList.add('no-fade');
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ root.classList.remove('no-fade'); });
+      });
+    }
+    for(var i=0;i<PHASES.length;i++) root.classList.remove('ph-'+PHASES[i]);
+    root.classList.add('ph-'+p);
+    if(animals && animals.length) settleAnimals(p === 'night');
+    alpenglow();
+  }
+
+  function updateSkyClock(){
+    var now = new Date();
+    var h = now.getHours() + now.getMinutes()/60;
+    applyPhase(forcedPhase || phaseFor(h));
+
+    var SR = SUNRISE, SS = SUNSET;     // real local sunrise / sunset
+    var dayLen = SS - SR, nightLen = 24 - dayLen;
+    var isDay = (h >= SR && h <= SS);
+    var t, x, y;
+
+    if(isDay){
+      t = (h - SR) / dayLen;
+    } else {
+      t = ((h - SS + 24) % 24) / nightLen;
+    }
+    x = 6 + t*88;
+    y = 84 - Math.sin(Math.PI * t) * 66;
+
+    // when a phase is forced, park the body at a flattering spot
+    if(forcedPhase){
+      if(forcedPhase === 'morning')   { isDay=true;  x=14; y=54; }
+      if(forcedPhase === 'afternoon') { isDay=true;  x=52; y=17; }
+      if(forcedPhase === 'evening')   { isDay=true;  x=86; y=63; }
+      if(forcedPhase === 'night')     { isDay=false; x=68; y=24; }
+    }
+
+    celestialX = x;
+    if(window.gsap){
+      gsap.to([sunEl, moonEl], { left:x+'%', top:y+'%', duration:2.2, ease:'sine.inOut', overwrite:'auto' });
+    } else {
+      sunEl.style.left = x+'%';  sunEl.style.top = y+'%';
+      moonEl.style.left = x+'%'; moonEl.style.top = y+'%';
+    }
+    var shine = document.getElementById('n-lake-shine');
+    if(shine) shine.style.left = x + '%';
+
+    // the rock faces away from the sun fall into shadow — and the shadow
+    // swings across the ranges as the sun tracks overhead
+    var lightLeft = x < 50;
+    var lo = isDay ? 0.12 : 0.30, hi = isDay ? 0.58 : 0.42;
+    var lVal = lightLeft ? lo : hi, rVal = lightLeft ? hi : lo;
+    if(window.gsap && (lVal !== lastFaceL || rVal !== lastFaceR)){
+      lastFaceL = lVal; lastFaceR = rVal;
+      gsap.to('.face-l', { opacity: lVal, duration: 3.5, ease:'sine.inOut', overwrite:'auto' });
+      gsap.to('.face-r', { opacity: rVal, duration: 3.5, ease:'sine.inOut', overwrite:'auto' });
+    }
+    root.style.setProperty('--sunOp',  isDay ? '1' : '0');
+    root.style.setProperty('--moonOp', isDay ? '0' : '1');
+    root.style.setProperty('--sunX',   x + '%');
+
+    var badge = document.getElementById('scene-badge');
+    if(badge) badge.textContent = forcedPhase ? (phase + ' · locked') : phase;
+  }
+
+  /* ───────────────────────── loop ───────────────────────── */
+  function frame(t){
+    var dt = lastT ? Math.min((t - lastT)/16.667, 3) : 1;
+    lastT = t;
+
+    drawStars(t);
+
+    drawLake(t, dt);
+
+    drawAnimals(t, dt);
+
+    fctx.clearRect(0,0,W,H);
+    if(precip === 'rain')      drawRain(dt);
+    else if(precip === 'snow') drawSnow(t, dt);
+
+    if(!precip && (phase === 'night' || phase === 'evening')) drawFlies(t, dt);
+    maybeSpawnFlock();
+    drawFlocks(t, dt);
+
+    raf = requestAnimationFrame(frame);
+  }
+  function start(){ if(!raf){ lastT = 0; raf = requestAnimationFrame(frame); } }
+  function stop(){ if(raf){ cancelAnimationFrame(raf); raf = null; } }
+
+  /* ───────────────── weather + lightning wiring ───────────────── */
+  var WX = ['wx-clear','wx-overcast','wx-rain','wx-storm','wx-snow'];
+  function setWeather(mode){
+    precip = null; heavy = false; overcast = false;
+    var cls = 'wx-clear';
+    if(mode === 'rain'){ precip='rain'; overcast=true; cls='wx-rain'; }
+    else if(mode === 'storm'){ precip='rain'; heavy=true; overcast=true; cls='wx-storm'; }
+    else if(mode === 'snow'){ precip='snow'; overcast=true; cls='wx-snow'; }
+    else if(mode === 'cloudy' || mode === 'fog'){ overcast=true; cls='wx-overcast'; }
+    for(var i=0;i<WX.length;i++) root.classList.remove(WX[i]);
+    root.classList.add(cls);
+    root.classList.toggle('wx-overcast', overcast);
+    weather = cls;
+  }
+
+  /* ── black thunderclouds: overlapping blobs drifting across the sky ── */
+  function buildStormClouds(){
+    var box = document.getElementById('n-storm');
+    if(!box) return;
+    var html = '', i, k;
+    var n = 8;
+    for(i=0;i<n;i++){
+      var cw = 300 + Math.random()*460;          // cluster width
+      var ch = cw * (0.30 + Math.random()*0.16); // cluster height
+      var top = Math.random()*46;
+      var dur = 120 + Math.random()*150;
+      var delay = -Math.random()*260;
+      var op = 0.55 + Math.random()*0.45;
+      var blobs = '';
+      var lobes = 5 + Math.floor(Math.random()*4);
+      for(k=0;k<lobes;k++){
+        var bw = ch * (0.75 + Math.random()*0.95);
+        var bx = (cw - bw) * (k/(lobes-1)) + (Math.random()-0.5)*30;
+        var by = ch - bw*0.72 - Math.random()*ch*0.34;
+        blobs += '<b style="width:'+bw+'px;height:'+bw+'px;left:'+bx+'px;top:'+by+'px;"></b>';
+      }
+      // flat rain-bearing base
+      blobs += '<b style="width:'+cw+'px;height:'+(ch*0.55)+'px;left:0;top:'+(ch*0.52)+
+               'px;border-radius:'+(ch*0.34)+'px;"></b>';
+      html += '<div class="n-scloud" style="width:'+cw+'px;height:'+ch+'px;top:'+top+
+              '%;left:0;opacity:'+op+';animation-duration:'+dur+'s;animation-delay:'+delay+'s;">'+
+              blobs+'</div>';
+    }
+    box.innerHTML = html;
+  }
+
+  function watchLightning(){
+    var src = document.getElementById('weather-lightning-overlay');
+    if(!src || !window.MutationObserver) return;
+    new MutationObserver(function(){
+      if(src.classList.contains('lightning-flash')){
+        flashEl.classList.add('on');
+        setTimeout(function(){ flashEl.classList.remove('on'); }, 90);
+      }
+    }).observe(src, { attributes:true, attributeFilter:['class'] });
+  }
+
+  /* ───────── GSAP: every near tree sways on its own rhythm ─────────
+     Started only once the anime.js entrance has finished, so the two
+     libraries never write `transform` on the same node at the same time. */
+  var treeSwayStarted = false;
+  function animateTrees(){
+    if(!window.gsap || reduced || treeSwayStarted) return;
+    treeSwayStarted = true;
+    var gs = document.querySelectorAll('#n-forest-near .n-tree-g');
+    for(var i=0;i<gs.length;i++){
+      gs[i].style.transform = '';            // clear whatever the entrance left behind
+      var amp = 0.5 + Math.random()*1.1;
+      gsap.fromTo(gs[i], { skewX:-amp }, {
+        skewX: amp,
+        duration: 3.4 + Math.random()*3.2,
+        delay: Math.random()*2.5,
+        repeat: -1, yoyo: true, ease: 'sine.inOut'
+      });
+    }
+    // gusts lean the whole canopy — applied to the parent layer, so it never
+    // collides with the per-tree sway tweens
+    function gust(){
+      gsap.to('#n-forest-near', {
+        skewX: 0.4 + Math.random()*0.8, duration: 2.4,
+        yoyo: true, repeat: 1, ease: 'sine.inOut', overwrite: 'auto'
+      });
+      gsap.delayedCall(10 + Math.random()*16, gust);
+    }
+    gsap.delayedCall(8, gust);
+  }
+
+  /* ───────── GSAP: moonlight/sunlight glittering on the lake ───────── */
+  function animateWater(){
+    if(!window.gsap || reduced) return;
+    gsap.to('#n-lake-shine', {
+      scaleX: 1.45, opacity: 0.5,
+      duration: 4.6, repeat: -1, yoyo: true, ease: 'sine.inOut'
+    });
+    gsap.to('#n-lake-mirror', {
+      opacity: 0.20, duration: 7, repeat: -1, yoyo: true, ease: 'sine.inOut'
+    });
+  }
+
+  /* ───────── anime.js: scene entrance + grass in the breeze ───────── */
+  function animateScene(){
+    if(!window.anime || reduced){ animateTrees(); return; }
+    if(!reduced){
       anime({
-        targets: stars,
-        r: function(s){ return s.r * 2.4; },
-        duration: 900,
-        delay: anime.stagger(6),
+        targets: ['#n-forest-far','#n-lake','#n-bank'],
+        opacity: [0, 1],
+        translateY: [26, 0],
+        duration: 1500,
+        delay: anime.stagger(130),
+        easing: 'easeOutCubic'
+      });
+      anime({
+        targets: '#n-grass-layer',
+        skewX: [-0.9, 0.9],
+        duration: 3800,
         direction: 'alternate',
+        loop: true,
+        easing: 'easeInOutSine'
+      });
+      // the forest grows up from the ground, back rows first
+      anime({
+        targets: '#n-forest-far',
+        scaleY: [0.72, 1],
+        opacity: [0, 1],
+        duration: 1500,
+        delay: 260,
+        easing: 'easeOutBack'
+      });
+      anime({
+        targets: '#n-forest-near .n-tree-g',
+        scaleY: [0.55, 1],
+        opacity: [0, 1],
+        duration: 1250,
+        delay: anime.stagger(26, { from: 'center' }),
+        easing: 'easeOutBack',
+        complete: animateTrees          // hand the trees over to GSAP cleanly
+      });
+      anime({
+        targets: '.n-haze',
+        opacity: [{ value: 0.7, duration: 5400 }, { value: 1, duration: 5400 }],
+        direction: 'alternate',
+        loop: true,
         easing: 'easeInOutSine'
       });
     }
+  }
 
-    var t = 0;
-    function frame(){
-      t += 0.016;
-      ctx.clearRect(0, 0, W, H);
-
-      // update + draw stars
-      for (var i = 0; i < stars.length; i++){
-        var s = stars[i];
-
-        // gentle drift
-        s.x += s.vx;
-        s.y += s.vy;
-
-        // magnetic pull toward the mouse when close
-        if (mouse.active){
-          var mdx = mouse.x - s.x;
-          var mdy = mouse.y - s.y;
-          var md = Math.sqrt(mdx * mdx + mdy * mdy);
-          if (md < PULL_DIST && md > 0.5){
-            var pull = (1 - md / PULL_DIST) * 0.35;
-            s.x += (mdx / md) * pull;
-            s.y += (mdy / md) * pull;
-          }
-        }
-
-        // wrap around edges
-        if (s.x < -20) s.x = W + 20;
-        if (s.x > W + 20) s.x = -20;
-        if (s.y < -20) s.y = H + 20;
-        if (s.y > H + 20) s.y = -20;
-
-        // twinkle
-        var tw = 0.6 + Math.sin(t * 2 + s.tw) * 0.4;
-
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(' + STAR_RGB + ',' + (0.55 * tw) + ')';
-        ctx.fill();
+  /* ───────────── click the weather chip to preview scenes ───────────── */
+  function wireSceneSwitcher(){
+    var chip = document.getElementById('weather-widget');
+    var info = document.getElementById('weather-info');
+    if(!chip || !info) return;
+    var badge = document.createElement('span');
+    badge.id = 'scene-badge';
+    info.appendChild(badge);
+    var cycle = [null,'morning','afternoon','evening','night'];
+    var idx = 0;
+    chip.title = 'Live weather — the scene follows your local time automatically.\n' +
+                 'Shift+click to preview another time of day.';
+    chip.addEventListener('click', function(e){
+      if(e && e.shiftKey){
+        idx = (idx + 1) % cycle.length;       // manual preview
+        forcedPhase = cycle[idx];
+      } else {
+        idx = 0;                              // a normal click always returns to automatic
+        forcedPhase = null;
       }
-
-      // star-to-star links
-      for (var a = 0; a < stars.length; a++){
-        for (var b = a + 1; b < stars.length; b++){
-          var dx = stars[a].x - stars[b].x;
-          var dy = stars[a].y - stars[b].y;
-          var dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < LINK_DIST){
-            var alpha = (1 - dist / LINK_DIST) * 0.35;
-            ctx.beginPath();
-            ctx.moveTo(stars[a].x, stars[a].y);
-            ctx.lineTo(stars[b].x, stars[b].y);
-            ctx.strokeStyle = 'rgba(' + LINE_RGB + ',' + alpha + ')';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        }
-      }
-
-      // star-to-mouse links (brighter)
-      if (mouse.active){
-        for (var m = 0; m < stars.length; m++){
-          var ndx = stars[m].x - mouse.x;
-          var ndy = stars[m].y - mouse.y;
-          var ndist = Math.sqrt(ndx * ndx + ndy * ndy);
-          if (ndist < MOUSE_DIST){
-            var malpha = (1 - ndist / MOUSE_DIST) * 0.7;
-            ctx.beginPath();
-            ctx.moveTo(stars[m].x, stars[m].y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.strokeStyle = 'rgba(' + LINE_RGB + ',' + malpha + ')';
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
-          }
-        }
-        // small glow node at the cursor
-        ctx.beginPath();
-        ctx.arc(mouse.x, mouse.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(' + LINE_RGB + ',0.9)';
-        ctx.fill();
-      }
-
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  })();
-  </script>
-
-  <script>
-  // ─── FLOATING DEVOPS / CLOUD ICONS ───
-  // Brand logos drift from the left edge to the right, at varied heights,
-  // speeds and sizes, with a gentle vertical bob. Uses GSAP for the motion.
-  // Icons pulled from the Simple Icons CDN. Fails silently and respects
-  // reduced-motion.
-  (function(){
-    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion || !window.gsap) return;
-
-    var layer = document.getElementById('floating-icons');
-    if (!layer) return;
-
-    // Each icon carries an explicit URL. Cloud logos (AWS/Azure/GCP) come from
-    // devicon (full colour, current); the rest from Simple Icons with verified
-    // slugs. si() builds a coloured Simple Icons URL.
-    function si(slug, colour){ return 'https://cdn.simpleicons.org/' + slug + '/' + colour; }
-    var DEVICON = 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/';
-
-    var isDark = true; // theme is always dark/black now
-
-    var ICONS = [
-      { url: DEVICON + 'amazonwebservices/amazonwebservices-plain-wordmark.svg' },
-      { url: DEVICON + 'azure/azure-original.svg' },
-      { url: DEVICON + 'googlecloud/googlecloud-original.svg' },
-      { url: si('docker',        '2496ED') },
-      { url: si('kubernetes',    '326CE5') },
-      { url: si('terraform',     '7B42BC') },
-      { url: si('ansible',       'EE0000') },
-      { url: si('jenkins',       'D24939') },
-      { url: si('github',        isDark ? 'FFFFFF' : '181717') },
-      { url: si('gitlab',        'FC6D26') },
-      { url: si('prometheus',    'E6522C') },
-      { url: si('grafana',       'F46800') },
-      { url: si('linux',         'FCC624') },
-      { url: si('nginx',         '009639') },
-      { url: si('helm',          '0F1689') },
-      { url: si('argo',          'EF7B4D') },
-      { url: si('githubactions', '2088FF') },
-      { url: si('vault',         'FFD814') },
-      { url: si('elasticsearch', '005571') },
-      { url: si('python',        '3776AB') }
-    ];
-
-    function launch(icon, initial){
-      var el = document.createElement('div');
-      el.className = 'float-icon';
-      var img = document.createElement('img');
-      img.src = icon.url;
-      img.alt = '';
-      img.loading = 'lazy';
-      el.appendChild(img);
-      layer.appendChild(el);
-
-      var size = 34 + Math.random() * 34;          // 34–68px
-      el.style.width = el.style.height = size + 'px';
-
-      var yStart = Math.random() * (window.innerHeight - size);
-      var duration = 22 + Math.random() * 26;       // 22–48s to cross
-      var startX = initial ? Math.random() * window.innerWidth : -size - 40;
-      var endX = window.innerWidth + size + 40;
-      var baseOpacity = 0.28 + Math.random() * 0.22; // more visible, still in the back
-
-      gsap.set(el, { x: startX, y: yStart, opacity: 0 });
-
-      // fade in, then hold — fade handled by the timeline below
-      var remaining = initial ? (endX - startX) / (endX + size + 40) : 1;
-
-      var tl = gsap.timeline({
-        onComplete: function(){
-          el.remove();
-          launch(icon, false); // recycle this logo from the left again
-        }
-      });
-
-      tl.to(el, { opacity: baseOpacity, duration: 2, ease: 'power1.out' }, 0)
-        .to(el, {
-          x: endX,
-          duration: duration * remaining,
-          ease: 'none'
-        }, 0)
-        .to(el, { opacity: 0, duration: 2.5, ease: 'power1.in' }, '>-2.5');
-
-      // gentle independent vertical bob
-      gsap.to(el, {
-        y: '+=' + (18 + Math.random() * 26),
-        duration: 3 + Math.random() * 3,
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: -1
-      });
-    }
-
-    // stagger initial launches so the screen fills gradually
-    ICONS.forEach(function(icon, i){
-      setTimeout(function(){ launch(icon, true); }, i * 500);
+      updateSkyClock();
     });
-  })();
-  </script>
+  }
 
-  <script src="ai-agent-widget.js"></script>
+  /* ───────────────────────── boot ───────────────────────── */
+  buildMountains();
+  buildForests();
+  buildBank();
+  buildGrass();
+  buildClouds();
+  buildStormClouds();
+  setWeather('clear');
+  resize();
+  updateSkyClock();
+  watchLightning();
+  wireSceneSwitcher();
+  animateWater();
+  animateRanges();
+  revealRanges();
+  alpenglow();
+  animateScene();
+  start();
+
+  window.addEventListener('resize', function(){
+    clearTimeout(window.__nRz);
+    window.__nRz = setTimeout(resize, 180);
+  });
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden) stop(); else { updateSkyClock(); start(); }
+  });
+  window.addEventListener('focus',   updateSkyClock);
+  window.addEventListener('pageshow', updateSkyClock);
+  setInterval(updateSkyClock, 10000);   // catches every boundary within 10s
+
+  return {
+    setWeather: setWeather,
+    // real local sunrise/sunset, in decimal hours (e.g. 5.87 = 05:52)
+    setSunTimes: function(sr, ss){
+      if(typeof sr !== 'number' || typeof ss !== 'number') return;
+      if(!isFinite(sr) || !isFinite(ss)) return;
+      if(sr < 0 || sr > 24 || ss < 0 || ss > 24 || ss - sr < 3) return;
+      SUNRISE = sr; SUNSET = ss;
+      updateSkyClock();
+    },
+    get sunTimes(){ return { sunrise: SUNRISE, sunset: SUNSET }; },
+    setPhase: function(p){
+      forcedPhase = (p && p !== 'auto') ? p : null;
+      var b = document.getElementById('scene-badge');
+      if(b) b.textContent = forcedPhase || '';
+      updateSkyClock();
+    },
+    get phase(){ return phase; }
+  };
+})();
+</script>
+
 </body>
 </html>

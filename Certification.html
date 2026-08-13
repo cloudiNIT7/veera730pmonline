@@ -1,738 +1,1184 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cloud iNIT | Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-</head>
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login Form Lamp | @coding.stella</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg-color: #0b0d10;
+  --bg-color-on: #1c1f24;
+
+  --shade-hi: #fbf7ee;
+  --shade-lo: #e4dccb;
+  --brass-dark: #8a6a3f;
+  --brass-light: #d9b877;
+
+  --glow-color: rgba(255, 200, 110, 0.35);
+  --accent-color: #d4a373;
+  --accent-soft: rgba(212, 163, 115, 0.35);
+
+  --ink: #eef0f3;
+  --ink-dim: #8b93a1;
+  --ink-faint: #565d6b;
+
+  --danger: #e2685f;
+  --success: #7fd8a3;
+
+  --on: 0;
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--bg-color);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  position: relative;
+  transition: background 0.6s var(--ease-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------------- ambient night scene ---------------- */
+
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 22% 60%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 35% 15%, #fff, transparent),
+    radial-gradient(1px 1px at 48% 75%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 63% 30%, #fff, transparent),
+    radial-gradient(1px 1px at 78% 55%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 88% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 92% 70%, #fff, transparent),
+    radial-gradient(1px 1px at 15% 85%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 70% 85%, #fff, transparent);
+  opacity: calc(0.5 - (var(--on) * 0.35));
+  transition: opacity 0.8s var(--ease-soft);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 45%, transparent 30%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.floor-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 700px 300px at 50% 88%, var(--glow-color), transparent 70%);
+  opacity: var(--on);
+  transition: opacity 0.8s var(--ease-soft);
+}
+
+/* ---------------- mute toggle ---------------- */
+
+.mute-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  color: var(--ink-dim);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: color 0.3s, border-color 0.3s, background 0.3s;
+}
+
+.mute-toggle:hover {
+  color: var(--accent-color);
+  border-color: var(--accent-soft);
+}
+
+.mute-toggle svg {
+  width: 18px;
+  height: 18px;
+  grid-area: 1 / 1;
+}
+
+.icon-sound-off { display: none; }
+.mute-toggle[aria-pressed="true"] .icon-sound-on { display: none; }
+.mute-toggle[aria-pressed="true"] .icon-sound-off { display: block; }
+
+/* ---------------- layout ---------------- */
+
+.container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6vmin;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1040px;
+  padding: 40px 24px;
+}
+
+/* ---------------- lamp ---------------- */
+
+.lamp-wrapper {
+  position: relative;
+  width: 360px;
+  height: 526px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lamp-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.lamp-shade {
+  transition: filter 0.6s var(--ease-soft);
+}
+
+[data-on="true"] .lamp-shade {
+  filter: drop-shadow(0 0 26px rgba(255, 232, 170, 0.45));
+}
+
+.shade-outline {
+  fill: none;
+  stroke: var(--accent-color);
+  stroke-width: 1.6;
+  opacity: 0.9;
+}
+
+.shade-rim-top,
+.shade-rim-bottom {
+  fill: var(--brass-dark);
+  opacity: 0.25;
+}
+
+.light-cone,
+.floor-shadow,
+.dust-motes {
+  opacity: var(--on);
+  transition: opacity 0.8s var(--ease-soft);
+}
+
+.floor-shadow {
+  fill: rgba(0, 0, 0, 0.45);
+  filter: blur(3px);
+  opacity: 0.5;
+}
+
+.mote {
+  fill: #ffe9b8;
+  opacity: 0;
+}
+
+.lamp-metal {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
+}
+
+.harp {
+  opacity: 0.9;
+}
+
+.cord-line {
+  stroke: #4b5058;
+  stroke-width: 2;
+}
+
+.cord-bead {
+  fill: var(--accent-color);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+}
+
+.cord-hit {
+  cursor: pointer;
+}
+
+.inner-glow {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-soft);
+}
+
+[data-on="true"] .inner-glow {
+  opacity: 1;
+}
+
+.filament {
+  fill: #fff2cf;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-soft);
+}
+
+[data-on="true"] .filament {
+  opacity: 0.9;
+}
+
+.cord-hint {
+  position: absolute;
+  right: 8px;
+  bottom: 92px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-dim);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.hint-arrow {
+  width: 14px;
+  height: 14px;
+  transform: rotate(180deg);
+}
+
+/* ---------------- login form ---------------- */
+
+.login-form {
+  width: 390px;
+  max-width: 100%;
+  padding: 3rem 2.5rem;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(26px);
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+.login-form.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.eyebrow {
+  color: var(--accent-color);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: #fff;
+  font-size: 1.9rem;
+  line-height: 1.15;
+  margin-bottom: 0.4rem;
+}
+
+.headline .char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.subline {
+  color: var(--ink-dim);
+  font-size: 0.88rem;
+  margin-bottom: 1.8rem;
+}
+
+.field-group {
+  margin-bottom: 1.15rem;
+}
+
+.field-group label {
+  display: block;
+  color: var(--ink-dim);
+  margin-bottom: 0.5rem;
+  margin-left: 2px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.input-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+
+.input-shell:focus-within {
+  border-color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.field-icon {
+  width: 18px;
+  height: 18px;
+  margin-left: 14px;
+  color: var(--ink-faint);
+  flex-shrink: 0;
+  transition: color 0.3s;
+}
+
+.input-shell:focus-within .field-icon {
+  color: var(--accent-color);
+}
+
+.field-group input[type="text"],
+.field-group input[type="email"],
+.field-group input[type="password"] {
+  width: 100%;
+  padding: 13px 12px;
+  border: none;
+  outline: none;
+  color: var(--ink);
+  background: transparent;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+}
+
+.field-group input::placeholder {
+  color: var(--ink-faint);
+}
+
+/* Chrome/Edge/Safari force a light background + dark text on autofilled
+   fields, which blows out the glass theme. This neutralises it: a huge
+   inset box-shadow paints over the browser's autofill background, and
+   the absurdly long transition delay stops it flashing white first. */
+.field-group input:-webkit-autofill,
+.field-group input:-webkit-autofill:hover,
+.field-group input:-webkit-autofill:focus,
+.field-group input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.06) inset;
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.06) inset;
+  transition: background-color 600000s ease-in-out 0s, color 600000s ease-in-out 0s;
+}
+
+.field-group.invalid input:-webkit-autofill,
+.field-group.invalid input:-webkit-autofill:hover,
+.field-group.invalid input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px rgba(226, 104, 95, 0.08) inset;
+  box-shadow: 0 0 0 1000px rgba(226, 104, 95, 0.08) inset;
+}
+
+.toggle-visibility {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-faint);
+  padding: 0 14px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.toggle-visibility:hover {
+  color: var(--accent-color);
+}
+
+.toggle-visibility svg {
+  width: 18px;
+  height: 18px;
+  grid-area: 1 / 1;
+}
+
+.icon-eye-closed { display: none; }
+.toggle-visibility[aria-pressed="true"] .icon-eye-open { display: none; }
+.toggle-visibility[aria-pressed="true"] .icon-eye-closed { display: block; }
+
+.field-error {
+  display: block;
+  color: var(--danger);
+  font-size: 0.74rem;
+  margin-top: 0.4rem;
+  margin-left: 2px;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.field-group.invalid .input-shell {
+  border-color: var(--danger);
+}
+
+.field-group.invalid .field-error {
+  height: auto;
+  opacity: 1;
+}
+
+.login-btn {
+  position: relative;
+  width: 100%;
+  padding: 15px;
+  margin-top: 0.8rem;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: #211a10;
+  background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #aa771c);
+  background-size: 200% 200%;
+  transition: transform 0.2s, box-shadow 0.3s;
+  overflow: hidden;
+}
+
+.login-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(191, 149, 63, 0.3);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+.btn-label,
+.btn-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.btn-check {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.btn-spinner {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(33, 26, 16, 0.25);
+  border-top-color: #211a10;
+  opacity: 0;
+}
+
+.login-btn.is-loading .btn-label { opacity: 0; transform: scale(0.8); }
+.login-btn.is-loading .btn-spinner { opacity: 1; }
+
+.login-btn.is-success .btn-label { opacity: 0; }
+.login-btn.is-success .btn-spinner { opacity: 0; }
+.login-btn.is-success .btn-check { opacity: 1; transform: scale(1); }
+
+.form-footer {
+  text-align: center;
+  margin-top: 1.6rem;
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+.form-status {
+  text-align: center;
+  color: var(--danger);
+  font-size: 0.82rem;
+  margin-top: 0.9rem;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-soft);
+}
+
+.form-status.visible {
+  height: auto;
+  opacity: 1;
+}
+
+.form-status.is-success {
+  color: var(--success);
+}
+
+/* ---------------- sparkle burst (injected on success) ---------------- */
+
+.sparkle {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* ---------------- responsive ---------------- */
+
+@media (max-width: 720px) {
+  .container {
+    gap: 2rem;
+  }
+  .lamp-wrapper {
+    width: 230px;
+    height: 336px;
+  }
+  .login-form {
+    padding: 2.25rem 1.75rem;
+  }
+  .cord-hint {
+    bottom: 64px;
+  }
+}
+
+@media (max-width: 380px) {
+  .login-form {
+    width: 100%;
+  }
+}
+
+/* ---------------- reduced motion ---------------- */
+
+@media (prefers-reduced-motion: reduce) {
   * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.2s !important;
   }
+}
 
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #0a0e27;
-    overflow: hidden;
-  }
-
-  /* Loading overlay */
-  #loadingOverlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(10, 14, 39, 0.85);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  #loadingOverlay.active {
-    display: flex;
-  }
-
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid rgba(0, 212, 255, 0.2);
-    border-top: 4px solid #00d4ff;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  #loadingOverlay p {
-    color: #00d4ff;
-    font-size: 0.95em;
-    letter-spacing: 1px;
-  }
-
-  /* Side Toast Popup */
-  .toast {
-    position: fixed;
-    bottom: 30px;
-    right: -380px;
-    width: 320px;
-    background: rgba(15, 21, 53, 0.97);
-    border: 1px solid rgba(0, 212, 255, 0.35);
-    border-radius: 14px;
-    padding: 16px 18px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    z-index: 99999;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  }
-
-  .toast-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-  }
-
-  .toast-icon.success {
-    background: rgba(0, 212, 255, 0.15);
-    border: 1px solid rgba(0, 212, 255, 0.4);
-  }
-
-  .toast-icon.error {
-    background: rgba(220, 50, 50, 0.15);
-    border: 1px solid rgba(220, 50, 50, 0.4);
-  }
-
-  .toast-icon.warning {
-    background: rgba(255, 193, 7, 0.15);
-    border: 1px solid rgba(255, 193, 7, 0.4);
-  }
-
-  .toast-icon svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .toast-body {
-    flex: 1;
-  }
-
-  .toast-title {
-    font-size: 0.88em;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 3px;
-    letter-spacing: 0.3px;
-  }
-
-  .toast-msg {
-    font-size: 0.78em;
-    color: #8fa4d4;
-    line-height: 1.45;
-  }
-
-  .toast-close {
-    background: none;
-    border: none;
-    color: #8fa4d4;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 0;
-    line-height: 1;
-    flex-shrink: 0;
-    transition: color 0.2s;
-  }
-
-  .toast-close:hover {
-    color: #fff;
-  }
-
-  .toast-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    border-radius: 0 0 14px 14px;
-    width: 100%;
-    background: linear-gradient(90deg, #00d4ff, #0099ff);
-    transform-origin: left;
-  }
-
-  /* Error message inline */
-  #errorMsg {
-    display: none;
-    background: rgba(220, 50, 50, 0.12);
-    border: 1px solid rgba(220, 50, 50, 0.35);
-    color: #ff6b6b;
-    padding: 9px 14px;
-    border-radius: 8px;
-    font-size: 0.82em;
-    width: 100%;
-    text-align: center;
-  }
-
-  /* Logo */
-  .logo-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 4px;
-  }
-
-  .logo-wrap img {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    border: 2px solid rgba(0, 212, 255, 0.4);
-    object-fit: cover;
-    background: #0f1535;
-    will-change: transform;
-  }
-
-  /* Background grid */
-  section {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2px;
-    flex-wrap: wrap;
-    overflow: hidden;
-  }
-
-  section::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(#0a0e27, #00d4ff, #0099ff, #0a0e27);
-    animation: animate 6s linear infinite;
-  }
-
-  @keyframes animate {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100%); }
-  }
-
-  section span {
-    position: relative;
-    display: block;
-    width: calc(6.25vw - 2px);
-    height: calc(6.25vw - 2px);
-    background: #0f1535;
-    z-index: 2;
-    opacity: 0;
-  }
-
-
-  /* Sign in card */
-  section .signin {
-    position: absolute;
-    width: 400px;
-    background: rgba(15, 21, 53, 0.95);
-    backdrop-filter: blur(10px);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 36px 35px;
-    border-radius: 14px;
-    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 212, 255, 0.2);
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    opacity: 0;
-  }
-
-  section .signin .content {
-    position: relative;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  section .signin .content h2 {
-    font-size: 1.6em;
-    background: linear-gradient(135deg, #00d4ff, #0099ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 1px;
-  }
-
-  /* Form */
-  section .signin .content .form {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  /* Input box with proper label */
-  .inputBox {
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    opacity: 0;
-  }
-
-  .inputBox label {
-    font-size: 0.75em;
-    color: #00d4ff;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    padding-left: 2px;
-  }
-
-  .inputBox input[type="email"],
-  .inputBox input[type="password"] {
-    width: 100%;
-    background: #1a2346;
-    border: 2px solid rgba(0, 212, 255, 0.2);
-    outline: none;
-    padding: 12px 14px;
-    border-radius: 10px;
-    color: #fff;
-    font-weight: 500;
-    font-size: 0.95em;
-    font-family: 'Poppins', sans-serif;
-    transition: border 0.3s, background 0.3s, box-shadow 0.3s;
-  }
-
-  .inputBox input[type="email"]:focus,
-  .inputBox input[type="password"]:focus {
-    border: 2px solid #00d4ff;
-    background: #1f2952;
-    box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.12);
-  }
-
-  .inputBox input[type="email"]::placeholder,
-  .inputBox input[type="password"]::placeholder {
-    color: #5a6a99;
-    font-size: 0.9em;
-  }
-
-  /* Login button */
-  .login-btn {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    padding: 13px;
-    background: linear-gradient(135deg, #00d4ff, #0099ff);
-    color: #fff;
-    font-weight: 700;
-    font-size: 1em;
-    letter-spacing: 1px;
-    cursor: pointer;
-    border: none;
-    border-radius: 10px;
-    text-transform: uppercase;
-    margin-top: 6px;
-    box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
-    font-family: 'Poppins', sans-serif;
-  }
-
-  .login-btn:active {
-    opacity: 0.9;
-  }
-
-  .btn-ripple {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.45);
-    transform: scale(0);
-    pointer-events: none;
-  }
-
-  @media (max-width: 900px) {
-    section span { width: calc(10vw - 2px); height: calc(10vw - 2px); }
-  }
-
-  @media (max-width: 600px) {
-    section span { width: calc(20vw - 2px); height: calc(20vw - 2px); }
-    section .signin { width: 90%; padding: 32px 24px; }
-    .toast { width: 280px; }
-  }
 </style>
+</head>
+<body data-on="false">
 
-<body>
+<!-- ambient night scene -->
+<div class="scene" aria-hidden="true">
+  <div class="stars"></div>
+  <div class="vignette"></div>
+  <div class="floor-glow"></div>
+</div>
 
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay">
-    <div class="spinner"></div>
-    <p id="loadingText">Signing you in...</p>
+<button class="mute-toggle" id="muteToggle" type="button" aria-pressed="false" aria-label="Mute sound effects">
+  <svg viewBox="0 0 24 24" class="icon-sound-on"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M19 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.6"/></svg>
+  <svg viewBox="0 0 24 24" class="icon-sound-off"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+
+<main class="container">
+
+  <div class="lamp-wrapper">
+    <svg class="lamp-svg" viewBox="0 0 240 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <radialGradient id="shadeFill" cx="50%" cy="15%" r="90%">
+          <stop offset="0%" stop-color="var(--shade-hi)" />
+          <stop offset="100%" stop-color="var(--shade-lo)" />
+        </radialGradient>
+        <linearGradient id="brass" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="var(--brass-dark)" />
+          <stop offset="50%" stop-color="var(--brass-light)" />
+          <stop offset="100%" stop-color="var(--brass-dark)" />
+        </linearGradient>
+        <radialGradient id="coneGrad" cx="50%" cy="0%" r="100%">
+          <stop offset="0%" stop-color="var(--glow-color)" stop-opacity="0.55" />
+          <stop offset="100%" stop-color="var(--glow-color)" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="bulbGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff6da" stop-opacity="1" />
+          <stop offset="100%" stop-color="#fff6da" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+
+      <!-- light cone cast onto the floor -->
+      <polygon class="light-cone" points="78,178 162,178 208,338 32,338" fill="url(#coneGrad)" />
+
+      <!-- floor contact shadow -->
+      <ellipse class="floor-shadow" cx="120" cy="344" rx="88" ry="11" />
+
+      <!-- dust motes drifting through the light cone -->
+      <g class="dust-motes">
+        <circle class="mote" cx="95" cy="320" r="1.6" />
+        <circle class="mote" cx="140" cy="300" r="1.3" />
+        <circle class="mote" cx="115" cy="270" r="1.8" />
+        <circle class="mote" cx="155" cy="250" r="1.2" />
+        <circle class="mote" cx="90" cy="230" r="1.5" />
+        <circle class="mote" cx="130" cy="210" r="1.4" />
+        <circle class="mote" cx="105" cy="330" r="1.3" />
+        <circle class="mote" cx="150" cy="310" r="1.6" />
+      </g>
+
+      <!-- stand -->
+      <rect class="lamp-metal" x="116" y="176" width="8" height="140" rx="4" fill="url(#brass)" />
+      <rect class="lamp-metal" x="66" y="314" width="108" height="14" rx="7" fill="url(#brass)" />
+      <ellipse class="lamp-metal" cx="120" cy="328" rx="46" ry="5" fill="url(#brass)" opacity="0.85" />
+
+      <!-- harp + finial -->
+      <path class="harp" d="M108 112 L119 70 M132 112 L121 70" stroke="url(#brass)" stroke-width="2" fill="none" stroke-linecap="round" />
+      <circle class="finial" cx="120" cy="66" r="4.5" fill="url(#brass)" />
+
+      <!-- pull cord -->
+      <g class="pull-cord">
+        <line class="cord-line" x1="150" y1="140" x2="150" y2="210" />
+        <circle class="cord-bead" cx="150" cy="220" r="6.5" />
+        <circle class="cord-hit" cx="150" cy="220" r="26" fill="transparent" tabindex="0" role="switch" aria-checked="false" aria-label="Pull cord to turn on the lamp" />
+      </g>
+
+      <!-- bulb glow, visible under the shade -->
+      <ellipse class="inner-glow" cx="120" cy="150" rx="52" ry="24" fill="url(#bulbGlow)" />
+      <circle class="filament" cx="120" cy="150" r="7" />
+
+      <!-- shade -->
+      <path class="lamp-shade" d="M96 110 C80 110 63 148 58 176 L182 176 C177 148 160 110 144 110 Z" fill="url(#shadeFill)" />
+      <path class="shade-outline" d="M96 110 C80 110 63 148 58 176 L182 176 C177 148 160 110 144 110 Z" />
+      <ellipse class="shade-rim-top" cx="120" cy="110" rx="24" ry="4" />
+      <ellipse class="shade-rim-bottom" cx="120" cy="176" rx="62" ry="7" />
+    </svg>
+
+    <p class="cord-hint" id="cordHint" aria-hidden="true">
+      <svg viewBox="0 0 24 24" class="hint-arrow"><path d="M12 3v14M12 17l-5-5M12 17l5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      pull the cord
+    </p>
   </div>
 
-  <!-- Side Toast -->
-  <div class="toast" id="toast">
-    <div class="toast-icon" id="toastIcon"></div>
-    <div class="toast-body">
-      <div class="toast-title" id="toastTitle"></div>
-      <div class="toast-msg" id="toastMsg"></div>
-    </div>
-    <button class="toast-close" onclick="hideToast()">&#x2715;</button>
-    <div class="toast-bar" id="toastBar"></div>
-  </div>
+  <section class="login-form" aria-label="Sign in">
+    <p class="eyebrow">Cloud iNIT</p>
+    <h2 class="headline" id="headline" aria-label="Welcome back">Welcome back</h2>
+    <p class="subline">Sign in to pick up where you left off.</p>
 
-  <section id="bgSection">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-
-    <div class="signin" id="signinCard">
-      <div class="content">
-        <div class="logo-wrap">
-          <img id="logoImg" src="https://i.ibb.co/C5XqXXx5/d2a09cd4-f07d-4034-99ad-51292342123d.png" alt="Cloud iNIT Logo">
-          <h2 id="brandTitle">Cloud iNIT</h2>
+    <form id="loginForm" novalidate>
+      <div class="field-group">
+        <label for="email">Email</label>
+        <div class="input-shell">
+          <svg class="field-icon" viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z" fill="currentColor"/></svg>
+          <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="username" />
         </div>
-        <div class="form">
-          <div id="errorMsg"></div>
-          <div class="inputBox" id="emailBox">
-            <label for="emailInput">Email</label>
-            <input type="email" id="emailInput" placeholder="Enter your email" required>
-          </div>
-          <div class="inputBox" id="passwordBox">
-            <label for="passwordInput">Password</label>
-            <input type="password" id="passwordInput" placeholder="Enter your password" required>
-          </div>
-          <div class="inputBox" id="btnBox">
-            <button class="login-btn" id="loginBtn" onclick="handleLogin()">Login</button>
-          </div>
-        </div>
+        <span class="field-error" data-for="email">Enter your email</span>
       </div>
-    </div>
+
+      <div class="field-group">
+        <label for="password">Password</label>
+        <div class="input-shell">
+          <svg class="field-icon" viewBox="0 0 24 24"><path d="M6 10V8a6 6 0 1 1 12 0v2h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h1Zm2 0h8V8a4 4 0 1 0-8 0v2Z" fill="currentColor"/></svg>
+          <input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" />
+          <button class="toggle-visibility" type="button" id="togglePassword" aria-label="Show password" aria-pressed="false">
+            <svg viewBox="0 0 24 24" class="icon-eye-open"><path d="M12 5c-5 0-9 4.2-10 7 1 2.8 5 7 10 7s9-4.2 10-7c-1-2.8-5-7-10-7Zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9Z" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="var(--bg-color)"/></svg>
+            <svg viewBox="0 0 24 24" class="icon-eye-closed"><path d="M3 3l18 18M10.6 10.7a2 2 0 0 0 2.7 2.7M7.4 7.6C5 9 3.3 10.9 2 12c1 2.8 5 7 10 7 1.7 0 3.2-.4 4.6-1.1M16.8 16.8C19.2 15.3 20.7 13.2 22 12c-.6-1.6-2-3.6-3.9-5.2A11 11 0 0 0 12 5c-.7 0-1.4.1-2.1.2" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <span class="field-error" data-for="password">Enter your password</span>
+      </div>
+
+      <button class="login-btn" type="submit" id="loginBtn">
+        <span class="btn-label">Sign In</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+        <svg class="btn-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <p class="form-status" id="formStatus" role="alert"></p>
+    </form>
+
+    <p class="form-footer">Powered by Cloud iNIT</p>
   </section>
 
-<script src="ai-agent-widget.js"></script>
-</body>
+</main>
 
+<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3.12.5/dist/Draggable.min.js"></script>
+<script src="https://unpkg.com/animejs@3.2.2/lib/anime.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.17.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.17.0/firebase-auth-compat.js"></script>
 <script>
-  /* ── GSAP entrance + interaction animations ── */
-  window.addEventListener('DOMContentLoaded', () => {
+/* ==========================================================================
+   Login Form Lamp — interaction layer
 
-    // Background tiles: staggered, randomized fade/scale reveal
-    gsap.to("#bgSection span", {
-      opacity: 1,
+   Responsibility split (kept consistent with the rest of the platform):
+   - GSAP    → master timelines, the draggable cord's physics, 3D tilt on the
+               form reveal, and general layout transitions.
+   - anime.js → the shade stroke draw-in, the per-letter headline cascade,
+               dust-mote / sparkle particle loops, and small inner-component
+               animations (spinner, checkmark, filament flicker).
+   ========================================================================== */
+
+gsap.registerPlugin(Draggable);
+
+const MOTION_OK = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const root = document.documentElement;
+const body = document.body;
+
+const loginForm = document.querySelector(".login-form");
+const headline = document.getElementById("headline");
+const cordHint = document.getElementById("cordHint");
+
+const cordBead = document.querySelector(".cord-bead");
+const cordLine = document.querySelector(".cord-line");
+const hitArea = document.querySelector(".cord-hit");
+const shadeOutline = document.querySelector(".shade-outline");
+const motes = gsap.utils.toArray(".mote");
+
+const muteToggle = document.getElementById("muteToggle");
+const togglePassword = document.getElementById("togglePassword");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const loginFormEl = document.getElementById("loginForm");
+const formStatus = document.getElementById("formStatus");
+
+let isOn = false;
+let isMuted = false;
+let moteLoop = null;
+let filamentLoop = null;
+
+const clickSound = new Audio("https://assets.codepen.io/605876/click.mp3");
+
+/* --------------------------------------------------------------------
+   Firebase — auth for the 7:30 AM offline batch.
+
+   Kept as the DEFAULT app (no name passed to initializeApp) rather than
+   a named secondary app: onAuthStateChanged on dashboard.html and other
+   pages reads the default app's session, and naming this one breaks
+   that lookup even though the sign-in itself would still succeed here.
+   -------------------------------------------------------------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyCFdcL1yRhonVFSMpLkZm2Cyqt2-NCHwBI",
+  authDomain: "veera730pmonline.firebaseapp.com",
+  projectId: "veera730pmonline",
+  storageBucket: "veera730pmonline.firebasestorage.app",
+  messagingSenderId: "570230262031",
+  appId: "1:570230262031:web:63f3917d8197259bbcd67a",
+  measurementId: "G-9V7EDX772E",
+};
+
+let auth = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth();
+} catch (err) {
+  console.error("Firebase failed to initialize — sign-in will be unavailable.", err);
+}
+
+/* --------------------------------------------------------------------
+   Headline split into per-character spans (anime.js will cascade them
+   in once the lamp turns on). Done once up front so layout is stable.
+   -------------------------------------------------------------------- */
+(function splitHeadline() {
+  const text = headline.textContent;
+  headline.textContent = "";
+  text.split("").forEach((ch) => {
+    const span = document.createElement("span");
+    span.className = "char";
+    span.textContent = ch === " " ? "\u00A0" : ch;
+    headline.appendChild(span);
+  });
+})();
+
+/* --------------------------------------------------------------------
+   anime.js — draw the shade's outline in on page load
+   -------------------------------------------------------------------- */
+function drawShadeOutline() {
+  const len = shadeOutline.getTotalLength();
+  shadeOutline.style.strokeDasharray = len;
+  shadeOutline.style.strokeDashoffset = len;
+
+  anime({
+    targets: shadeOutline,
+    strokeDashoffset: [len, 0],
+    easing: "easeInOutSine",
+    duration: MOTION_OK ? 1400 : 1,
+    delay: 200,
+  });
+}
+
+/* --------------------------------------------------------------------
+   GSAP — page-load intro timeline for the lamp illustration
+   -------------------------------------------------------------------- */
+function playIntro() {
+  const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+  gsap.set(".lamp-svg", { opacity: 0, y: -14 });
+  gsap.set([".harp", ".finial", ".lamp-metal"], { opacity: 0 });
+  gsap.set(".pull-cord", { opacity: 0, transformOrigin: "50% 0%", scaleY: 0.6 });
+
+  tl.to(".lamp-svg", { opacity: 1, y: 0, duration: 0.9 })
+    .to([".harp", ".finial", ".lamp-metal"], { opacity: 1, duration: 0.6, stagger: 0.06 }, "-=0.5")
+    .to(".pull-cord", { opacity: 1, scaleY: 1, duration: 0.7, ease: "elastic.out(1, 0.5)" }, "-=0.3")
+    .call(drawShadeOutline, null, "-=0.6")
+    .call(showCordHintOnce, null, "+=0.9");
+
+  return tl;
+}
+
+/* --------------------------------------------------------------------
+   Idle hint nudging first-time visitors toward the cord.
+   anime.js drives the little bounce loop; GSAP drives the fade.
+   -------------------------------------------------------------------- */
+function showCordHintOnce() {
+  if (isOn) return;
+
+  gsap.to(cordHint, { opacity: 1, duration: 0.5 });
+
+  if (MOTION_OK) {
+    anime({
+      targets: cordHint,
+      translateY: [0, -6],
+      duration: 900,
+      direction: "alternate",
+      loop: true,
+      easing: "easeInOutQuad",
+    });
+  }
+}
+
+function hideCordHint() {
+  gsap.to(cordHint, { opacity: 0, duration: 0.3, overwrite: true });
+}
+
+/* --------------------------------------------------------------------
+   GSAP Draggable — the pull cord. Bounded drag, natural elastic
+   snap-back, and a small pendulum rotation for weight.
+   -------------------------------------------------------------------- */
+Draggable.create(hitArea, {
+  type: "y",
+  bounds: { minY: 0, maxY: 60 },
+  onPress() {
+    hideCordHint();
+  },
+  onDrag() {
+    gsap.set(cordBead, { y: this.y });
+    gsap.set(cordLine, { attr: { y2: 210 + this.y } });
+  },
+  onRelease() {
+    if (this.y > 30) {
+      toggleLamp();
+    }
+
+    gsap.to([cordBead, hitArea], {
+      y: 0,
       duration: 0.6,
-      ease: "power2.out",
-      stagger: {
-        each: 0.008,
-        from: "random"
-      }
+      ease: "elastic.out(1, 0.4)",
     });
-
-    // Mouse-reactive multicolor tiles: each tile near the cursor
-    // flashes a different random color, then fades back to normal.
-    const tileColors = [
-      "#00d4ff", "#0099ff", "#7b2ff7", "#ff2d95",
-      "#ff9800", "#ffea00", "#00e676", "#ff3d3d", "#3dfff0"
-    ];
-    let lastTile = null;
-
-    document.getElementById("bgSection").addEventListener("mousemove", (e) => {
-      const el = document.elementFromPoint(e.clientX, e.clientY);
-      if (!el || el.tagName !== "SPAN" || el === lastTile) return;
-      lastTile = el;
-
-      const color = tileColors[Math.floor(Math.random() * tileColors.length)];
-
-      gsap.killTweensOf(el);
-      gsap.fromTo(el,
-        { backgroundColor: color, scale: 1.12 },
-        {
-          backgroundColor: "#0f1535",
-          scale: 1,
-          duration: 1.1,
-          ease: "power2.out"
-        }
-      );
-
-      // splash onto a couple of neighboring tiles too, with a slight delay
-      const neighbors = [
-        el.previousElementSibling,
-        el.nextElementSibling
-      ];
-      neighbors.forEach((n) => {
-        if (!n || n.tagName !== "SPAN") return;
-        const nColor = tileColors[Math.floor(Math.random() * tileColors.length)];
-        gsap.killTweensOf(n);
-        gsap.fromTo(n,
-          { backgroundColor: nColor, scale: 1.06 },
-          { backgroundColor: "#0f1535", scale: 1, duration: 1, ease: "power2.out", delay: 0.05 }
-        );
-      });
+    gsap.to(cordLine, {
+      attr: { y2: 210 },
+      duration: 0.6,
+      ease: "elastic.out(1, 0.4)",
     });
+  },
+});
 
-    // Master entrance timeline for the sign-in card
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+// keyboard access: Enter / Space toggles the lamp same as a full pull
+hitArea.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    hideCordHint();
+    toggleLamp();
+    gsap.fromTo(
+      cordBead,
+      { y: 0 },
+      { y: 14, duration: 0.15, yoyo: true, repeat: 1, ease: "power1.inOut" }
+    );
+  }
+});
 
-    tl.fromTo("#signinCard",
-      { opacity: 0, y: 40, scale: 0.92 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.7 }
-    )
-    .fromTo("#logoImg",
-      { opacity: 0, scale: 0.4, rotate: -180 },
-      { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "back.out(1.7)" },
-      "-=0.45"
-    )
-    .fromTo("#brandTitle",
-      { opacity: 0, y: 10 },
-      { opacity: 1, y: 0, duration: 0.5 },
-      "-=0.4"
-    )
-    .fromTo(["#emailBox", "#passwordBox", "#btnBox"],
-      { opacity: 0, y: 18 },
-      { opacity: 1, y: 0, duration: 0.5, stagger: 0.12 },
-      "-=0.25"
+/* --------------------------------------------------------------------
+   anime.js — dust motes drifting through the light cone, filament
+   flicker. Both are only ever running while the lamp is lit, and both
+   are skipped for reduced-motion.
+   -------------------------------------------------------------------- */
+function startAmbientLoops() {
+  if (!MOTION_OK) return;
+
+  moteLoop = anime({
+    targets: motes,
+    translateY: () => anime.random(-70, -30),
+    translateX: () => anime.random(-10, 10),
+    opacity: [0, 0.8, 0],
+    duration: () => anime.random(2600, 4200),
+    delay: anime.stagger(300, { start: 200 }),
+    easing: "easeInOutSine",
+    loop: true,
+  });
+
+  filamentLoop = anime({
+    targets: ".filament",
+    opacity: [0.75, 1, 0.82, 0.98, 0.85],
+    duration: 2600,
+    easing: "easeInOutSine",
+    loop: true,
+  });
+}
+
+function stopAmbientLoops() {
+  if (moteLoop) moteLoop.pause();
+  if (filamentLoop) filamentLoop.pause();
+  gsap.to(motes, { opacity: 0, duration: 0.4 });
+}
+
+/* --------------------------------------------------------------------
+   anime.js — per-letter headline cascade, played once when the form
+   first becomes visible.
+   -------------------------------------------------------------------- */
+let headlinePlayed = false;
+function playHeadlineCascade() {
+  if (headlinePlayed) return;
+  headlinePlayed = true;
+
+  anime({
+    targets: "#headline .char",
+    opacity: [0, 1],
+    translateY: [16, 0],
+    duration: MOTION_OK ? 700 : 1,
+    delay: MOTION_OK ? anime.stagger(28, { start: 250 }) : 0,
+    easing: "easeOutExpo",
+  });
+}
+
+/* --------------------------------------------------------------------
+   GSAP — master on/off timeline: ambient colour, the light cone/glow,
+   and the form's 3D reveal with staggered fields.
+   -------------------------------------------------------------------- */
+function toggleLamp() {
+  isOn = !isOn;
+
+  playClick();
+
+  body.setAttribute("data-on", isOn);
+  hitArea.setAttribute("aria-checked", String(isOn));
+  gsap.to(root, { "--on": isOn ? 1 : 0, duration: 0.7, ease: "power2.inOut" });
+  gsap.to(body, {
+    backgroundColor: isOn ? "#1c1f24" : "#0b0d10",
+    duration: 0.7,
+    ease: "power2.inOut",
+  });
+
+  if (isOn) {
+    loginForm.classList.add("active");
+    startAmbientLoops();
+
+    gsap.fromTo(
+      loginForm,
+      { autoAlpha: 0, y: 26, rotateX: -8 },
+      { autoAlpha: 1, y: 0, rotateX: 0, duration: 0.8, ease: "power3.out" }
     );
 
-    // Logo gentle float loop
-    gsap.to("#logoImg", {
-      y: -6,
-      duration: 2.2,
-      ease: "sine.inOut",
-      repeat: -1,
-      yoyo: true,
-      delay: 1.4
-    });
+    gsap.fromTo(
+      loginForm.querySelectorAll(".eyebrow, .subline, .field-group, .login-btn, .form-footer"),
+      { opacity: 0, y: 14 },
+      { opacity: 1, y: 0, duration: 0.5, ease: "power2.out", stagger: 0.06, delay: 0.15 }
+    );
 
-    // Card magnetic tilt on mousemove (advanced interaction)
-    const card = document.getElementById("signinCard");
-    card.addEventListener("mousemove", (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      gsap.to(card, {
-        rotateY: x / 28,
-        rotateX: -y / 28,
-        transformPerspective: 900,
-        transformOrigin: "center",
-        duration: 0.4,
-        ease: "power2.out"
-      });
+    playHeadlineCascade();
+  } else {
+    stopAmbientLoops();
+    gsap.to(loginForm, {
+      autoAlpha: 0,
+      y: 18,
+      rotateX: -6,
+      duration: 0.5,
+      ease: "power2.in",
+      onComplete: () => loginForm.classList.remove("active"),
     });
-    card.addEventListener("mouseleave", () => {
-      gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.6, ease: "power3.out" });
-    });
+  }
+}
 
-    // Input focus micro-interaction
-    document.querySelectorAll('.inputBox input').forEach(input => {
-      input.addEventListener('focus', () => {
-        gsap.to(input, { scale: 1.02, duration: 0.25, ease: "power2.out" });
-      });
-      input.addEventListener('blur', () => {
-        gsap.to(input, { scale: 1, duration: 0.25, ease: "power2.out" });
-      });
-    });
+function playClick() {
+  if (isMuted) return;
+  try {
+    clickSound.currentTime = 0;
+    clickSound.play().catch(() => {});
+  } catch (err) {
+    /* autoplay restrictions — safe to ignore */
+  }
+}
 
-    // Login button hover lift + ripple click effect
-    const loginBtn = document.getElementById('loginBtn');
-    loginBtn.addEventListener('mouseenter', () => {
-      gsap.to(loginBtn, { y: -3, boxShadow: "0 15px 35px rgba(0, 212, 255, 0.45)", duration: 0.25 });
-    });
-    loginBtn.addEventListener('mouseleave', () => {
-      gsap.to(loginBtn, { y: 0, boxShadow: "0 10px 25px rgba(0, 212, 255, 0.3)", duration: 0.25 });
-    });
-    loginBtn.addEventListener('click', (e) => {
-      const rect = loginBtn.getBoundingClientRect();
-      const ripple = document.createElement('span');
-      ripple.className = 'btn-ripple';
-      const size = Math.max(rect.width, rect.height) * 1.4;
-      ripple.style.width = ripple.style.height = size + 'px';
-      ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-      ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-      loginBtn.appendChild(ripple);
-      gsap.to(ripple, {
-        scale: 1,
-        opacity: 0,
-        duration: 0.6,
-        ease: "power2.out",
-        onComplete: () => ripple.remove()
-      });
-    });
+/* --------------------------------------------------------------------
+   Mute toggle
+   -------------------------------------------------------------------- */
+muteToggle.addEventListener("click", () => {
+  isMuted = !isMuted;
+  muteToggle.setAttribute("aria-pressed", String(isMuted));
+});
 
-    // Spinner text pulse while loading
-    gsap.to("#loadingText", {
-      opacity: 0.4,
-      duration: 0.8,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    });
+/* --------------------------------------------------------------------
+   Password visibility toggle
+   -------------------------------------------------------------------- */
+togglePassword.addEventListener("click", () => {
+  const showing = passwordInput.type === "text";
+  passwordInput.type = showing ? "password" : "text";
+  togglePassword.setAttribute("aria-pressed", String(!showing));
+  togglePassword.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+});
+
+/* --------------------------------------------------------------------
+   Sign-in flow — validation shake, loading spinner, success check +
+   sparkle burst, then a real Firebase Auth call.
+   -------------------------------------------------------------------- */
+function showFormStatus(message, type = "error") {
+  formStatus.textContent = message;
+  formStatus.classList.remove("is-success");
+  if (type === "success") formStatus.classList.add("is-success");
+  formStatus.classList.add("visible");
+
+  if (type === "error") {
+    gsap.fromTo(
+      formStatus,
+      { x: 0 },
+      { x: 8, duration: 0.08, yoyo: true, repeat: 5, ease: "power1.inOut", clearProps: "x" }
+    );
+  }
+}
+
+function hideFormStatus() {
+  formStatus.classList.remove("visible", "is-success");
+  formStatus.textContent = "";
+}
+
+function friendlyAuthMessage(err) {
+  switch (err.code) {
+    case "auth/invalid-email":
+      return "That email address doesn't look right.";
+    case "auth/user-disabled":
+      return "This account has been disabled. Contact your batch admin.";
+    case "auth/user-not-found":
+    case "auth/wrong-password":
+    case "auth/invalid-credential":
+      return "Email or password is incorrect.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Please wait a moment and try again.";
+    case "auth/network-request-failed":
+      return "Network error — check your connection and try again.";
+    default:
+      return "Couldn't sign in. Please try again.";
+  }
+}
+
+loginFormEl.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (loginBtn.classList.contains("is-loading") || loginBtn.classList.contains("is-success")) return;
+
+  hideFormStatus();
+
+  const fields = [
+    { el: emailInput.closest(".field-group"), input: emailInput },
+    { el: passwordInput.closest(".field-group"), input: passwordInput },
+  ];
+
+  let valid = true;
+  fields.forEach(({ el, input }) => {
+    const empty = input.value.trim() === "";
+    el.classList.toggle("invalid", empty);
+    if (empty) {
+      valid = false;
+      gsap.fromTo(
+        el,
+        { x: 0 },
+        { x: 8, duration: 0.08, yoyo: true, repeat: 5, ease: "power1.inOut", clearProps: "x" }
+      );
+    }
   });
 
-  /* ── Toast animation via GSAP ── */
-  let toastTimer = null;
+  if (!valid) return;
 
-  window.showToast = function (type, title, msg) {
-    const toast = document.getElementById('toast');
-    const icon = document.getElementById('toastIcon');
-    const bar = document.getElementById('toastBar');
+  if (!auth) {
+    showFormStatus("Sign-in isn't available right now. Please refresh and try again.");
+    return;
+  }
 
-    document.getElementById('toastTitle').textContent = title;
-    document.getElementById('toastMsg').textContent = msg;
+  loginBtn.classList.add("is-loading");
+  gsap.to(loginBtn, { scale: 0.98, duration: 0.15, yoyo: true, repeat: 1 });
 
-    if (type === 'success') {
-      icon.className = 'toast-icon success';
-      icon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-      bar.style.background = 'linear-gradient(90deg, #00d4ff, #0099ff)';
-    } else if (type === 'warning') {
-      icon.className = 'toast-icon warning';
-      icon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
-      bar.style.background = 'linear-gradient(90deg, #ffc107, #ff9800)';
-    } else {
-      icon.className = 'toast-icon error';
-      icon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-      bar.style.background = 'linear-gradient(90deg, #ff6b6b, #cc3333)';
-    }
+  auth
+    .signInWithEmailAndPassword(emailInput.value.trim(), passwordInput.value)
+    .then(() => {
+      loginBtn.classList.remove("is-loading");
+      loginBtn.classList.add("is-success");
+      burstSparkles();
 
-    gsap.killTweensOf(bar);
-    gsap.set(bar, { scaleX: 1, transformOrigin: "left" });
-    gsap.to(bar, { scaleX: 0, duration: 3.5, ease: "none" });
-
-    gsap.killTweensOf(toast);
-    gsap.fromTo(toast, { x: 0 }, { x: -344, duration: 0.55, ease: "back.out(1.4)" });
-
-    if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => window.hideToast(), 3500);
-  };
-
-  window.hideToast = function () {
-    gsap.to(document.getElementById('toast'), { x: 0, duration: 0.4, ease: "power2.in" });
-  };
-</script>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-
-  const firebaseConfig = {
-        apiKey: "AIzaSyCFdcL1yRhonVFSMpLkZm2Cyqt2-NCHwBI",
-        authDomain: "veera730pmonline.firebaseapp.com",
-        projectId: "veera730pmonline",
-        storageBucket: "veera730pmonline.firebasestorage.app",
-        messagingSenderId: "570230262031",
-        appId: "1:570230262031:web:63f3917d8197259bbcd67a",
-        measurementId: "G-9V7EDX772E"
-    };
-
-  const app       = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth      = getAuth(app);
-
-  /* ── Login ── */
-  window.handleLogin = async function () {
-    const email    = document.getElementById("emailInput").value.trim();
-    const password = document.getElementById("passwordInput").value;
-    const overlay  = document.getElementById("loadingOverlay");
-
-    document.getElementById("errorMsg").style.display = "none";
-
-    if (!email || !password) {
-      showToast('error', 'Missing fields', 'Please enter your email and password.');
-      gsap.fromTo("#signinCard", { x: -8 }, { x: 0, duration: 0.4, ease: "elastic.out(1, 0.3)" });
-      return;
-    }
-
-    overlay.classList.add("active");
-    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.25 });
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      showToast('success', 'Welcome back!', 'Login successful.');
       setTimeout(() => {
         window.location.href = "https://certification-1047857993049.us-west1.run.app";
-      }, 1200);
-    } catch (error) {
-      overlay.classList.remove("active");
-      let msg = "Cloud iNIT: Authentication failed. Please try again.";
-      switch (error.code) {
-        case "auth/user-not-found":
-        case "auth/wrong-password":
-        case "auth/invalid-credential":
-          msg = "Cloud iNIT: Invalid email or password."; break;
-        case "auth/invalid-email":
-          msg = "Cloud iNIT: Please enter a valid email address."; break;
-        case "auth/too-many-requests":
-          msg = "Cloud iNIT: Too many attempts. Please try again later."; break;
-        case "auth/user-disabled":
-          msg = "Cloud iNIT: This account has been disabled. Contact support."; break;
-        case "auth/network-request-failed":
-          msg = "Cloud iNIT: Network error. Check your connection and retry."; break;
-      }
-      showToast('error', 'Login failed', msg);
-      gsap.fromTo("#signinCard", { x: -8 }, { x: 0, duration: 0.4, ease: "elastic.out(1, 0.3)" });
-    }
-  };
+      }, 900);
+    })
+    .catch((err) => {
+      loginBtn.classList.remove("is-loading");
+      showFormStatus(friendlyAuthMessage(err));
+    });
+});
 
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") window.handleLogin();
+/* --------------------------------------------------------------------
+   anime.js — small sparkle burst around the button on success
+   -------------------------------------------------------------------- */
+function burstSparkles() {
+  if (!MOTION_OK) return;
+
+  const rect = loginBtn.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const count = 14;
+  const sparkles = [];
+
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.style.left = `${cx}px`;
+    s.style.top = `${cy}px`;
+    document.body.appendChild(s);
+    sparkles.push(s);
+  }
+
+  anime({
+    targets: sparkles,
+    translateX: () => anime.random(-70, 70),
+    translateY: () => anime.random(-50, 50),
+    scale: [1, 0],
+    opacity: [1, 0],
+    easing: "easeOutExpo",
+    duration: 700,
+    delay: anime.stagger(12),
+    complete: () => sparkles.forEach((s) => s.remove()),
   });
+}
+
+playIntro();
+
 </script>
 
+</body>
 </html>

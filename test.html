@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud iNIT | Test Center</title>
+<style>
+  :root{
+    --violet:#8b5cf6;
+    --cyan:#22d3ee;
+    --purple:#a855f7;
+    --panel:rgba(20,18,38,0.55);
+    --border:rgba(255,255,255,0.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif;}
+  html,body{height:100%;}
+  body{
+    color:#eef0ff;
+    overflow-x:hidden;
+    background:#0a0714;
+  }
+
+  /* fixed aurora background layer - single container, no drift/tiling */
+  .bg-layer{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    contain:strict;
+    transform:translateZ(0);
+    background:
+      radial-gradient(circle at 20% 20%, rgba(139,92,246,0.35), transparent 55%),
+      radial-gradient(circle at 80% 30%, rgba(34,211,238,0.28), transparent 50%),
+      radial-gradient(circle at 50% 85%, rgba(168,85,247,0.30), transparent 55%),
+      linear-gradient(180deg, #0a0714 0%, #0d0a1f 100%);
+  }
+  .orb{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(60px);
+    opacity:0.5;
+    z-index:-1;
+    contain:strict;
+    transform:translateZ(0);
+    animation:float 14s ease-in-out infinite;
+  }
+  .orb1{width:320px;height:320px;background:var(--violet);top:-80px;left:-80px;}
+  .orb2{width:260px;height:260px;background:var(--cyan);bottom:-60px;right:-60px;animation-delay:-6s;}
+  @keyframes float{
+    0%,100%{transform:translateZ(0) translateY(0);}
+    50%{transform:translateZ(0) translateY(-30px);}
+  }
+
+  /* Top-right corner profile widget */
+  .corner-profile{
+    position:fixed;
+    top:20px;
+    right:20px;
+    z-index:20;
+    display:none;
+    gap:10px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-radius:18px;
+    padding:12px 16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    max-width:min(320px, calc(100vw - 40px));
+  }
+  .corner-profile.active{display:flex;}
+  .corner-avatar{
+    width:38px;height:38px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--violet),var(--cyan));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:15px;color:#0a0714;
+    flex-shrink:0;
+  }
+  .corner-text{text-align:left;overflow:hidden;flex:1;}
+  .corner-name-row{
+    display:flex;align-items:center;gap:6px;
+  }
+  .corner-name{
+    font-size:13.5px;font-weight:600;color:#fff;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    max-width:150px;
+  }
+  .corner-email{
+    font-size:11px;color:rgba(238,240,255,0.5);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    max-width:190px;
+    margin-top:1px;
+  }
+  .online-dot{
+    display:inline-block;
+    width:7px;height:7px;
+    border-radius:50%;
+    background:#4ade80;
+    box-shadow:0 0 8px #4ade80;
+    flex-shrink:0;
+  }
+  .corner-badges{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:8px;
+  }
+  .corner-badge{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    padding:4px 9px;
+    border-radius:10px;
+    flex:1;
+    min-width:72px;
+  }
+  .corner-badge-label{
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    opacity:0.75;
+  }
+  .corner-badge-value{
+    font-size:13px;
+    font-weight:700;
+  }
+  /* Two colours across the whole widget:
+       violet  = the standing account balance
+       cyan    = anything earned in a given period                        */
+  .badge-primary{
+    background:rgba(168,85,247,0.16);
+    border:1px solid rgba(168,85,247,0.38);
+    color:#d8b4fe;
+  }
+  .badge-day{
+    background:rgba(34,211,238,0.14);
+    border:1px solid rgba(34,211,238,0.32);
+    color:#7dd3fc;
+  }
+  /* the account balance is the headline figure, so give it more weight */
+  .badge-primary{flex:1.3;}
+  .badge-primary .corner-badge-value{font-size:15px;}
+
+  /* ── the sum that plays when points land ── */
+  .eq-card{
+    position:fixed;
+    left:50%;
+    top:42%;
+    transform:translate(-50%,-50%);
+    z-index:2100;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:20px 28px;
+    border-radius:20px;
+    pointer-events:none;
+    font-variant-numeric:tabular-nums;
+    background:rgba(15,17,32,0.96);
+    border:1px solid rgba(255,255,255,0.14);
+    box-shadow:0 24px 70px rgba(0,0,0,0.75);
+  }
+  .eq-card span{opacity:0;display:inline-block;}
+  .eq-card .e-n{font-size:30px;font-weight:800;letter-spacing:-0.03em;color:#fff;}
+  .eq-card .e-op{font-size:20px;font-weight:700;opacity:0.55;}
+  .eq-card .e-tag{
+    font-size:10px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.7px;
+    opacity:0.6;
+    margin-right:2px;
+  }
+  /* the two colours already in use: cyan for test, violet for the account */
+  .eq-card.for-test{border-color:rgba(34,211,238,0.45);box-shadow:0 24px 70px rgba(0,0,0,0.75),0 0 34px rgba(34,211,238,0.22);}
+  .eq-card.for-test .e-gain,.eq-card.for-test .e-total,.eq-card.for-test .e-op,.eq-card.for-test .e-tag{color:#7dd3fc;}
+  .eq-card.for-profile{border-color:rgba(168,85,247,0.45);box-shadow:0 24px 70px rgba(0,0,0,0.75),0 0 34px rgba(168,85,247,0.22);}
+  .eq-card.for-profile .e-gain,.eq-card.for-profile .e-total,.eq-card.for-profile .e-op,.eq-card.for-profile .e-tag{color:#d8b4fe;}
+  @media (max-width:560px){
+    .eq-card{padding:15px 18px;gap:7px;}
+    .eq-card .e-n{font-size:23px;}
+  }
+
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    text-align:center;
+  }
+
+  .logo{
+    width:64px;
+    height:64px;
+    border-radius:16px;
+    margin-bottom:18px;
+    box-shadow:0 0 24px rgba(139,92,246,0.5);
+  }
+
+  .batch-tag{
+    display:inline-block;
+    padding:6px 16px;
+    border-radius:999px;
+    background:rgba(139,92,246,0.15);
+    border:1px solid var(--border);
+    color:var(--cyan);
+    font-size:13px;
+    letter-spacing:0.5px;
+    margin-bottom:22px;
+  }
+
+  h1{
+    font-size:clamp(28px,4vw,42px);
+    font-weight:700;
+    background:linear-gradient(90deg,#fff,var(--cyan),var(--violet));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin-bottom:12px;
+  }
+
+  p.sub{
+    color:rgba(238,240,255,0.65);
+    font-size:15px;
+    max-width:460px;
+    margin-bottom:40px;
+    line-height:1.5;
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-radius:22px;
+    padding:36px 32px;
+    width:100%;
+    max-width:440px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    padding:16px 20px;
+    border-radius:14px;
+    border:1px solid var(--border);
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    margin-bottom:16px;
+    transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    color:#fff;
+  }
+  .btn:last-child{margin-bottom:0;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(0);}
+  .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+  .btn-exam{
+    background:linear-gradient(135deg,var(--violet),var(--purple));
+    position:relative;
+    overflow:hidden;
+  }
+  .exam-label{position:relative;z-index:1;display:inline-flex;align-items:center;gap:10px;}
+
+  /* A light sweeping across the button says "something is running" without
+     putting a number on screen. It stops once the point has been earned. */
+  .exam-sweep{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    opacity:0;
+    pointer-events:none;
+    background:linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(255,255,255,0.26) 45%,
+      rgba(34,211,238,0.30) 55%,
+      transparent 80%
+    );
+    transform:translateX(-100%);
+  }
+  .btn-exam.earning .exam-sweep{
+    opacity:1;
+    animation:examSweep 2.4s ease-in-out infinite;
+  }
+  @keyframes examSweep{
+    0%   {transform:translateX(-100%);}
+    100% {transform:translateX(100%);}
+  }
+  /* a matching hairline along the base, so it reads as ongoing */
+  .btn-exam.earning::after{
+    content:'';
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:2px;
+    z-index:1;
+    background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+    background-size:50% 100%;
+    background-repeat:no-repeat;
+    animation:examLine 2.4s ease-in-out infinite;
+  }
+  @keyframes examLine{
+    0%   {background-position:-60% 0;}
+    100% {background-position:160% 0;}
+  }
+  /* while the exam window is open the button is not a button any more —
+     it is a status, so it stops looking clickable */
+  .btn-exam.ongoing{
+    cursor:default;
+    background:linear-gradient(135deg,#1e2a52,#243a6b);
+    border-color:rgba(34,211,238,0.4);
+  }
+  .btn-exam.ongoing .exam-sweep{
+    opacity:1;
+    animation:examSweep 1.8s ease-in-out infinite;
+  }
+  .btn-exam.ongoing::after{
+    content:'';
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:2px;
+    z-index:1;
+    background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+    background-size:50% 100%;
+    background-repeat:no-repeat;
+    animation:examLine 1.8s ease-in-out infinite;
+  }
+  .btn-exam.ongoing:disabled{opacity:1;}
+
+  /* after the five minutes the button stops moving and reports the score */
+  .btn-exam.summary{
+    cursor:default;
+    background:linear-gradient(135deg,#2a1e4d,#3b2a6b);
+    border-color:rgba(168,85,247,0.45);
+  }
+  .btn-exam.summary:disabled{opacity:1;}
+  .btn-exam.summary .exam-sweep{opacity:0;animation:none;}
+  .exam-score{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:15px;
+    font-variant-numeric:tabular-nums;
+  }
+  .exam-score .sc-num{font-weight:800;font-size:18px;}
+  .exam-score .sc-test{color:#7dd3fc;}
+  .exam-score .sc-star{color:#7dd3fc;font-size:14px;}
+  .exam-score .sc-lbl{font-size:11px;font-weight:600;text-transform:uppercase;
+    letter-spacing:0.4px;opacity:0.7;}
+  .live-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 0 0 rgba(34,211,238,0.65);
+    animation:liveDot 1.5s ease-out infinite;
+    flex-shrink:0;
+  }
+  @keyframes liveDot{
+    0%  {box-shadow:0 0 0 0 rgba(34,211,238,0.65);}
+    70% {box-shadow:0 0 0 9px rgba(34,211,238,0);}
+    100%{box-shadow:0 0 0 0 rgba(34,211,238,0);}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .btn-exam.earning .exam-sweep,
+    .btn-exam.ongoing .exam-sweep{animation:none;opacity:0.5;transform:none;}
+    .btn-exam.earning::after,
+    .btn-exam.ongoing::after{animation:none;background-position:50% 0;}
+    .live-dot{animation:none;}
+  }
+  .btn-exam:hover{box-shadow:0 10px 30px rgba(139,92,246,0.45);}
+
+  .hint{
+    margin-top:22px;
+    font-size:12.5px;
+    color:rgba(238,240,255,0.45);
+  }
+
+  #popupWarning, #loginWarning{
+    display:none;
+    margin-top:18px;
+    padding:12px 16px;
+    border-radius:12px;
+    background:rgba(239,68,68,0.12);
+    border:1px solid rgba(239,68,68,0.35);
+    color:#fca5a5;
+    font-size:13px;
+  }
+
+  #loginWarning a{color:#fff;text-decoration:underline;}
+
+  /* Points-earned toast */
+  .toast{
+    position:fixed;
+    bottom:28px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    z-index:50;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 22px;
+    border-radius:14px;
+    background:linear-gradient(135deg,rgba(139,92,246,0.95),rgba(34,211,238,0.85));
+    color:#0a0714;
+    font-weight:700;
+    font-size:14px;
+    box-shadow:0 14px 36px rgba(0,0,0,0.4);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.35s ease, transform 0.35s ease;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg-layer"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <!-- Top-right corner profile widget, filled once login is verified -->
+  <div class="corner-profile" id="cornerProfile">
+    <div class="corner-avatar" id="cornerAvatar">?</div>
+    <div class="corner-text">
+      <div class="corner-name-row">
+        <span class="online-dot"></span>
+        <span class="corner-name" id="cornerName">—</span>
+      </div>
+      <div class="corner-email" id="cornerEmail">—</div>
+      <div class="corner-badges">
+        <div class="corner-badge badge-primary" title="Your Cloud iNIT account points">
+          <span class="corner-badge-label">Profile Points</span>
+          <span class="corner-badge-value" id="cornerProfilePoints">0</span>
+        </div>
+        <div class="corner-badge badge-day" title="Points earned on this page this month — one per day">
+          <span class="corner-badge-label">Test Points</span>
+          <span class="corner-badge-value" id="cornerMonthly">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <img class="logo" src="https://i.ibb.co/bMgt1Tgq/cloudinit.png" alt="Cloud iNIT logo">
+    <span class="batch-tag">7:30 PM</span>
+    <h1>Test Center</h1>
+    <p class="sub">Start your official exam session below.</p>
+
+    <div class="panel">
+      <button class="btn btn-exam" id="startExamBtn" disabled>
+        <span class="exam-sweep" id="examSweep"></span>
+        <span class="exam-label">🎓 Start Exam</span>
+      </button>
+
+      <div id="popupWarning">
+        Your browser blocked the exam window. Please allow popups for this site and try again.
+      </div>
+      <div id="loginWarning">
+        You're not logged in. <a href="login.html">Log in</a> to start your exam.
+      </div>
+
+      <div class="hint">Exam opens in a secure new window — your start and finish time are recorded automatically.</div>
+    </div>
+  </div>
+
+  <div class="toast" id="pointsToast">🎉 <span id="toastText">+1 point earned!</span></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, updateDoc,
+    serverTimestamp, runTransaction, increment
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCFdcL1yRhonVFSMpLkZm2Cyqt2-NCHwBI",
+    authDomain: "veera730pmonline.firebaseapp.com",
+    projectId: "veera730pmonline",
+    storageBucket: "veera730pmonline.firebasestorage.app",
+    messagingSenderId: "570230262031",
+    appId: "1:570230262031:web:63f3917d8197259bbcd67a",
+    measurementId: "G-9V7EDX772E"
+  };
+
+  // The shared student-task-tracker project. A copy of every student's name
+  // and points is kept here as well, so the batch can be read in one place
+  // without opening each batch's own project.
+  const taskTrackerConfig = {
+    apiKey: "AIzaSyAE3mBpbQ0be_I7baVrVMT0ppTfvEPB38I",
+    authDomain: "student-task-tracker-c892a.firebaseapp.com",
+    projectId: "student-task-tracker-c892a",
+    storageBucket: "student-task-tracker-c892a.firebasestorage.app",
+    messagingSenderId: "270942651958",
+    appId: "1:270942651958:web:5114d65ea5bcbf613d7a97",
+    measurementId: "G-NPK6LE8VCJ"
+  };
+
+  // the folder the copies live in, one document per student
+  const TEST_USERS_FOLDER = '7:30 pm test user';
+
+  const cornerProfile = document.getElementById('cornerProfile');
+  const cornerAvatar = document.getElementById('cornerAvatar');
+  const cornerName = document.getElementById('cornerName');
+  const cornerProfilePoints = document.getElementById('cornerProfilePoints');
+  const cornerMonthly = document.getElementById('cornerMonthly');
+  const cornerEmail = document.getElementById('cornerEmail');
+
+  const startExamBtn = document.getElementById('startExamBtn');
+  const popupWarning = document.getElementById('popupWarning');
+  const loginWarning = document.getElementById('loginWarning');
+
+  const pointsToast = document.getElementById('pointsToast');
+  const toastText = document.getElementById('toastText');
+
+  const PAGE_OPEN_BONUS_POINTS = 1;      // test points, tallied monthly
+  const PROFILE_BONUS_POINTS = 300;      // Cloud iNIT account points
+  const PAGE_OPEN_BONUS_MINUTES = 2;
+
+  let sessionUser = null;
+  let latestTestPoints = 0;      // this month's page bonus tally
+  let latestTotalPoints = 0;     // the Cloud iNIT account balance
+  let examBonusTimer = null;
+  let sessionName = null;
+  let dbRef = null;
+  let taskDbRef = null;      // the shared student-task-tracker project
+
+  // Count from whatever is on screen to the new figure. Jumping straight to
+  // the number makes an increase easy to miss.
+  function countTo(el, to) {
+    if (!el) return;
+    const from = parseInt(el.textContent.replace(/[^\d-]/g, ''), 10) || 0;
+    if (from === to) { el.textContent = to.toLocaleString(); return; }
+    const dur = 700, t0 = performance.now();
+    (function step(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))).toLocaleString();
+      if (p < 1) requestAnimationFrame(step); else el.textContent = to.toLocaleString();
+    })(performance.now());
+  }
+
+  function showToast(text) {
+    toastText.textContent = text;
+    pointsToast.classList.add('show');
+    setTimeout(() => pointsToast.classList.remove('show'), 4000);
+  }
+
+  // Server-side transaction: gives PAGE_OPEN_BONUS_POINTS once per day for
+  // keeping this page open for PAGE_OPEN_BONUS_MINUTES.
+  //
+  // Points are tracked in a MONTH-KEYED doc (veeraUsers/{uid}/monthlyBonus/{YYYY-MM})
+  // rather than the shared lifetime points/accountPoints field used by
+  // leaderboards elsewhere — a new month simply means a new, empty doc, so
+  // the counter "resets" automatically with no cron job or manual reset needed.
+  // A separate per-day flag doc still gates it to once per day.
+  // Records when this session began, using the server's clock rather than the
+  // browser's. The security rules compare request.time against this stamp, so
+  // the five-minute wait is checked by Firestore and not by the page.
+  //
+  // Only written once per day: a reload must not restart the clock, or the
+  // wait could be dodged by refreshing at the four-minute mark.
+  async function stampSessionStart(uid) {
+    const today = new Date().toISOString().slice(0, 10);
+    const dailyRef = doc(dbRef, 'veeraUsers', uid, 'dailyPoints', today);
+    try {
+      await runTransaction(dbRef, async (transaction) => {
+        const snap = await transaction.get(dailyRef);
+        if (snap.exists() && snap.data().pageOpenedAt) return;   // already stamped today
+        transaction.set(dailyRef, {
+          pageOpenedAt: serverTimestamp(),
+          uid: uid
+        }, { merge: true });
+      });
+    } catch (err) {
+      console.warn('Could not stamp the session start:', err);
+    }
+  }
+
+  async function awardPageOpenBonus(uid) {
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);   // YYYY-MM-DD
+    const monthKey = now.toISOString().slice(0, 7);  // YYYY-MM
+
+    const dailyRef = doc(dbRef, 'veeraUsers', uid, 'dailyPoints', today);
+    const monthlyRef = doc(dbRef, 'veeraUsers', uid, 'monthlyBonus', monthKey);
+    const userRef = doc(dbRef, 'veeraUsers', uid);
+
+    try {
+      const result = await runTransaction(dbRef, async (transaction) => {
+        // One point per calendar day, full stop. The flag is read inside the
+        // transaction, so two tabs finishing their five minutes at the same
+        // moment still produce a single point: whichever commits second is
+        // re-run by Firestore, sees the flag, and awards nothing.
+        const dailySnap = await transaction.get(dailyRef);
+        if (dailySnap.exists() && dailySnap.data().pageOpenBonusAwarded) {
+          return { awarded: false };
+        }
+
+        const monthlySnap = await transaction.get(monthlyRef);
+        const currentMonthPoints = (monthlySnap.exists() && monthlySnap.data().points !== undefined)
+          ? monthlySnap.data().points
+          : 0;
+        const newMonthPoints = currentMonthPoints + PAGE_OPEN_BONUS_POINTS;
+
+        transaction.set(monthlyRef, {
+          points: newMonthPoints,
+          month: monthKey
+        }, { merge: true });
+
+        // the account balance the rest of the platform reads
+        transaction.set(userRef, {
+          totalPoints: increment(PROFILE_BONUS_POINTS)
+        }, { merge: true });
+
+        transaction.set(dailyRef, {
+          pageOpenBonusAwarded: true,
+          pageOpenBonusPoints: PAGE_OPEN_BONUS_POINTS,
+          testProfileBonus: PROFILE_BONUS_POINTS,
+          // written by the server; the rules require this to be at least
+          // PAGE_OPEN_BONUS_MINUTES after pageOpenedAt
+          pageOpenBonusAt: serverTimestamp()
+        }, { merge: true });
+
+        return {
+          awarded: true,
+          newMonthPoints: newMonthPoints,
+          prevMonthPoints: currentMonthPoints
+        };
+      });
+
+      if (result.awarded) {
+        latestTestPoints = result.newMonthPoints;
+
+        recordExamPoint('activity_bonus', PAGE_OPEN_BONUS_POINTS, {
+          minutesOnPage: PAGE_OPEN_BONUS_MINUTES,
+          monthTotalAfter: result.newMonthPoints,
+          profilePointsAwarded: PROFILE_BONUS_POINTS
+        });
+
+        // Hold the counters at their old figures until each sum has played,
+        // so the point visibly arrives rather than the number quietly moving.
+        const profileBefore = latestTotalPoints;
+        const profileAfter = profileBefore + PROFILE_BONUS_POINTS;
+
+        playEquation('Test points', result.prevMonthPoints, PAGE_OPEN_BONUS_POINTS,
+                     result.newMonthPoints, 'for-test')
+          .then(() => {
+            countTo(cornerMonthly, result.newMonthPoints);
+            return playEquation('Profile points', profileBefore, PROFILE_BONUS_POINTS,
+                                profileAfter, 'for-profile');
+          })
+          .then(() => {
+            // the live listener will confirm this figure a moment later
+            countTo(cornerProfilePoints, profileAfter);
+            showToast(`+${PAGE_OPEN_BONUS_POINTS} test point and +${PROFILE_BONUS_POINTS} profile points earned!`);
+          });
+
+        // keep the shared copy in step
+        mirrorToTaskTracker(result.newMonthPoints, profileAfter);
+      }
+    } catch (err) {
+      console.warn('Could not award page-open bonus:', err);
+    }
+  }
+
+  // Show this month's running bonus total on load (in case it was already
+  // earned earlier today, or on an earlier visit this month)
+  async function loadMonthlyBonus(uid) {
+    const monthKey = new Date().toISOString().slice(0, 7);
+    try {
+      const snap = await getDoc(doc(dbRef, 'veeraUsers', uid, 'monthlyBonus', monthKey));
+      const points = (snap.exists() && snap.data().points !== undefined) ? snap.data().points : 0;
+      latestTestPoints = points;
+      countTo(cornerMonthly, points);
+
+      // Already banked today? Then nothing is running, so no sweep.
+      const today = new Date().toISOString().slice(0, 10);
+      const daily = await getDoc(doc(dbRef, 'veeraUsers', uid, 'dailyPoints', today));
+      if (daily.exists() && daily.data().pageOpenBonusAwarded) {
+        setExamEarning(false);
+        return true;      // tells the caller not to start the timer
+      }
+    } catch (err) {
+      console.warn('Could not load monthly bonus total:', err);
+    }
+  }
+
+  // While the five minutes run, the Start Exam button carries a sweeping
+  // light. Deliberately no clock: a visible countdown invites people to sit
+  // and watch it, and the exact timing is not something they need.
+  //
+  // This is display only. The point is granted by the server-side transaction,
+  // which is what enforces one per day — reloading restarts the sweep but
+  // cannot earn a second point.
+  function setExamEarning(on) {
+    const btn = document.getElementById('startExamBtn');
+    if (btn) btn.classList.toggle('earning', !!on);
+  }
+
+  // Once the exam window is open the button reports the exam rather than
+  // inviting another click: it reads "Ongoing", keeps the sweep running, and
+  // is disabled until the window closes.
+  function setExamOngoing(on) {
+    const label = startExamBtn.querySelector('.exam-label');
+    startExamBtn.classList.toggle('ongoing', !!on);
+    startExamBtn.disabled = !!on;
+
+    if (on) {
+      startExamBtn.classList.remove('summary');
+      if (label) label.innerHTML = '<span class="live-dot"></span>Ongoing';
+      startExamBtn.setAttribute('aria-busy', 'true');
+
+      // Five minutes in, the running state ends and the button reports the
+      // score instead. The exam window stays open — this is about the
+      // activity point, not the exam.
+      clearTimeout(examBonusTimer);
+      examBonusTimer = setTimeout(finishExamOngoing, PAGE_OPEN_BONUS_MINUTES * 60 * 1000);
+    } else {
+      clearTimeout(examBonusTimer);
+      examBonusTimer = null;
+      startExamBtn.classList.remove('summary');
+      if (label) label.textContent = '🎓 Start Exam';
+      startExamBtn.removeAttribute('aria-busy');
+    }
+  }
+
+  // Stop the animation, bank the point if it has not been earned today, then
+  // show test points alongside the account balance.
+  async function finishExamOngoing() {
+    if (sessionUser) {
+      // guarded server-side: a second call on the same day awards nothing
+      await awardPageOpenBonus(sessionUser.uid);
+    }
+    showExamScore();
+  }
+
+  function showExamScore() {
+    const label = startExamBtn.querySelector('.exam-label');
+    startExamBtn.classList.remove('ongoing');
+    startExamBtn.classList.add('summary');
+    startExamBtn.disabled = true;
+    startExamBtn.removeAttribute('aria-busy');
+
+    if (!label) return;
+    const n = Number(latestTestPoints) || 0;
+    label.innerHTML =
+      '<span class="exam-score">' +
+        '<span class="sc-star">★</span>' +
+        '<span class="sc-num sc-test">' + n.toLocaleString() + '</span>' +
+        '<span class="sc-lbl">test point' + (n === 1 ? '' : 's') + '</span>' +
+      '</span>';
+  }
+
+  function startPageOpenBonusTimer(uid) {
+    setExamEarning(true);
+    setTimeout(() => {
+      setExamEarning(false);
+      awardPageOpenBonus(uid);
+    }, PAGE_OPEN_BONUS_MINUTES * 60 * 1000);
+  }
+
+
+
+  // Plays "prev + gain = total", holds the sum, then drops everything except
+  // the answer. Resolves when it has finished, so two of these can be run one
+  // after the other rather than on top of each other.
+  function playEquation(tag, prev, gain, total, flavour) {
+    return new Promise((resolve) => {
+      const card = document.createElement('div');
+      card.className = 'eq-card ' + flavour;
+      card.innerHTML =
+        '<span class="e-tag">' + tag + '</span>' +
+        '<span class="e-n">' + Number(prev).toLocaleString() + '</span>' +
+        '<span class="e-op">+</span>' +
+        '<span class="e-n e-gain">' + Number(gain).toLocaleString() + '</span>' +
+        '<span class="e-op">=</span>' +
+        '<span class="e-n e-total">' + Number(total).toLocaleString() + '</span>';
+      document.body.appendChild(card);
+
+      card.animate(
+        [{ opacity: 0, transform: 'translate(-50%,-50%) scale(0.86)' },
+         { opacity: 1, transform: 'translate(-50%,-50%) scale(1)' }],
+        { duration: 320, easing: 'cubic-bezier(.34,1.5,.64,1)', fill: 'forwards' }
+      );
+
+      const parts = card.querySelectorAll('span');
+      parts.forEach((el, i) => {
+        el.animate(
+          [{ opacity: 0, transform: 'translateY(12px) scale(0.7)' },
+           { opacity: 1, transform: 'none' }],
+          { duration: 320, delay: i * 130, easing: 'cubic-bezier(.34,1.5,.64,1)', fill: 'forwards' }
+        );
+      });
+
+      setTimeout(() => {
+        const answer = card.querySelector('.e-total');
+        Array.prototype.slice.call(parts)
+          .filter((p) => p !== answer)
+          .forEach((el, i) => {
+            el.animate(
+              [{ opacity: 1, transform: 'none' },
+               { opacity: 0, transform: 'translateX(-14px) scale(0.6)' }],
+              { duration: 280, delay: i * 40, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }
+            );
+          });
+        answer.animate(
+          [{ transform: 'scale(1)' }, { transform: 'scale(1.22)' }, { transform: 'scale(1)' }],
+          { duration: 420, delay: 160, easing: 'cubic-bezier(.34,1.4,.64,1)' }
+        );
+
+        setTimeout(() => {
+          card.animate(
+            [{ opacity: 1, transform: 'translate(-50%,-50%) scale(1)' },
+             { opacity: 0, transform: 'translate(-50%,-50%) scale(0.9)' }],
+            { duration: 300, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }
+          ).onfinish = () => { card.remove(); resolve(); };
+        }, 900);
+      }, parts.length * 130 + 800);
+    });
+  }
+
+
+  // Writes this student's name and points into the shared project. Never
+  // throws: the batch project is the source of truth, and a failure to mirror
+  // must not cost a student their points.
+  async function mirrorToTaskTracker(testPoints, profilePoints) {
+    if (!taskDbRef || !sessionUser) return;
+
+    const key = studentKey(sessionName, sessionUser.uid);
+    try {
+      await setDoc(doc(taskDbRef, TEST_USERS_FOLDER, key), {
+        name: sessionName || null,
+        studentKey: key,
+        email: sessionUser.email || null,
+        uid: sessionUser.uid,
+
+        testPoints: testPoints,
+        profilePoints: profilePoints,
+
+        batch: '7:30 PM',
+        batchId: 'batch_1930',
+        sourceProject: 'veera730pmonline',
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (err) {
+      console.warn('Could not copy the points to the task-tracker project:', err);
+    }
+  }
+
+  // ── examPoints ───────────────────────────────────────────────────────────
+  //   examPoints/{studentKey}                  summary for the student
+  //   examPoints/{studentKey}/records/{autoId} one entry per event
+  //
+  // The folder is keyed by the student's name rather than their uid so it can
+  // be read at a glance in the console. The uid is stored inside every record
+  // too, since a name is not guaranteed unique and the uid is the thing that
+  // actually identifies the account.
+  const BATCH_ID = 'batch_1930';
+  const BATCH_PROJECT = 'veera730pmonline';
+
+  function studentKey(name, uid) {
+    const base = (name || '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    // fall back to the uid if the name gives us nothing usable
+    return base || ('user_' + (uid || 'unknown'));
+  }
+
+  // Writes one record and keeps the parent summary in step. Never throws:
+  // a logging failure must not stop a student sitting their exam.
+  async function recordExamPoint(kind, points, extra) {
+    if (!dbRef || !sessionUser) return null;
+
+    const key = studentKey(sessionName, sessionUser.uid);
+    const now = new Date();
+
+    const detail = Object.assign({
+      kind: kind,                                   // 'exam_start' | 'exam_complete' | 'activity_bonus'
+      points: points || 0,
+
+      studentName: sessionName || null,
+      studentKey: key,
+      email: sessionUser.email || null,
+      uid: sessionUser.uid,
+
+      batchId: BATCH_ID,
+      batchProject: BATCH_PROJECT,
+
+      dateStr: now.toISOString().slice(0, 10),      // YYYY-MM-DD
+      monthStr: now.toISOString().slice(0, 7),      // YYYY-MM
+      localTime: now.toLocaleString(),
+      page: 'test.html',
+      userAgent: navigator.userAgent || null,
+      at: serverTimestamp()
+    }, extra || {});
+
+    try {
+      const ref = await addDoc(
+        collection(dbRef, 'examPoints', key, 'records'),
+        detail
+      );
+
+      // the summary sits on the folder itself, so the totals are visible
+      // without opening the records underneath
+      await setDoc(doc(dbRef, 'examPoints', key), {
+        studentName: sessionName || null,
+        studentKey: key,
+        email: sessionUser.email || null,
+        uid: sessionUser.uid,
+        batchId: BATCH_ID,
+        batchProject: BATCH_PROJECT,
+        totalExamPoints: increment(points || 0),
+        totalRecords: increment(1),
+        lastKind: kind,
+        lastAt: serverTimestamp()
+      }, { merge: true });
+
+      // Mirror the same summary into the shared task-tracker project, so
+      // every batch's analytics board can read exam results from one place
+      // instead of each batch's own project. Best-effort: a failure here
+      // must never stop a student sitting their exam — dbRef above is the
+      // real source of truth either way.
+      mirrorExamPointsToTaskTracker(key, points || 0, kind);
+
+      return ref.id;
+    } catch (err) {
+      console.warn('Could not write the examPoints record:', err);
+      return null;
+    }
+  }
+
+  // The "test folder" in the shared project: examPoints/{batchId_studentKey},
+  // one doc per student per batch, all batches sharing the same collection.
+  // analytics.html reads this (filtered to its own BATCH_ID) so the "Live
+  // tests" panel and exam radar work the same way across every batch.
+  async function mirrorExamPointsToTaskTracker(key, points, kind) {
+    if (!taskDbRef || !sessionUser) return;
+    try {
+      await setDoc(doc(taskDbRef, 'examPoints', BATCH_ID + '_' + key), {
+        studentName: sessionName || null,
+        studentKey: key,
+        email: sessionUser.email || null,
+        uid: sessionUser.uid,
+        batchId: BATCH_ID,
+        batchProject: BATCH_PROJECT,
+        points: increment(points || 0),
+        lastKind: kind || null,
+        lastAt: serverTimestamp()
+      }, { merge: true });
+    } catch (err) {
+      console.warn('Could not mirror exam points to the task-tracker project:', err);
+    }
+  }
+
+  // Official exam — requires login, logs start/close time server-side
+  startExamBtn.addEventListener('click', async function () {
+    if (!sessionUser) {
+      loginWarning.style.display = 'block';
+      return;
+    }
+
+    startExamBtn.disabled = true;
+    const examLabel = startExamBtn.querySelector('.exam-label');
+    if (examLabel) examLabel.textContent = '⏳ Starting…';
+    else startExamBtn.textContent = '⏳ Starting…';
+
+    let logId = null;
+    try {
+      const logRef = await addDoc(collection(dbRef, 'examLog'), {
+        name: sessionName,
+        email: sessionUser.email || null,
+        uid: sessionUser.uid,
+        batch: 'veera730pmonline',
+        quizPlatform: 'joinmyquiz.com',
+        examStartTime: serverTimestamp(),
+        examCloseTime: null,
+        status: 'in_progress'
+      });
+      logId = logRef.id;
+
+      // the same event, filed under the student's own folder
+      recordExamPoint('exam_start', 0, {
+        examLogId: logId,
+        quizPlatform: 'joinmyquiz.com',
+        status: 'in_progress'
+      });
+    } catch (logErr) {
+      // Don't block the student from reaching the exam if logging fails
+      console.warn('Could not record exam start time:', logErr);
+    }
+
+    const examWindow = window.open(
+      'https://joinmyquiz.com/',
+      'examWindow',
+      'width=1200,height=800,left=100,top=60,scrollbars=yes,resizable=yes'
+    );
+
+    if (!examWindow || examWindow.closed || typeof examWindow.closed === 'undefined') {
+      // blocked before it ever opened — give the button back
+      popupWarning.style.display = 'block';
+      setExamOngoing(false);
+      return;
+    }
+    popupWarning.style.display = 'none';
+    examWindow.focus();
+
+    setExamOngoing(true);
+    trackExamWindow(examWindow, logId);
+  });
+
+  function trackExamWindow(examWindow, logId) {
+    const pollInterval = setInterval(async () => {
+      if (!examWindow || examWindow.closed) {
+        clearInterval(pollInterval);
+
+        // the exam is over, so the button becomes a button again — done first
+        // so a logging failure cannot leave it stuck on "Ongoing"
+        setExamOngoing(false);
+
+        if (!logId) return;
+        try {
+          await updateDoc(doc(dbRef, 'examLog', logId), {
+            examCloseTime: serverTimestamp(),
+            status: 'completed'
+          });
+          recordExamPoint('exam_complete', 0, {
+            examLogId: logId,
+            status: 'completed'
+          });
+        } catch (closeErr) {
+          console.warn('Could not record exam close time:', closeErr);
+        }
+      }
+    }, 1000);
+  }
+
+  try {
+    // Default [DEFAULT] app so onAuthStateChanged can read the existing session
+    const app = initializeApp(firebaseConfig);
+    try { getAnalytics(app); } catch (e) { /* analytics optional, ignore if blocked */ }
+
+    const auth = getAuth(app);
+    dbRef = getFirestore(app);
+
+    // A named secondary app: initialising this as the default would break
+    // onAuthStateChanged, which has to read the session from the batch project.
+    try {
+      const taskApp = initializeApp(taskTrackerConfig, 'taskTracker');
+      taskDbRef = getFirestore(taskApp);
+    } catch (taskErr) {
+      console.warn('Could not connect to the task-tracker project:', taskErr);
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        loginWarning.style.display = 'block';
+        startExamBtn.disabled = true;
+        return;
+      }
+
+      sessionUser = user;
+      startExamBtn.disabled = false;
+      loginWarning.style.display = 'none';
+      cornerProfile.classList.add('active');
+
+      // Check today's state first: if the point is already banked there is
+      // nothing to count down to, so show "Earned today" instead of a timer
+      // that would end in nothing happening.
+      // start the server-side clock first, then decide whether to run the
+      // on-screen one
+      stampSessionStart(user.uid).then(() =>
+        loadMonthlyBonus(user.uid)
+      ).then((alreadyEarned) => {
+        if (!alreadyEarned) startPageOpenBonusTimer(user.uid);
+      });
+
+      // Fill in what Firebase Auth already gives us right away
+      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'Student');
+      sessionName = fallbackName;
+      cornerName.textContent = fallbackName;
+      cornerEmail.textContent = user.email || '—';
+      cornerAvatar.textContent = fallbackName.trim().charAt(0).toUpperCase() || '?';
+
+      // Then enrich with the full profile from Firestore veeraUsers/{uid}
+      // (same source your dashboard reads from)
+      try {
+        // The profile balance the dashboard shows is veeraUsers/{uid}.totalPoints.
+        // Watching it rather than reading once means the figure here follows
+        // any points earned elsewhere while this page is open.
+        onSnapshot(doc(dbRef, 'veeraUsers', user.uid), (snap) => {
+          if (!snap.exists()) return;
+          const data = snap.data();
+
+          const displayName = data.name || data.username || fallbackName;
+          sessionName = displayName;
+          cornerName.textContent = displayName;
+          cornerAvatar.textContent = displayName.trim().charAt(0).toUpperCase() || '?';
+
+          const total = data.totalPoints !== undefined ? data.totalPoints
+                      : data.points !== undefined ? data.points
+                      : data.accountPoints !== undefined ? data.accountPoints
+                      : 0;
+          latestTotalPoints = total;
+          countTo(cornerProfilePoints, total);
+          // the balance moved — could have been earned on any page — so keep
+          // the shared copy current
+          mirrorToTaskTracker(latestTestPoints, total);
+        }, (err) => console.warn('Could not watch the profile doc:', err));
+
+      } catch (fireErr) {
+        // Non-fatal: page still works with Auth-only details in the corner widget
+        console.warn('Could not load veeraUsers profile doc:', fireErr);
+      }
+    });
+  } catch (err) {
+    console.error('Firebase init error:', err);
+    loginWarning.style.display = 'block';
+    loginWarning.textContent = 'Something went wrong verifying your session. Please refresh or contact support.';
+  }
+</script>
+
+</body>
+</html>
