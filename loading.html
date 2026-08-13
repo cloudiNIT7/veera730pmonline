@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud iNIT</title>
+    <link rel="preconnect" href="https://i.ibb.co" crossorigin>
+    <link rel="preload" as="image" href="https://i.ibb.co/bMgt1Tgq/cloudinit.png" fetchpriority="high">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 
     <style>
         /* ==========================================================================
@@ -18,6 +21,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        :root {
+            --_theme---foreground-primary: #fbfaf7; /* Warm off-white, matches site text color */
+            --_theme---heroes-accent: #cc7d5c;       /* Terracotta orange, matches site accent */
         }
 
         body {
@@ -669,6 +677,58 @@
         }
 
         /* ==========================================================================
+           9b. GROWING TREE ICON (models section)
+           ========================================================================== */
+        .growing-tree .tree-trunk {
+            stroke-dasharray: 24;
+            stroke-dashoffset: 24;
+            animation: tree-draw-trunk 4s ease-in-out infinite;
+        }
+        .growing-tree .tree-base {
+            stroke-dasharray: 62;
+            stroke-dashoffset: 62;
+            animation: tree-draw-base 4s ease-in-out infinite;
+        }
+        .growing-tree .tree-leaf-1 {
+            stroke-dasharray: 55;
+            stroke-dashoffset: 55;
+            transform-origin: 30px 32px;
+            animation: tree-draw-leaf 4s ease-in-out infinite;
+        }
+        .growing-tree .tree-leaf-2 {
+            stroke-dasharray: 55;
+            stroke-dashoffset: 55;
+            transform-origin: 30px 26px;
+            animation: tree-draw-leaf 4s ease-in-out infinite;
+            animation-delay: 0.3s;
+        }
+
+        @keyframes tree-draw-trunk {
+            0% { stroke-dashoffset: 24; }
+            15%, 100% { stroke-dashoffset: 0; }
+        }
+        @keyframes tree-draw-base {
+            0%, 8% { stroke-dashoffset: 62; }
+            20%, 100% { stroke-dashoffset: 0; }
+        }
+        @keyframes tree-draw-leaf {
+            0%, 20% { stroke-dashoffset: 55; opacity: 0; }
+            35%, 90% { stroke-dashoffset: 0; opacity: 1; }
+            97%, 100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .growing-tree .tree-trunk,
+            .growing-tree .tree-base,
+            .growing-tree .tree-leaf-1,
+            .growing-tree .tree-leaf-2 {
+                animation: none !important;
+                stroke-dashoffset: 0 !important;
+                opacity: 1 !important;
+            }
+        }
+
+        /* ==========================================================================
            10. HERO GRAPHIC AMBIENT GLOW (cursor-reactive)
            ========================================================================== */
         .hero-right-graphic::before {
@@ -682,6 +742,18 @@
         .hero-right-graphic svg {
             position: relative;
             z-index: 1;
+        }
+
+        .heroes_lottie_component {
+            position: relative;
+            z-index: 1;
+            margin: 0 auto;
+        }
+
+        .heroes_lottie_component svg {
+            width: 100% !important;
+            height: 100% !important;
+            overflow: visible;
         }
 
         .hero-graphic-img {
@@ -857,14 +929,519 @@
         .btn-details.icon-btn {
             border-radius: 999px;
         }
+
+        /* ==========================================================================
+           14. GLASSMORPHISM LAYER  ✦  frosted translucent redesign
+           Injected last so it wins the cascade. Purely visual — no markup / JS
+           changes. Uses layered radial ambient light + backdrop-blur glass panels.
+           ========================================================================== */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.055);
+            --glass-bg-strong: rgba(255, 255, 255, 0.09);
+            --glass-border: rgba(255, 255, 255, 0.14);
+            --glass-border-soft: rgba(255, 255, 255, 0.08);
+            --glass-blur: 26px;
+            --accent: #cc7d5c;
+            --accent-glow: rgba(204, 125, 92, 0.35);
+            --ease-glass: cubic-bezier(0.22, 1, 0.36, 1);
+            --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Ambient aurora background behind everything — slowly drifting */
+        body {
+            background-color: #0d0d0f;
+            background-image:
+                radial-gradient(60vw 60vw at 12% -5%, rgba(204,125,92,0.18), transparent 60%),
+                radial-gradient(55vw 55vw at 92% 8%, rgba(92,140,204,0.16), transparent 62%),
+                radial-gradient(70vw 70vw at 50% 115%, rgba(160,92,204,0.15), transparent 60%);
+            background-attachment: fixed;
+        }
+
+        /* Drifting aurora blobs layer (soft, blurred, animated) */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: -20%;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(28vw 28vw at 20% 30%, rgba(204,125,92,0.20), transparent 65%),
+                radial-gradient(24vw 24vw at 80% 65%, rgba(92,140,204,0.18), transparent 65%),
+                radial-gradient(22vw 22vw at 55% 85%, rgba(160,92,204,0.16), transparent 65%);
+            filter: blur(30px);
+            animation: auroraDrift 26s ease-in-out infinite alternate;
+        }
+        @keyframes auroraDrift {
+            0%   { transform: translate3d(0, 0, 0) scale(1); }
+            33%  { transform: translate3d(3%, -2%, 0) scale(1.08); }
+            66%  { transform: translate3d(-2%, 3%, 0) scale(1.04); }
+            100% { transform: translate3d(2%, 1%, 0) scale(1.1); }
+        }
+
+        /* Soft floating grain/mist overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.05), transparent),
+                radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.04), transparent),
+                radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,0.05), transparent);
+            background-size: 240px 240px, 320px 320px, 200px 200px;
+        }
+        body > * { position: relative; z-index: 1; }
+
+        /* Reusable glossy top-edge highlight for glass panels */
+        .navbar, .input-container, .mindmap-wrapper, .model-card,
+        .answer-panel, .modal-panel, .footer-container {
+            position: relative;
+        }
+        .mindmap-wrapper::after, .model-card::after,
+        .answer-panel::after, .modal-panel::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            background: linear-gradient(140deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 40%);
+            opacity: 0.7;
+        }
+
+        /* ---- Navbar glass ---- */
+        .navbar {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid var(--glass-border-soft);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        /* ---- Buttons ---- */
+        .btn-secondary, .btn-download, .tag-btn, .btn-details, .modal-close {
+            background: var(--glass-bg) !important;
+            -webkit-backdrop-filter: blur(14px) saturate(160%);
+            backdrop-filter: blur(14px) saturate(160%);
+            border: 1px solid var(--glass-border) !important;
+            transition: background .4s var(--ease-glass), border-color .4s var(--ease-glass), transform .45s var(--spring), box-shadow .4s var(--ease-glass);
+        }
+        .btn-secondary:hover, .btn-download:hover, .tag-btn:hover {
+            background: var(--glass-bg-strong) !important;
+            border-color: rgba(255,255,255,0.26) !important;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .btn-primary, .btn-ask {
+            transition: transform .45s var(--spring), box-shadow .4s var(--ease-glass), opacity .3s ease;
+        }
+        .btn-primary:hover, .btn-ask:hover {
+            transform: translateY(-2px) scale(1.03);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.8));
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+        }
+        .btn-ask {
+            background: linear-gradient(135deg, var(--accent), #b5623f);
+            box-shadow: 0 4px 18px var(--accent-glow);
+        }
+
+        /* ---- Hero input glass ---- */
+        .input-container {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 30px rgba(0,0,0,0.35);
+        }
+        .input-container:focus-within {
+            border-color: var(--accent-glow);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 34px var(--accent-glow);
+        }
+
+        /* ---- Mindmap wrapper glass ---- */
+        .mindmap-wrapper {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid var(--glass-border-soft);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 20px 60px rgba(0,0,0,0.4);
+            animation: gentleFloat 9s ease-in-out infinite;
+        }
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* ---- Model cards glass ---- */
+        .model-card {
+            background: var(--glass-bg) !important;
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            border: 1px solid var(--glass-border) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 40px rgba(0,0,0,0.35);
+            transition: transform .5s var(--spring), box-shadow .5s var(--ease-glass), border-color .5s var(--ease-glass), background .5s var(--ease-glass);
+            overflow: hidden;
+        }
+        /* Diagonal light sweep that glides across on hover */
+        .model-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -80%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(105deg, transparent, rgba(255,255,255,0.12), transparent);
+            transform: skewX(-18deg);
+            transition: left .8s var(--ease-glass);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .model-card:hover::before { left: 130%; }
+        .model-card:hover {
+            transform: translateY(-6px) scale(1.008);
+            background: var(--glass-bg-strong) !important;
+            border-color: rgba(255,255,255,0.24) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 26px 65px rgba(0,0,0,0.55), 0 0 50px rgba(204,125,92,0.15);
+        }
+
+        /* ---- Answer panel glass ---- */
+        .answer-panel {
+            background: var(--glass-bg-strong) !important;
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+            border: 1px solid var(--glass-border) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 40px rgba(0,0,0,0.4);
+        }
+
+        /* ---- Modal glass ---- */
+        .modal-overlay {
+            background: rgba(8,8,10,0.45);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        .modal-panel {
+            background: var(--glass-bg-strong) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(160%);
+            backdrop-filter: blur(28px) saturate(160%);
+            border: 1px solid var(--glass-border) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 30px 80px rgba(0,0,0,0.55);
+        }
+
+        /* ---- Contact popover glass (inline-styled element, override) ---- */
+        #contact-options-popover {
+            background: rgba(30,30,34,0.55) !important;
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid var(--glass-border) !important;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important;
+        }
+
+        /* ---- Footer glass ---- */
+        .footer-container {
+            background: rgba(255,255,255,0.03);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-top: 1px solid var(--glass-border-soft);
+        }
+
+        /* ---- Feature dividers softened for glass ---- */
+        .feature-item { border-bottom-color: var(--glass-border-soft); }
+
+        /* ---- Hover preview card (professional account peek) ---- */
+        .social-tip { position: relative; }
+        .social-preview {
+            position: fixed;
+            width: 268px;
+            background: rgba(22,22,26,0.68);
+            -webkit-backdrop-filter: blur(26px) saturate(180%);
+            backdrop-filter: blur(26px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 30px 70px rgba(0,0,0,0.6);
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+            transition: opacity .32s var(--ease-glass), transform .4s var(--spring);
+            pointer-events: none;
+            z-index: 999;
+            overflow: hidden;
+        }
+        .social-preview.is-visible { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* brand cover strip */
+        .social-preview .sp-cover {
+            height: 56px;
+            background: linear-gradient(120deg, var(--sp-c1, #cc7d5c), var(--sp-c2, #b5623f));
+            position: relative;
+            overflow: hidden;
+        }
+        .social-preview .sp-cover::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(120px 60px at 20% 0%, rgba(255,255,255,0.35), transparent 70%);
+        }
+        .social-preview .sp-cover::before {
+            content: "";
+            position: absolute;
+            top: 0; left: -60%;
+            width: 45%; height: 100%;
+            background: linear-gradient(105deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-20deg);
+            animation: spCoverShine 2.6s ease-in-out infinite;
+        }
+        @keyframes spCoverShine { 0% { left: -60%; } 55%, 100% { left: 160%; } }
+
+        .social-preview .sp-body { padding: 0 16px 16px; }
+
+        .social-preview .sp-avatar-wrap {
+            margin-top: -26px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+        .social-preview .sp-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            padding: 9px;
+            background: rgba(20,20,24,0.9);
+            border: 2px solid rgba(255,255,255,0.14);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+            object-fit: contain;
+        }
+        .social-preview .sp-follow {
+            font-size: 11px;
+            font-weight: 600;
+            color: #fbfaf7;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border-soft);
+            border-radius: 999px;
+            padding: 5px 12px;
+        }
+
+        .social-preview .sp-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fbfaf7;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            line-height: 1.2;
+        }
+        .social-preview .sp-check {
+            width: 14px; height: 14px;
+            flex-shrink: 0;
+            color: #4a9eff;
+        }
+        .social-preview .sp-handle {
+            font-size: 12px;
+            color: var(--accent);
+            margin-top: 2px;
+        }
+        .social-preview .sp-sub {
+            font-size: 12px;
+            color: #b3b3b3;
+            margin-top: 9px;
+            line-height: 1.45;
+        }
+
+        .social-preview .sp-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--glass-border-soft);
+        }
+        .social-preview .sp-stat { line-height: 1.2; }
+        .social-preview .sp-stat b {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fbfaf7;
+        }
+        .social-preview .sp-stat span {
+            display: block;
+            font-size: 10px;
+            color: #8a8a8a;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-top: 1px;
+        }
+
+        .social-preview .sp-cta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 13px;
+            width: 100%;
+            font-size: 12px;
+            font-weight: 600;
+            color: #191919;
+            background: linear-gradient(135deg, #fbfaf7, #e6e2da);
+            border-radius: 10px;
+            padding: 9px 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .social-preview { transition: opacity .2s ease; transform: none; }
+            .social-preview.is-visible { transform: none; }
+            .social-preview .sp-cover::before { animation: none; }
+        }
+
+        /* ==========================================================================
+           ASK AI BUTTON  ✦  full animated treatment + loading spinner
+           ========================================================================== */
+        .btn-ask {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(120deg, #cc7d5c, #e0916f, #b5623f, #cc7d5c) !important;
+            background-size: 300% 100% !important;
+            border: none !important;
+            color: #fff !important;
+            box-shadow: 0 4px 18px var(--accent-glow), 0 0 0 0 rgba(204,125,92,0.5);
+            animation: askGradient 6s ease infinite, askPulse 2.8s ease-in-out infinite;
+            transition: transform .45s var(--spring), box-shadow .4s var(--ease-glass);
+            isolation: isolate;
+        }
+        @keyframes askGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes askPulse {
+            0%, 100% { box-shadow: 0 4px 18px var(--accent-glow), 0 0 0 0 rgba(204,125,92,0.45); }
+            50% { box-shadow: 0 6px 26px var(--accent-glow), 0 0 0 6px rgba(204,125,92,0); }
+        }
+        .btn-ask:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+        .btn-ask:active { transform: translateY(0) scale(0.98); }
+
+        /* moving shine sweep */
+        .btn-ask-shine {
+            position: absolute;
+            top: 0; left: -120%;
+            width: 60%; height: 100%;
+            background: linear-gradient(105deg, transparent, rgba(255,255,255,0.5), transparent);
+            transform: skewX(-20deg);
+            z-index: 1;
+            animation: askShine 3.2s ease-in-out infinite;
+        }
+        @keyframes askShine {
+            0% { left: -120%; }
+            55%, 100% { left: 160%; }
+        }
+
+        .btn-ask-label, .btn-ask-arrow, .btn-ask-spinner {
+            position: relative;
+            z-index: 2;
+        }
+        .btn-ask-label { font-weight: 600; letter-spacing: 0.2px; }
+
+        /* bouncing arrow at rest */
+        .btn-ask-arrow {
+            display: inline-block;
+            margin-left: 4px;
+            animation: askArrowBounce 1.6s var(--ease-glass) infinite;
+            transition: opacity .2s ease;
+        }
+        @keyframes askArrowBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        /* spinner (hidden until loading) */
+        .btn-ask-spinner {
+            display: none;
+            width: 15px; height: 15px;
+            margin-left: 6px;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: askSpin 0.7s linear infinite;
+        }
+        @keyframes askSpin { to { transform: rotate(360deg); } }
+
+        /* loading state */
+        .btn-ask.is-loading {
+            pointer-events: none;
+            animation: askGradient 2.5s ease infinite, askPulse 1.2s ease-in-out infinite;
+        }
+        .btn-ask.is-loading .btn-ask-arrow { display: none; }
+        .btn-ask.is-loading .btn-ask-spinner { display: inline-block; }
+        .btn-ask.is-loading .btn-ask-label::after {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            text-align: left;
+            animation: askDots 1.2s steps(4, end) infinite;
+        }
+        @keyframes askDots {
+            0% { content: ""; }
+            25% { content: "."; }
+            50% { content: ".."; }
+            75% { content: "..."; }
+            100% { content: ""; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn-ask, .btn-ask-shine, .btn-ask-arrow { animation: none !important; }
+            .btn-ask { background-position: 0 50% !important; }
+        }
+
+        /* ---- Header "iNIT" typing/erasing effect (navbar only) ---- */
+        .logo-typed {
+            color: var(--accent);
+            font-family: inherit;
+        }
+        .logo-caret {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            margin-left: 2px;
+            background: var(--accent);
+            transform: translateY(2px);
+            animation: logoCaretBlink 0.8s steps(1) infinite;
+        }
+        @keyframes logoCaretBlink {
+            0%, 50% { opacity: 1; }
+            50.01%, 100% { opacity: 0; }
+        }
+
+        /* Graceful fallback where backdrop-filter is unsupported */
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .navbar, .input-container, .mindmap-wrapper, .model-card,
+            .answer-panel, .modal-panel, #contact-options-popover, .footer-container {
+                background: rgba(28,28,32,0.92) !important;
+            }
+        }
+
+        /* Global smooth scrolling */
+        html { scroll-behavior: smooth; }
+
+        /* Respect reduced motion for all new ambient/float animations */
+        @media (prefers-reduced-motion: reduce) {
+            body::after, .mindmap-wrapper { animation: none !important; }
+            .model-card::before { display: none !important; }
+            html { scroll-behavior: auto; }
+        }
     </style>
 </head>
 <body>
 
     <header class="navbar">
         <div class="logo">
-            <img class="logo-icon" src="https://i.ibb.co/C5XqXXx5/d2a09cd4-f07d-4034-99ad-51292342123d.png" alt="Cloud iNIT logo" style="height: 28px; vertical-align: middle; margin-right: 8px;">
-            Cloud iNIT
+            <img class="logo-icon" src="https://i.ibb.co/bMgt1Tgq/cloudinit.png" alt="Cloud iNIT logo" fetchpriority="high" decoding="async" loading="eager" style="height: 28px; vertical-align: middle; margin-right: 8px;">
+            Cloud <span id="logo-typed" class="logo-typed"></span><span class="logo-caret" aria-hidden="true"></span>
         </div>
         <div class="nav-right">
             <a href="login.html" class="btn-login icon-btn">
@@ -941,7 +1518,10 @@
             <div class="input-container">
                 <input type="text" id="chat-input" placeholder="How can I help you today?">
                 <button id="submit-btn" class="btn-ask">
-                    Ask Ai <span class="up-arrow">↑</span>
+                    <span class="btn-ask-shine" aria-hidden="true"></span>
+                    <span class="btn-ask-label">Ask Ai</span>
+                    <span class="btn-ask-arrow" aria-hidden="true">↑</span>
+                    <span class="btn-ask-spinner" aria-hidden="true"></span>
                 </button>
             </div>
 
@@ -960,14 +1540,22 @@
         </div>
 
         <div class="hero-right-graphic">
-            <img src="https://static01.nyt.com/images/2022/04/14/multimedia/22ai-indigenous/22ai-indigenous-articleLarge.gif?quality=75&auto=webp&disable=upscale" alt="Hero graphic" class="hero-graphic-img">
+            <div
+                class="heroes_lottie_component"
+                data-lottie=""
+                data-lottie-src="https://cdn.prod.website-files.com/6889473510b50328dbb70ae6/68c00420bab94b062559518b_API.json"
+                data-frames-in="0,90"
+                data-frames-loop="91,119"
+                data-lottie-speed="1"
+                style="width: 100%; max-width: 560px; max-height: 65vh; aspect-ratio: 1 / 1;"
+            ></div>
         </div>
     </main>
 
     <section class="problems-section">
         <div class="problems-header reveal">
             <div class="badge-icon" style="display: flex; align-items: center; justify-content: center;">
-                <img class="logo-icon" src="https://i.ibb.co/C5XqXXx5/d2a09cd4-f07d-4034-99ad-51292342123d.png" alt="Cloud iNIT logo" style="height: 40px; display: block;">
+                <img class="logo-icon" src="https://i.ibb.co/bMgt1Tgq/cloudinit.png" alt="Cloud iNIT logo" style="height: 40px; display: block;">
             </div>
             <h2 style="text-align:center;">The AI for problem solvers</h2>
    
@@ -1300,9 +1888,11 @@
     <section class="models-section">
         <div class="models-header reveal">
             <div class="model-cloud-icon">
-                <svg width="60" height="40" viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 32C12 32 8 28 8 22C8 17.5 11.5 13.5 16 13C17.5 8 22 4 28 4C34.5 4 39.5 9 40 15.5C45 16 49 20 49 25C49 30.5 44.5 35 39 35" stroke="#a3a3a3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M26 35C24 35 22.5 33.5 22.5 31.5C22.5 30 24 28.5 26 28.5" stroke="#a3a3a3" stroke-width="1.5" stroke-linecap="round"/>
+                <svg class="growing-tree" width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path class="tree-trunk" d="M30 54 L30 30" stroke="#fbfaf7" stroke-width="3" stroke-linecap="round"/>
+                    <path class="tree-leaf tree-leaf-1" d="M30 32 C22 30 14 24 12 15 C22 14 30 20 30 32Z" stroke="#fbfaf7" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+                    <path class="tree-leaf tree-leaf-2" d="M30 26 C38 24 46 18 48 9 C38 8 30 14 30 26Z" stroke="#fbfaf7" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+                    <ellipse class="tree-base" cx="30" cy="55" rx="14" ry="4" stroke="#fbfaf7" stroke-width="2.5" fill="none"/>
                 </svg>
             </div>
             <h2>Cloud iNIT's ai models</h2>
@@ -1395,23 +1985,23 @@
     <footer class="footer-container">
         <div class="footer-content">
             <div class="footer-left-brand">
-                <img src="https://i.ibb.co/C5XqXXx5/d2a09cd4-f07d-4034-99ad-51292342123d.png" alt="Cloud iNIT Logo" style="height:24px; width:24px; vertical-align:middle; margin-right:8px;"> Cloud iNIT © 2026
+                <img src="https://i.ibb.co/bMgt1Tgq/cloudinit.png" alt="Cloud iNIT Logo" style="height:24px; width:24px; vertical-align:middle; margin-right:8px;"> Cloud iNIT © 2026
             </div>
             
             <div class="social-links">
-                <a href="https://x.com/veeracloud7" target="_blank" rel="noopener">
+                <a href="https://x.com/veeracloud7" target="_blank" rel="noopener" class="social-tip" data-tip="@veeracloud7" data-name="Cloud iNIT" data-sub="Cloud &amp; DevOps updates, tips and community news." data-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/1280px-Logo_of_Twitter.svg.png" data-platform="X" data-c1="#1d1d1f" data-c2="#3a3a3d" data-stat1="Posts" data-stat2="Following">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/1280px-Logo_of_Twitter.svg.png" alt="Twitter"> Twitter
                 </a>
-                <a href="https://www.instagram.com/cloud_tech_devops/" target="_blank" rel="noopener">
+                <a href="https://www.instagram.com/cloud_tech_devops/" target="_blank" rel="noopener" class="social-tip" data-tip="@cloud_tech_devops" data-name="cloud_tech_devops" data-sub="Behind-the-scenes posts, reels and cloud content." data-logo="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" data-platform="Instagram" data-c1="#833ab4" data-c2="#fd1d1d" data-stat1="Posts" data-stat2="Reels">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram"> Instagram
                 </a>
-                <a href="https://whatsapp.com/channel/0029VbCkNwX8qJ02LaVO8o0Y" target="_blank" rel="noopener">
+                <a href="https://whatsapp.com/channel/0029VbCkNwX8qJ02LaVO8o0Y" target="_blank" rel="noopener" class="social-tip" data-tip="Official Channel" data-name="Cloud iNIT Channel" data-sub="Join our WhatsApp channel for instant updates." data-logo="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" data-platform="WhatsApp" data-c1="#128C7E" data-c2="#25D366" data-stat1="Members" data-stat2="Updates">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp"> WhatsApp
                 </a>
-                <a href="https://www.youtube.com/@cloudtect" target="_blank" rel="noopener">
+                <a href="https://www.youtube.com/@cloudtect" target="_blank" rel="noopener" class="social-tip" data-tip="@cloudtect" data-name="Cloud iNIT" data-sub="Tutorials, walkthroughs and full course videos." data-logo="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png" data-platform="YouTube" data-c1="#c4302b" data-c2="#ff0000" data-stat1="Videos" data-stat2="Playlists">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png" alt="YouTube"> YouTube
                 </a>
-                <a href="https://www.facebook.com/profile.php?id=61591112875415" target="_blank" rel="noopener">
+                <a href="https://www.facebook.com/profile.php?id=61591112875415" target="_blank" rel="noopener" class="social-tip" data-tip="Facebook Page" data-name="Cloud iNIT" data-sub="Follow our page for announcements and events." data-logo="https://upload.wikimedia.org/wikipedia/commons/1/1b/Facebook_icon.svg" data-platform="Facebook" data-c1="#1877F2" data-c2="#0a5dc2" data-stat1="Likes" data-stat2="Follows">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Facebook_icon.svg" alt="Facebook"> Facebook
                 </a>
             </div>
@@ -1703,6 +2293,7 @@
                 answerPanelBody.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
                 openAnswerPanel();
                 chatInput.value = '';
+                submitBtn.classList.add('is-loading');
 
                 try {
                     const answer = await fetchVeeraAnswer(queryText);
@@ -1710,6 +2301,8 @@
                 } catch (err) {
                     console.error('Cloud iNIT API error:', err);
                     answerPanelBody.textContent = `Something went wrong reaching Cloud iNIT: ${err.message}`;
+                } finally {
+                    submitBtn.classList.remove('is-loading');
                 }
             };
 
@@ -1839,6 +2432,357 @@
             }
         });
     </script>
+<script>
+(function(){
+    var el = document.getElementById('logo-typed');
+    if (!el) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = 'iNIT';
+        return;
+    }
+    var word = 'iNIT';
+    var i = 0, deleting = false;
+    var typeSpeed = 140, eraseSpeed = 90, holdFull = 1600, holdEmpty = 500;
+    function tick(){
+        if (!deleting) {
+            i++;
+            el.textContent = word.slice(0, i);
+            if (i === word.length) { deleting = true; return setTimeout(tick, holdFull); }
+            return setTimeout(tick, typeSpeed);
+        } else {
+            i--;
+            el.textContent = word.slice(0, i);
+            if (i === 0) { deleting = false; return setTimeout(tick, holdEmpty); }
+            return setTimeout(tick, eraseSpeed);
+        }
+    }
+    setTimeout(tick, 400);
+})();
+</script>
+<script>
+(function(){
+    var links = document.querySelectorAll('.social-tip');
+    if (!links.length) return;
+
+    var card = document.createElement('div');
+    card.className = 'social-preview';
+    document.body.appendChild(card);
+    var hideTimer = null;
+
+    var checkSvg = '<svg class="sp-check" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 1.8 3-.2 1 2.8 2.6 1.6-.8 2.9.8 2.9-2.6 1.6-1 2.8-3-.2L12 22l-2.4-1.8-3 .2-1-2.8L3 16.2l.8-2.9L3 10.4l2.6-1.6 1-2.8 3 .2L12 2zm-1.2 13.4l5-5-1.4-1.4-3.6 3.6-1.8-1.8-1.4 1.4 3.2 3.2z"/></svg>';
+
+    function build(link){
+        var d = link.dataset;
+        card.style.setProperty('--sp-c1', d.c1 || '#cc7d5c');
+        card.style.setProperty('--sp-c2', d.c2 || '#b5623f');
+        card.innerHTML =
+            '<div class="sp-cover"></div>' +
+            '<div class="sp-body">' +
+                '<div class="sp-avatar-wrap">' +
+                    '<img class="sp-avatar" src="' + d.logo + '" alt="">' +
+                    '<span class="sp-follow">Follow</span>' +
+                '</div>' +
+                '<div class="sp-name">' + (d.name || '') + checkSvg + '</div>' +
+                '<div class="sp-handle">' + (d.tip || '') + '</div>' +
+                '<div class="sp-sub">' + (d.sub || '') + '</div>' +
+                '<div class="sp-stats">' +
+                    '<div class="sp-stat"><b>' + (d.platform || '') + '</b><span>Platform</span></div>' +
+                    '<div class="sp-stat"><b>● Live</b><span>Active now</span></div>' +
+                '</div>' +
+                '<div class="sp-cta">Open ' + (d.platform || 'account') + ' ↗</div>' +
+            '</div>';
+    }
+
+    function position(link){
+        var r = link.getBoundingClientRect();
+        var cw = 268, gap = 12;
+        var left = r.left + r.width/2 - cw/2;
+        left = Math.max(12, Math.min(left, window.innerWidth - cw - 12));
+        var top = r.top - card.offsetHeight - gap;
+        if (top < 12) top = r.bottom + gap;
+        card.style.left = left + 'px';
+        card.style.top = top + 'px';
+    }
+
+    links.forEach(function(link){
+        link.addEventListener('mouseenter', function(){
+            clearTimeout(hideTimer);
+            build(link);
+            card.classList.remove('is-visible');
+            requestAnimationFrame(function(){
+                position(link);
+                requestAnimationFrame(function(){ card.classList.add('is-visible'); });
+            });
+        });
+        link.addEventListener('mouseleave', function(){
+            hideTimer = setTimeout(function(){ card.classList.remove('is-visible'); }, 80);
+        });
+    });
+
+    window.addEventListener('scroll', function(){ card.classList.remove('is-visible'); }, { passive: true });
+})();
+</script>
 <script src="ai-agent-widget.js"></script>
+<script>
+(function(){
+  function waitForLottie(timeoutMs = 4000) {
+    return new Promise((resolve, reject) => {
+      const start = performance.now();
+      function check() {
+        if (window.lottie && typeof window.lottie.loadAnimation === 'function') {
+          resolve(window.lottie);
+          return;
+        }
+        if (performance.now() - start > timeoutMs) {
+          reject(new Error('[lottie] not available within timeout'));
+          return;
+        }
+        requestAnimationFrame(check);
+      }
+      check();
+    });
+  }
+
+  class LottieScrollController {
+    constructor() {
+      this.animations = new Map();
+      this.observer = null;
+      this.mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      this.prefersReducedMotion = this.mq.matches;
+
+      const onMQChange = (e) => {
+        this.prefersReducedMotion = e.matches;
+        this.animations.forEach((_, el) => e.matches ? this.setStaticMode(el) : this.resetAnimation(el));
+      };
+      if (this.mq.addEventListener) this.mq.addEventListener('change', onMQChange);
+      else if (this.mq.addListener) this.mq.addListener(onMQChange);
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) this.pauseAll();
+        else if (!this.prefersReducedMotion) this.resumeAll();
+      });
+
+      this.injectThemeCSS();
+    }
+
+    async mount(root = document) {
+      try { await waitForLottie(); } catch(e) { console.warn(e); return; }
+
+      if (this.observer) this.observer.disconnect();
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) this.handleIntersection(entry.target);
+          else this.handleExitIntersection(entry.target);
+        });
+      }, { root: null, rootMargin: '0px 0px -1px 0px', threshold: 0 });
+
+      const targets = Array.from(root.querySelectorAll('[data-lottie]'));
+      targets.forEach(el => this.initEl(el));
+
+      requestAnimationFrame(() => {
+        targets.forEach(el => { if (this.isInViewport(el, 0.1)) this.handleIntersection(el); });
+      });
+
+      window.addEventListener('load', () => {
+        this.animations.forEach((_, el) => {
+          if (this.isInViewport(el, 0.1)) this.handleIntersection(el);
+        });
+      }, { once: true });
+    }
+
+    initEl(el) {
+      if (el.dataset.lottieInit === 'true') return;
+      el.dataset.lottieInit = 'true';
+
+      const src        = el.dataset.lottieSrc;
+      const speed      = parseFloat(el.dataset.lottieSpeed) || 1;
+      const framesIn   = this.parseFrames(el.dataset.framesIn);
+      const framesLoop = this.parseFrames(el.dataset.framesLoop);
+      if (!src || !framesIn || !framesLoop) return;
+
+      const animation = lottie.loadAnimation({
+        container: el,
+        renderer: 'svg',
+        loop: false,
+        autoplay: false,
+        path: src,
+        rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
+      });
+
+      this.animations.set(el, {
+        animation, speed, framesIn, framesLoop,
+        hasPlayedIn: false, isLooping: false, isPaused: false,
+        currentFrame: framesIn.start, isStaticMode: false
+      });
+
+      this.observer && this.observer.observe(el);
+
+      animation.addEventListener('DOMLoaded', () => {
+        animation.setSpeed(speed);
+        this.updateThemeColors(el);
+
+        if (this.prefersReducedMotion) {
+          this.setStaticMode(el);
+          return;
+        }
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (this.isInViewport(el, 0.1)) this.handleIntersection(el);
+          });
+        });
+      });
+
+      animation.addEventListener('complete', () => this.handleAnimationComplete(el));
+      animation.addEventListener('enterFrame', () => {
+        const d = this.animations.get(el);
+        if (d) d.currentFrame = animation.currentFrame;
+      });
+    }
+
+    isInViewport(el, minRatio = 0.1) {
+      const r = el.getBoundingClientRect();
+      const vpH = window.innerHeight || document.documentElement.clientHeight;
+      const vpW = window.innerWidth  || document.documentElement.clientWidth;
+      const visibleW = Math.max(0, Math.min(r.right, vpW) - Math.max(r.left, 0));
+      const visibleH = Math.max(0, Math.min(r.bottom, vpH) - Math.max(r.top, 0));
+      const visibleArea = visibleW * visibleH;
+      const elArea = Math.max(1, r.width * r.height);
+      return (visibleArea / elArea) >= minRatio;
+    }
+
+    parseFrames(s) {
+      if (!s) return null;
+      const parts = String(s).split(',').map(v => parseInt(v.trim(), 10));
+      if (parts.length !== 2 || parts.some(isNaN)) return null;
+      return { start: parts[0], end: parts[1] };
+    }
+
+    handleIntersection(el) {
+      const d = this.animations.get(el);
+      if (!d) return;
+      if (this.prefersReducedMotion) { this.setStaticMode(el); return; }
+      if (d.isPaused) { this.resumeAnimation(el); return; }
+      if (!d.hasPlayedIn) { this.playIntroAnimation(el); }
+    }
+
+    handleExitIntersection(el) {
+      const d = this.animations.get(el);
+      if (!d) return;
+      this.pauseAnimation(el);
+    }
+
+    setStaticMode(el) {
+      const d = this.animations.get(el);
+      if (!d) return;
+      d.animation.stop();
+      d.animation.goToAndStop(d.framesLoop.start, true);
+      d.isStaticMode = true;
+      d.hasPlayedIn = true;
+      d.isPaused = false;
+      d.isLooping = false;
+    }
+
+    playIntroAnimation(el) {
+      const d = this.animations.get(el);
+      if (!d) return;
+      d.animation.loop = false;
+      d.animation.goToAndStop(d.framesIn.start, true);
+      d.animation.playSegments([d.framesIn.start, d.framesIn.end], true);
+      d.hasPlayedIn = true;
+      d.isPaused = false;
+    }
+
+    handleAnimationComplete(el) {
+      const d = this.animations.get(el);
+      if (!d) return;
+      if (d.hasPlayedIn && !d.isLooping && !d.isStaticMode) {
+        this.startLoopAnimation(el);
+      }
+    }
+
+    startLoopAnimation(el) {
+      const d = this.animations.get(el);
+      if (!d) return;
+      d.animation.loop = true;
+      d.isLooping = true;
+      d.isPaused = false;
+      d.animation.goToAndStop(d.framesLoop.start, true);
+      d.animation.playSegments([d.framesLoop.start, d.framesLoop.end], true);
+    }
+
+    pauseAnimation(el) {
+      const d = this.animations.get(el);
+      if (!d || d.isPaused) return;
+      d.animation.pause();
+      d.isPaused = true;
+    }
+
+    resumeAnimation(el) {
+      const d = this.animations.get(el);
+      if (!d || !d.isPaused) return;
+      d.animation.play();
+      d.isPaused = false;
+    }
+
+    resetAnimation(el) {
+      const d = this.animations.get(el);
+      if (!d) return;
+      d.animation.stop();
+      d.animation.goToAndStop(d.framesIn.start, true);
+      d.hasPlayedIn = false;
+      d.isLooping = false;
+      d.isPaused = false;
+      d.currentFrame = d.framesIn.start;
+      d.isStaticMode = false;
+    }
+
+    pauseAll(){ this.animations.forEach((d, el)=>{ if (!d.isStaticMode) this.pauseAnimation(el); }); }
+    resumeAll(){ this.animations.forEach((d, el)=>{ if (d.isPaused && !d.isStaticMode) this.resumeAnimation(el); }); }
+
+    injectThemeCSS() {
+      if (document.getElementById('lottie-theme-override')) return;
+      const style = document.createElement('style');
+      style.id = 'lottie-theme-override';
+      style.textContent = `
+        .heroes_lottie_component [fill="rgb(19,19,20)"],
+        .heroes_lottie_component [fill="rgb(19, 19, 20)"],
+        .heroes_lottie_component [fill="#131314"] {
+          fill: var(--_theme---foreground-primary) !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    updateThemeColors(container) {
+      const all = container.querySelectorAll('*');
+      const swapMap = new Map([
+        ['#131314', 'var(--_theme---foreground-primary)'],
+        ['rgb(19, 19, 20)', 'var(--_theme---foreground-primary)'],
+        ['rgb(19,19,20)',    'var(--_theme---foreground-primary)'],
+      ]);
+      all.forEach(node => {
+        const fill = node.getAttribute('fill');
+        if (fill && swapMap.has(fill)) node.setAttribute('fill', swapMap.get(fill));
+      });
+    }
+  }
+
+  const controller = new LottieScrollController();
+  function boot() { controller.mount(document); }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
+  } else {
+    boot();
+  }
+
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) boot();
+  });
+
+  window.lottieController = controller;
+})();
+</script>
 </body>
 </html>
